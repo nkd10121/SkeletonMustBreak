@@ -5,6 +5,8 @@
 #include "SceneManager.h"
 #include "TitlePlayer.h"
 
+#include "SoundManager.h"
+
 namespace
 {
 	enum ui
@@ -56,6 +58,8 @@ SceneTitle::SceneTitle(SceneManager& mgr) :
 	m_lightHandle = CreatePointLightHandle(VGet(0.0f, 0.0f, 400.0), 1000.0f, 0.08f, 0.003f, 0.0f);
 
 	SetLightEnable(FALSE);
+
+	SoundManager::GetInstance().Load("select","data/sound/se/select.mp3",false);
 }
 
 SceneTitle::~SceneTitle()
@@ -92,6 +96,7 @@ void SceneTitle::Update(std::shared_ptr<Input>& input)
 		{
 			if (m_destinationScene != e_Destination::StageSelect)
 			{
+				SoundManager::GetInstance().PlaySE("select");
 				m_destinationScene = static_cast<e_Destination>(static_cast<int>(m_destinationScene) - 1);
 			}
 		}
@@ -100,6 +105,7 @@ void SceneTitle::Update(std::shared_ptr<Input>& input)
 		{
 			if (m_destinationScene != e_Destination::Quit)
 			{
+				SoundManager::GetInstance().PlaySE("select");
 				m_destinationScene = static_cast<e_Destination>(static_cast<int>(m_destinationScene) + 1);
 			}
 		}

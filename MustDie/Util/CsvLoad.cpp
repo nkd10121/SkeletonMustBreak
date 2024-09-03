@@ -54,6 +54,8 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charcterName)
 		//[1]:体力
 		//[2]:攻撃力
 		//[3]:防御力
+		//[4]:移動速度
+		//[5]:死亡時のポイント
 
 		//指定したキャラクター名と一致するデータがあれば情報を取得する
 		if (strConmaBuf[LoadData::eStatusOrder::name] == charcterName)
@@ -62,6 +64,8 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charcterName)
 			data.hp = std::stoi(strConmaBuf[LoadData::eStatusOrder::hp]);
 			data.atk = std::stoi(strConmaBuf[LoadData::eStatusOrder::atk]);
 			data.def = std::stoi(strConmaBuf[LoadData::eStatusOrder::def]);
+			data.speed = std::stof(strConmaBuf[LoadData::eStatusOrder::speed]);
+			data.point = std::stoi(strConmaBuf[LoadData::eStatusOrder::point]);
 		}
 	}
 

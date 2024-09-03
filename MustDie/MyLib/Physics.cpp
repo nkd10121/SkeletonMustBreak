@@ -85,13 +85,13 @@ void MyLib::Physics::Update()
 			// 最大重力加速度より大きかったらクランプ
 			if (velocity.y < MaxGravityAccel)
 			{
-				velocity = VGet(velocity.x, MaxGravityAccel, velocity.z);
+				velocity = MyLib::Vec3(velocity.x, MaxGravityAccel, velocity.z);
 			}
 		}
 
 		auto nextPos = pos + velocity;
 
-		//item->rigidbody.SetVelocity(velocity);
+		item->rigidbody.SetVelocity(velocity);
 
 		// もともとの情報、予定情報をデバッグ表示
 #if _DEBUG
@@ -783,7 +783,7 @@ void MyLib::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& col)
 	{
 		// 接触したポリゴンで一番高いＹ座標をプレイヤーのＹ座標にする
 		auto set = col->rigidbody.GetNextPos();
-		set.y = PolyMaxPosY + 3.4f;
+		set.y = PolyMaxPosY + radius;
 		col->rigidbody.SetNextPos(set);
 
 		//m_nextPos.y = PolyMaxPosY;

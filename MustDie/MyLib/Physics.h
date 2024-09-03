@@ -87,7 +87,7 @@ private:	//ステージ当たり判定テスト
 private:
 	// 重力と最大重力加速度
 	static constexpr float Gravity = -0.01f;
-	static constexpr float MaxGravityAccel = -0.15f;
+	static constexpr float MaxGravityAccel = -0.30f;
 
 	static const int BeforeFixInfoColor = 0x0000ff;	// 補正前情報色
 	static const int AimInfoColor = 0x00ff00;	// 補正前予定情報色

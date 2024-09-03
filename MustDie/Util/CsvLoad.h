@@ -12,8 +12,10 @@ namespace LoadData
 	{
 		name,	//キャラクター名
 		hp,		//体力
-		atk,		//攻撃力
-		def		//防御力
+		atk,	//攻撃力
+		def,	//防御力
+		speed,
+		point
 	};
 
 	//ステータス情報の並び列挙型

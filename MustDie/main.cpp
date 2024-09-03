@@ -34,8 +34,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	SceneManager sceneManager;
 #ifdef _DEBUG
-	sceneManager.ChangeScene(std::make_shared<SceneTitle>(sceneManager));
-	//sceneManager.ChangeScene(std::make_shared<SceneGame>(sceneManager));
+	//sceneManager.ChangeScene(std::make_shared<SceneTitle>(sceneManager));
+	sceneManager.ChangeScene(std::make_shared<SceneGame>(sceneManager));
 	//sceneManager.ChangeScene(std::make_shared<SceneDebug>(sceneManager));
 #else
 	sceneManager.ChangeScene(std::make_shared<SceneTitle>(sceneManager));

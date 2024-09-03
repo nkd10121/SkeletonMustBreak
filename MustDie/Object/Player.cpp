@@ -192,7 +192,7 @@ void Player::Update(std::shared_ptr<Input>& input)
 
 	//加速度を0にする
 	//m_moveVec = MyLib::Vec3();
-	rigidbody.SetVelocity(MyLib::Vec3());
+	//rigidbody.SetVelocity(MyLib::Vec3());
 
 	//座標を取得する
 	m_collisionPos = rigidbody.GetPos();
@@ -253,7 +253,10 @@ void Player::Update(std::shared_ptr<Input>& input)
 		MV1SetRotationXYZ(m_modelHandle, m_rot.ConvertToVECTOR());
 	}
 	//m_moveVec.y += kModelOffsetY * kModelSize;
-	rigidbody.SetVelocity(m_moveVec,2.0f);
+
+	MyLib::Vec3 prevVelocity = rigidbody.GetVelocity();
+	MyLib::Vec3 newVelocity = MyLib::Vec3(m_moveVec.x, prevVelocity.y, m_moveVec.z);
+	rigidbody.SetVelocity(newVelocity,m_status.speed);
 
 
 	//もっている武器の移動、回転を更新する

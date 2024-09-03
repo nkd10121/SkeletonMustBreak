@@ -1,13 +1,15 @@
-#include "Enemy.h"
+#include "EnemyBig.h"
 #include "CsvLoad.h"
 #include "WeaponBase.h"
-#include "DxLib.h"
 
 namespace
 {
+
 	//モデルサイズ
-	constexpr float kModelSize = 4.0f;
-	constexpr float kModelOffsetY = 1.0f;
+	constexpr float kModelSize = 6.8f;
+	constexpr float kModelOffsetY = 0.8f;
+
+	constexpr float kCollisionRadius = 6.0f;
 
 	constexpr float kWeaponModelSize = 0.01f;
 
@@ -21,7 +23,7 @@ namespace
 	constexpr float kSearchingRange = 30.0f;
 }
 
-Enemy::Enemy(int modelH, int weponH) :
+EnemyBig::EnemyBig(int modelH, int weponH):
 	EnemyBase(Collidable::Priority::Middle),
 	m_nowAnimIdx(eAnimIdx::Run),
 	m_weponHandle(-1),
@@ -39,11 +41,9 @@ Enemy::Enemy(int modelH, int weponH) :
 	//当たり判定の設定
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, false);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
-	sphereCol->m_radius = 3.4f;
+	sphereCol->m_radius = kCollisionRadius;
 
-	MV1SetDifColorScale(modelH, GetColorF(0.2f, 1.0f, 0.4f, 1.0f));
-
-	CsvLoad::GetInstance().StatusLoad(m_status, "NormalSkelton");
+	CsvLoad::GetInstance().StatusLoad(m_status, "BigSkelton");
 
 	m_weapon = std::make_shared<WeaponBase>();
 	m_weapon->Init(weponH, modelH, "handslot.r", kWeaponModelSize);
@@ -55,14 +55,13 @@ Enemy::Enemy(int modelH, int weponH) :
 	m_dropPoint = m_status.point;
 }
 
-Enemy::~Enemy()
+EnemyBig::~EnemyBig()
 {
 	//メモリの解放
 	MV1DeleteModel(m_modelHandle);
-	//MV1DeleteModel(m_weponHandle);
 }
 
-void Enemy::Init(std::shared_ptr<MyLib::Physics> physics, std::vector<MyLib::Vec3> route)
+void EnemyBig::Init(std::shared_ptr<MyLib::Physics> physics, std::vector<MyLib::Vec3> route)
 {
 	m_pPhisics = physics;
 
@@ -103,15 +102,15 @@ void Enemy::Init(std::shared_ptr<MyLib::Physics> physics, std::vector<MyLib::Vec
 
 
 	//通常状態に設定しておく
-	m_updateFunc = &Enemy::WalkUpdate;
+	m_updateFunc = &EnemyBig::WalkUpdate;
 }
 
-void Enemy::Finalize(std::shared_ptr<MyLib::Physics> physics)
+void EnemyBig::Finalize(std::shared_ptr<MyLib::Physics> physics)
 {
 	Collidable::Finalize(physics);
 }
 
-void Enemy::Update(MyLib::Vec3 playerPos, bool isChase)
+void EnemyBig::Update(MyLib::Vec3 playerPos, bool isChase)
 {
 	//存在していない状態なら何もさせない
 	if (!m_isExist)return;
@@ -130,7 +129,7 @@ void Enemy::Update(MyLib::Vec3 playerPos, bool isChase)
 			m_isDead = true;
 			Finalize(m_pPhisics);
 
-			m_updateFunc = &Enemy::DeathUpdate;
+			m_updateFunc = &EnemyBig::DeathUpdate;
 
 			auto deathAnimIdx = GetRand(2);
 			auto deathAnimSpeed = 0.66f;
@@ -173,25 +172,9 @@ void Enemy::Update(MyLib::Vec3 playerPos, bool isChase)
 
 
 	m_weapon->Update((m_collisionPos + m_moveVec * 4));
-
-	//m_tempFrameCount++;
-
-	//auto positionMat = MV1GetFrameLocalWorldMatrix(m_modelHandle, m_weponAttachFrameNum);
-	//auto rotationMat = MGetRotY(DX_PI_F);
-	//MATRIX temp = MMult(rotationMat, positionMat);
-	//auto scaleMat = MGetScale( VGet(kWeaponModelSize, kWeaponModelSize, kWeaponModelSize));
-	//auto set = MMult(scaleMat, temp);
-	//MV1SetMatrix(m_weponHandle, set);
-
-	//if (rigidbody.GetPos().z < -50.0f)
-	//{
-	//	Finalize(m_pPhisics);
-	//	m_isExist = false;
-	//	m_isReach = true;
-	//}
 }
 
-void Enemy::Draw()
+void EnemyBig::Draw()
 {
 	//存在していない状態なら何もさせない
 	if (!m_isExist)return;
@@ -202,25 +185,21 @@ void Enemy::Draw()
 	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
 	//モデルの描画
 	MV1DrawModel(m_modelHandle);
-	//MV1DrawModel(m_weponHandle);
 	m_weapon->Draw();
 
 #ifdef _DEBUG
-	//DrawFormatString(0, 176, 0xffffff, "エネミーステータス:%d,%d,%d", m_status.hp, m_status.atk, m_status.def);
+	DrawFormatString(800, 60, 0xffffff, "%f,%f,%f", m_modelPos.x, m_modelPos.y, m_modelPos.z);
+	DrawFormatString(800, 76, 0xffffff, "%f,%f,%f", m_collisionPos.x, m_collisionPos.y, m_collisionPos.z);
 #endif
 }
 
-
-
-void Enemy::SetModelPos()
+void EnemyBig::SetModelPos()
 {
 	m_modelPos = m_collisionPos;
 	m_modelPos.y -= kModelOffsetY * kModelSize;
 }
 
-
-
-bool Enemy::UpdateAnim(int attachNo, float startTime)
+bool EnemyBig::UpdateAnim(int attachNo, float startTime)
 {
 	//アニメーションが設定されていなかったら早期リターン
 	if (attachNo == -1)	return false;
@@ -248,7 +227,7 @@ bool Enemy::UpdateAnim(int attachNo, float startTime)
 	return isLoop;
 }
 
-void Enemy::ChangeAnim(int animIndex, float animSpeed)
+void EnemyBig::ChangeAnim(int animIndex, float animSpeed)
 {
 	//さらに古いアニメーションがアタッチされている場合はこの時点で消しておく
 	if (m_prevAnimNo != -1)
@@ -273,7 +252,7 @@ void Enemy::ChangeAnim(int animIndex, float animSpeed)
 	MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
 }
 
-void Enemy::AttackUpdate(MyLib::Vec3 playerPos, bool isChase)
+void EnemyBig::AttackUpdate(MyLib::Vec3 playerPos, bool isChase)
 {
 	rigidbody.SetVelocity(MyLib::Vec3());
 	////アニメーションの更新
@@ -299,7 +278,7 @@ void Enemy::AttackUpdate(MyLib::Vec3 playerPos, bool isChase)
 
 			m_weapon->CollisionEnd(m_pPhisics);
 
-			m_updateFunc = &Enemy::WalkUpdate;
+			m_updateFunc = &EnemyBig::WalkUpdate;
 			ChangeAnim(eAnimIdx::Run);
 		}
 
@@ -308,14 +287,14 @@ void Enemy::AttackUpdate(MyLib::Vec3 playerPos, bool isChase)
 	m_attackWaitFrame++;
 }
 
-void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
+void EnemyBig::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 {
 	//攻撃フラグがtrueになっていたら攻撃をする
 	if (m_isAttack)
 	{
 		m_moveVec = (playerPos - m_collisionPos).Normalize();
 
-		m_updateFunc = &Enemy::AttackUpdate;
+		m_updateFunc = &EnemyBig::AttackUpdate;
 
 		m_nowAnimIdx = eAnimIdx::Idle;
 		ChangeAnim(m_nowAnimIdx);
@@ -326,7 +305,7 @@ void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 	{
 		if (m_knockCount == 0)
 		{
-			m_updateFunc = &Enemy::HitUpdate;
+			m_updateFunc = &EnemyBig::HitUpdate;
 			m_nowAnimIdx = eAnimIdx::Hit;
 			ChangeAnim(m_nowAnimIdx);
 		}
@@ -366,6 +345,7 @@ void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 		bool isChesed = m_isChasing;
 		m_isChasing = false;
 
+		playerPos.y = m_collisionPos.y;
 		auto len = playerPos - m_collisionPos;
 		auto dis = len.Size();
 
@@ -385,7 +365,7 @@ void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 				float distanceMin = 1000.0f;
 				int retRouteNum = 0;
 
-				for (int i = 0;i < m_route.size();i++)
+				for (int i = 0; i < m_route.size(); i++)
 				{
 					//現在座標からの距離を見る
 					auto dis = (m_route[i] - rigidbody.GetPos()).Size();
@@ -399,7 +379,7 @@ void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 
 				if (retRouteNum != m_routeNum - 1)
 				{
-				m_routeNum = retRouteNum;
+					m_routeNum = retRouteNum;
 
 				}
 
@@ -412,7 +392,7 @@ void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 
 
 	//移動速度をここで設定できるっぽい？
-	rigidbody.SetVelocity(m_moveVec,m_status.speed);
+	rigidbody.SetVelocity(m_moveVec, m_status.speed);
 
 	//atan2を使用して向いている角度を取得
 	auto angle = atan2(m_moveVec.x, m_moveVec.z);
@@ -421,7 +401,7 @@ void Enemy::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
 	MV1SetRotationXYZ(m_modelHandle, rotation);
 }
 
-void Enemy::HitUpdate(MyLib::Vec3 playerPos, bool isChase)
+void EnemyBig::HitUpdate(MyLib::Vec3 playerPos, bool isChase)
 {
 	rigidbody.SetVelocity(MyLib::Vec3());
 	//アニメーションの更新
@@ -431,12 +411,12 @@ void Enemy::HitUpdate(MyLib::Vec3 playerPos, bool isChase)
 	if (m_isAnimationFinish)
 	{
 
-		m_updateFunc = &Enemy::WalkUpdate;
+		m_updateFunc = &EnemyBig::WalkUpdate;
 		ChangeAnim(eAnimIdx::Run);
 	}
 }
 
-void Enemy::DeathUpdate(MyLib::Vec3 playerPos, bool isChase)
+void EnemyBig::DeathUpdate(MyLib::Vec3 playerPos, bool isChase)
 {
 	if (m_isAnimationFinish)
 	{

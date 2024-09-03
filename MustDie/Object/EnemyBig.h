@@ -1,16 +1,13 @@
 #pragma once
-#include "DxLib.h"
-#include "MyLib.h"
 #include "EnemyBase.h"
-#include <map>
 
 class WeaponBase;
 
-class Enemy : public EnemyBase
+class EnemyBig : public EnemyBase
 {
 public:
-	Enemy(int modelH,int weponH);
-	virtual ~Enemy();
+	EnemyBig(int modelH, int weponH);
+	virtual ~EnemyBig();
 
 	void Init(std::shared_ptr<MyLib::Physics>physics, std::vector<MyLib::Vec3> route) override;
 	void Finalize(std::shared_ptr<MyLib::Physics> physics) override;
@@ -83,7 +80,7 @@ private:
 	bool m_isChasing;
 
 	//ó‘Ô‘JˆÚ‚Ì‚½‚ß‚Ìƒƒ“ƒoŠÖ”
-	using UpdateFunc_t = void (Enemy::*)(MyLib::Vec3 playerPos, bool isChase);
+	using UpdateFunc_t = void (EnemyBig::*)(MyLib::Vec3 playerPos, bool isChase);
 	UpdateFunc_t m_updateFunc;
 
 	//UŒ‚
