@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Object\EnemyFast.cpp" />
     <ClCompile Include="Object\CharacterBase.cpp" />
     <ClCompile Include="Object\EnemyBase.cpp" />
     <ClCompile Include="Object\EnemyBig.cpp" />
@@ -65,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Object\EnemyFast.h" />
     <ClInclude Include="Object\CharacterBase.h" />
     <ClInclude Include="Object\EnemyBase.h" />
     <ClInclude Include="Object\EnemyBig.h" />

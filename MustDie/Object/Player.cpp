@@ -366,38 +366,54 @@ void Player::Draw()
 
 void Player::OnCollideEnter(const std::shared_ptr<Collidable>& colider)
 {
+#ifdef _DEBUG
 	std::string message = "プレイヤーが";
+#endif
 	auto tag = colider->GetTag();
 	switch (tag)
 	{
 	case GameObjectTag::Enemy:
+#ifdef _DEBUG
 		message += "敵";
+#endif
 		break;
 	case GameObjectTag::Shot:
+#ifdef _DEBUG
 		message += "弾";
+#endif
 		break;
 	}
+#ifdef _DEBUG
 	message += "と当たった！\n";
 	printfDx(message.c_str());
+#endif
 }
 
 void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 {
+#ifdef _DEBUG
 	std::string message = "プレイヤーが";
+#endif
 	auto tag = colider->GetTag();
 	switch (tag)
 	{
 	case GameObjectTag::Enemy:
+#ifdef _DEBUG
 		message += "敵";
+#endif
 		break;
 	case GameObjectTag::Shot:
+#ifdef _DEBUG
 		message += "弾";
+#endif
 		break;
 	case GameObjectTag::Sword:
 		m_status.hp -= 10;
 	}
+#ifdef _DEBUG
 	message += "と当たった！\n";
 	printfDx(message.c_str());
+#endif
 }
 
 /// <summary>

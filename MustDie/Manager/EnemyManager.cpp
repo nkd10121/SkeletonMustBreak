@@ -4,6 +4,7 @@
 #include "EnemyBase.h"
 #include "Enemy.h"
 #include "EnemyBig.h"
+#include "EnemyFast.h"
 #include "Input.h"
 #include "CsvLoad.h"
 #include "MapDataLoad.h"
@@ -11,13 +12,19 @@
 EnemyManager::EnemyManager() :
 	m_deathEnemyNum(0)
 {
-	temp_enemyHandle = MV1LoadModel("data/model/Skeleton_Minion.mv1");
+	m_enemyHandle["Skeleton_Minion"] = MV1LoadModel("data/model/Skeleton_Minion.mv1");
+	m_enemyHandle["SkeletonWarrior"] = MV1LoadModel("data/model/SkeletonWarrior.mv1");
 	temp_weaponHandle = MV1LoadModel("data/model/SkeletonBlade.mv1");
 }
 
 EnemyManager::~EnemyManager()
 {
-	MV1DeleteModel(temp_enemyHandle);
+	for (auto& handle : m_enemyHandle)
+	{
+		MV1DeleteModel(handle.second);
+	}
+	m_enemyHandle.clear();
+
 	MV1DeleteModel(temp_weaponHandle);
 }
 
@@ -180,15 +187,20 @@ void EnemyManager::CreateEnemy(std::string name, std::shared_ptr<MyLib::Physics>
 {
 	if (name == "NormalSkelton")
 	{
-		std::shared_ptr<Enemy>add = std::make_shared<Enemy>(MV1DuplicateModel(temp_enemyHandle), MV1DuplicateModel(temp_weaponHandle));
+		std::shared_ptr<Enemy>add = std::make_shared<Enemy>(MV1DuplicateModel(m_enemyHandle["Skeleton_Minion"]), MV1DuplicateModel(temp_weaponHandle));
 		add->Init(physics, CreateEnemyRoute("stage1"));
 		m_pEnemys.emplace_back(add);
 	}
 	else if (name == "BigSkelton")
 	{
-		std::shared_ptr<EnemyBig>add = std::make_shared<EnemyBig>(MV1DuplicateModel(temp_enemyHandle), MV1DuplicateModel(temp_weaponHandle));
+		std::shared_ptr<EnemyBig>add = std::make_shared<EnemyBig>(MV1DuplicateModel(m_enemyHandle["SkeletonWarrior"]), MV1DuplicateModel(temp_weaponHandle));
 		add->Init(physics, CreateEnemyRoute("stage1"));
 		m_pEnemys.emplace_back(add);
 	}
-
+	else if (name == "FastSkelton")
+	{
+		std::shared_ptr<EnemyFast>add = std::make_shared<EnemyFast>(MV1DuplicateModel(m_enemyHandle["Skeleton_Minion"]));
+		add->Init(physics, CreateEnemyRoute("stage1"));
+		m_pEnemys.emplace_back(add);
+	}
 }

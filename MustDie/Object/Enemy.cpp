@@ -6,7 +6,7 @@
 namespace
 {
 	//モデルサイズ
-	constexpr float kModelSize = 4.0f;
+	constexpr float kModelSize = 4.4f;
 	constexpr float kModelOffsetY = 1.0f;
 
 	constexpr float kWeaponModelSize = 0.01f;
@@ -39,7 +39,7 @@ Enemy::Enemy(int modelH, int weponH) :
 	//当たり判定の設定
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, false);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
-	sphereCol->m_radius = 3.4f;
+	sphereCol->m_radius = 3.8f;
 
 	//MV1SetDifColorScale(modelH, GetColorF(0.2f, 1.0f, 0.4f, 1.0f));
 

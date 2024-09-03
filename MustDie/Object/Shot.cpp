@@ -81,18 +81,26 @@ void Shot::OnCollideEnter(const std::shared_ptr<Collidable>& colider)
 
 void Shot::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 {
+#ifdef _DEBUG
 	std::string message = "弾が";
+#endif
 	auto tag = colider->GetTag();
 	switch (tag)
 	{
 	case GameObjectTag::Player:
+#ifdef _DEBUG
 		message += "プレイヤー";
+#endif
 		break;
 	case GameObjectTag::Enemy:
+#ifdef _DEBUG
 		message += "敵";
+#endif
 		m_isExist = false;
 		break;
 	}
+#ifdef _DEBUG
 	message += "と当たった！\n";
 	printfDx(message.c_str());
+#endif
 }

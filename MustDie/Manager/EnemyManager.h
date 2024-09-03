@@ -1,6 +1,7 @@
 #pragma once
 #include <List>
 #include <string>
+#include <map>
 #include <memory>
 
 #include "MyLib.h"
@@ -44,7 +45,7 @@ private:
 	std::unordered_map<int, int> m_enemyGenerationCountPerOnePhase;
 
 	//ˆê“I‚È•Ï”
-	int temp_enemyHandle;
+	std::map<std::string,int> m_enemyHandle;
 	int temp_weaponHandle;
 
 	int m_deathEnemyNum;

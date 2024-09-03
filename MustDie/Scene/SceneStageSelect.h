@@ -1,6 +1,9 @@
 #pragma once
 #include "SceneBase.h"
 
+#include <vector>
+#include <map>
+
 class TitlePlayer;
 
 class SceneStageSelect : public SceneBase
@@ -33,8 +36,15 @@ private:
 
 	e_Destination m_destinationScene;
 
+	std::vector<std::pair<int, int>> m_uiPos;
+
 	std::vector<int> m_handles;
 
+	float m_angle;
+	int m_cursorOffsetX;
+
+	int m_fontHandle;
+	int m_textHandle;
 
 	int m_lightHandle;
 	std::shared_ptr<TitlePlayer> m_player;

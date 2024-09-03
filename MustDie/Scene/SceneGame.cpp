@@ -42,7 +42,6 @@ void SceneGame::Update(std::shared_ptr<Input>& input)
 		{
 			SceneBase::StartFadeIn();
 			m_isFadeOuting = false;
-
 		}
 	}
 
