@@ -1,0 +1,47 @@
+#pragma once
+#include "ObjectBase.h"
+class WeaponBase : public ObjectBase
+{
+public:
+	WeaponBase();
+	virtual ~WeaponBase();
+
+	void Init(int weaponModelHandle,int ownerModelHandle, const TCHAR* franeName, float modelSize = 1.0f);
+	void Update(MyLib::Vec3 moveVec);
+	void Draw();
+
+	void CollisionInit(std::shared_ptr<MyLib::Physics> physics);
+	void CollisionEnd(std::shared_ptr<MyLib::Physics> physics);
+
+private:
+	void SetAttachFrame(const TCHAR* franeName);
+
+	void ConvertMatToVec();
+
+protected:
+	//モデルサイズの変更
+	void SetModelSize(float modelSize);
+
+	// 衝突したとき
+	void OnCollideEnter(const std::shared_ptr<Collidable>& colider);
+	void OnTriggerEnter(const std::shared_ptr<Collidable>& colider)override;
+
+private:
+	//武器モデルハンドル
+	int m_weaponModelHandle;
+	int m_ownerModelHandle;
+
+	std::shared_ptr<MyLib::Physics> m_pPhysics;
+
+	//武器を持たせる場所
+	int m_weaponAttachFrame;
+	//モデルサイズ
+	float m_modelScale;
+
+	MATRIX m_mat;
+
+	//当たり判定の切り替え
+	bool m_isCollisionOn;
+
+};
+
