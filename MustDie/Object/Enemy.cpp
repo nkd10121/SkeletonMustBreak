@@ -41,7 +41,7 @@ Enemy::Enemy(int modelH, int weponH) :
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
 	sphereCol->m_radius = 3.4f;
 
-	MV1SetDifColorScale(modelH, GetColorF(0.2f, 1.0f, 0.4f, 1.0f));
+	//MV1SetDifColorScale(modelH, GetColorF(0.2f, 1.0f, 0.4f, 1.0f));
 
 	CsvLoad::GetInstance().StatusLoad(m_status, "NormalSkelton");
 
