@@ -6,13 +6,10 @@
 class Input;
 class EnemyManager;
 class Camera;
-class TrapGrid;
 class Player;
 class TrapManager;
 class HealPortion;
-
 class SceneGame;
-
 struct ScoreInfo;
 
 /// <summary>
@@ -31,8 +28,8 @@ public:
 		ThirdPrePhase,		//第3準備フェーズ
 		ThirdBattlePhase,	//第3戦闘フェーズ
 
-		GameClear,
-		Gameover
+		GameClear,			//ゲームクリア
+		Gameover			//ゲームオーバー
 	};
 
 public:
@@ -153,20 +150,23 @@ private:
 	//エフェクトの生成フレーム
 	int m_effectFrame;
 
-	//////////////////////
+	//ミニマップハンドル
 	int m_miniMapHandle;
+	//クリスタルの座標
 	MyLib::Vec3 m_crystalPos;
 
-	float m_tempPlayerPosX;
-	float m_tempPlayerPosZ;
+#ifdef _DEBUG
+	//ミニマップを作成する時に目安にする座標
+	std::list<MyLib::Vec3> m_drawPos;
+	//フレーム数
+	int m_frame;
+#endif
 
-	int m_miniMapPlayerPosX;
-	int m_miniMapPlayerPosY;
-
+	//ミニマップ上のプレイヤー座標
+	MyLib::Vec3 m_miniMapPlayerPos;
+	//マップごとにY座標の中心が異なるため補正
 	int m_offsetY;
 
-	std::list<MyLib::Vec3> m_drawPos;
 
-	int m_frame;
 };
 

@@ -55,8 +55,9 @@ SceneStageSelect::SceneStageSelect(SceneManager& mgr):
 
 	for (int i = 1; i <= 3; i++)
 	{
-		auto str = (kMiniMapFrontName + std::to_string(i) + kMiniMapBackName).c_str();
-		m_handles.push_back(LoadGraph(str));
+		auto num = std::to_string(i);
+		auto path = (kMiniMapFrontName + num + kMiniMapBackName);
+		m_handles.push_back(LoadGraph(path.c_str()));
 	}
 
 

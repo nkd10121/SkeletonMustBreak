@@ -41,7 +41,7 @@ public:
 	const int GetFrontEnemyHp()const { return m_frontEnemyHp; }
 	//³–Ê‚Ì“G‚ÌÅ‘åHP‚ğ•Ô‚·
 	const int GetFrontEnemyMaxHp()const { return m_frontEnemyMaxHp; }
-
+	//“G‚ÌÀ•W‚ğ•Ô‚·
 	const std::list<MyLib::Vec3> GetEnemyPos()const { return m_enemyPos; }
 
 private:
@@ -88,6 +88,7 @@ private:
 	//³–Ê‚Ì“G‚ÌÅ‘åHP
 	int m_frontEnemyMaxHp;
 
+	//“G‚ÌÀ•W
 	std::list<MyLib::Vec3> m_enemyPos;
 };
 

@@ -6,10 +6,9 @@
 MyLib::Rigidbody::Rigidbody():
 	m_pos(),
 	m_nextPos(),
-	m_offsetPos(),
-	dir(),
-	velocity(),
-	useGravity(true)
+	m_dir(),
+	m_velocity(),
+	m_useGravity(true)
 {
 	// èàóùÇ»Çµ
 }
@@ -17,12 +16,12 @@ MyLib::Rigidbody::Rigidbody():
 /// <summary>
 /// èâä˙âª
 /// </summary>
-void MyLib::Rigidbody::Init(bool useGravity)
+void MyLib::Rigidbody::Init(bool m_useGravity)
 {
 	m_pos = Vec3();
-	dir = Vec3();
-	velocity = Vec3();
-	this->useGravity = useGravity;
+	m_dir = Vec3();
+	m_velocity = Vec3();
+	this->m_useGravity = m_useGravity;
 }
 
 /// <summary>
@@ -30,17 +29,7 @@ void MyLib::Rigidbody::Init(bool useGravity)
 /// </summary>
 void MyLib::Rigidbody::AddForce(const Vec3& force)
 {
-	velocity = velocity + force;
-}
-
-void MyLib::Rigidbody::SetPos(const Vec3& set)
-{
-	m_pos = set;
-}
-
-void MyLib::Rigidbody::MV1SetPos(const int& handle)
-{
-	MV1SetPosition(handle, m_pos.ConvertToVECTOR());
+	m_velocity = m_velocity + force;
 }
 
 /// <summary>
@@ -48,9 +37,9 @@ void MyLib::Rigidbody::MV1SetPos(const int& handle)
 /// </summary>
 void MyLib::Rigidbody::SetVelocity(Vec3 set, float mul)
 {
-	velocity = set * mul;
-	if (velocity.SquareSize() > 0)
+	m_velocity = set * mul;
+	if (m_velocity.SquareSize() > 0)
 	{
-		dir = velocity.Normalize();
+		m_dir = m_velocity.Normalize();
 	}
 }

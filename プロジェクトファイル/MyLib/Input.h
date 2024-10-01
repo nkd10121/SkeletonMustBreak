@@ -5,53 +5,47 @@
 
 #include <DxLib.h>
 
-enum class InputType
-{
-	keyboard,	//キーボード
-	pad			//パッド
-};
-
-using InputTable_t = std::unordered_map<std::string, std::map<InputType, int>>;
-
 class Input
 {
+private:
+	//入力デバイス
+	enum class InputType
+	{
+		keyboard,	//キーボード
+		pad			//パッド
+	};
+
+	//入力情報の型
+	using InputTable_t = std::unordered_map<std::string, std::map<InputType, int>>;
+
 public:
+	//コンストラクタ
 	Input();
 
-	/// <summary>
-	/// 入力情報を更新する
-	/// </summary>
+	//入力情報を更新する
 	void Update();
 
-	/// <summary>
-	/// 指定のコマンドが押された瞬間なのか
-	/// </summary>
-	/// <param name="command">コマンド文字列</param>
-	/// <returns> true : 押された瞬間, false : 押されていないか、押しっぱ</returns>
+	//指定のコマンドが押された瞬間なのか
 	bool IsTriggered(const char* command)const;
 
-	/// <summary>
-	/// 
-	/// </summary>
-	/// <param name="command"></param>
-	/// <returns></returns>
+	//指定のコマンドが押されている状態なのか
 	bool IsPushed(const char* command)const;
 
-	std::pair<float, float> GetLeftStick()const;
-	std::pair<float, float> GetRightStick()const;
+	//スティックの入力情報を取得
+	std::pair<float, float> GetInputStick(bool isRight)const;
 
-	bool GetIsPushedZR();
-	bool GetIsPushedZL();
+	//ZR,ZLボタンの入力情報を取得
+	bool GetIsPushedTriggerButton(bool isRight)const;
 
 private:
+	//コマンド
 	InputTable_t m_commandTable;
+
 	//コマンドの入力を覚えておく
 	std::map < std::string, bool> m_inputData;		//現在の入力
 	std::map < std::string, bool> m_lastInputData;	//直前の入力
 
 	//コントローラーの入力情報
 	DINPUT_JOYSTATE m_padState;
-
-	bool m_isZR = false;
-	bool m_isZL = false;
+	XINPUT_STATE* XInputState;
 };

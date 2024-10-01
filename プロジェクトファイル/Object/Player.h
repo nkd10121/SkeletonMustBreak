@@ -24,7 +24,7 @@ public:
 	void OnCollideEnter(const std::shared_ptr<Collidable>& colider)override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& colider)override;
 
-	void SetCameraAngle(MyLib::Vec3 dir) { m_cameraDirection = dir; }
+	void SetCameraAngle(MyLib::Vec3 m_dir) { m_cameraDirection = m_dir; }
 	void SetCameraAngle(float ang) { m_cameraAngle = ang; }
 
 	const MyLib::Vec3 GetPos()const { return rigidbody.GetPos(); }
@@ -38,7 +38,7 @@ public:
 
 	void SetSlotNumMax(int max) { m_slotNumMax = max; }
 
-	const int GetNowSlotNum()const { return m_slotNum; };
+	const int GetNowSlotNum()const { return m_nowSlotIdx; };
 
 	const int GetDifAngle()const { return m_difAngle; }
 
@@ -127,7 +127,7 @@ private:
 
 	MATRIX m_weponFrameMat;
 
-	int m_slotNum;
+	int m_nowSlotIdx;
 	int m_slotNumMax;
 
 

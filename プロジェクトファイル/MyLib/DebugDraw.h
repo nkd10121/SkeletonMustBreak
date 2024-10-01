@@ -11,18 +11,23 @@ namespace MyLib
 class DebugDraw
 {
 public:
+	//•`‰æî•ñ‚Ìíœ
 	static void Clear();
+	//•`‰æ
 	static void Draw3D();
 
-	static void DrawSphere(const Vec3& center,const float& radius,const unsigned int& color);
+	//‹…‘Ì‚Ì•`‰æƒŠƒXƒg‚É’Ç‰Á‚·‚é
+	static void AddDrawSphere(const Vec3& center,const float& radius,const unsigned int& color);
 private:
+	//‹…‘Ì‚Ì•`‰æî•ñ
 	struct SphereInfo
 	{
-		Vec3 center;
-		float radius;
-		unsigned int color;
+		Vec3 center;		//’†SÀ•W
+		float radius;		//”¼Œa
+		unsigned int color; //F
 	};
 
+	//‹…‘Ì‚Ì•`‰æî•ñƒŠƒXƒg
 	static std::list<SphereInfo> m_sphereInfo;
 };
 

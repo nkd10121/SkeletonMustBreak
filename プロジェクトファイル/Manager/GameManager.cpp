@@ -2,7 +2,6 @@
 #include "EnemyManager.h"
 #include "Camera.h"
 #include "Player.h"
-#include "TrapGrid.h"
 #include "TrapManager.h"
 #include "HealPortion.h"
 
@@ -11,7 +10,6 @@
 #include "MapDataLoad.h"
 #include "Font.h"
 #include "EffectManager.h"
-#include "EffekseerForDXLib.h"
 #include "SoundManager.h"
 
 #include "SceneManager.h"	//scoreInfoを扱うために必要
@@ -52,12 +50,19 @@ namespace
 /// <param name="stageName">ステージ名</param>
 GameManager::GameManager(std::string stageName) :
 	m_stageName(stageName),
+	m_pPlayer(nullptr),
+	m_pEnemyManager(nullptr),
+	m_pCamera(nullptr),
+	m_pTrapManager(nullptr),
+	m_pPortion(),
 	m_potionNum(0),
+	m_score(nullptr),
 	m_playerKillCount(nullptr),
 	m_trapKillCount(nullptr),
 	m_arrowHandle(-1),
 	m_portionHandle(-1),
 	m_uiHandle(-1),
+	m_pPhysics(nullptr),
 	m_objectHP(kObjectHPMax),
 	m_objectUIBgHandle(-1),
 	m_nowPhase(ePhaseName::FirstPrePhase),
@@ -73,7 +78,15 @@ GameManager::GameManager(std::string stageName) :
 	m_playerMaxHp(40),
 	m_fontHandle(-1),
 	m_isClear(false),
-	m_effectFrame(0)
+	m_effectFrame(0),
+	m_miniMapHandle(-1),
+	m_crystalPos(),
+#ifdef _DEBUG
+	m_drawPos(),
+	m_frame(0),
+#endif
+	m_miniMapPlayerPos(),
+	m_offsetY(0)
 {
 	MapDataLoad::GetInstance().ResetStageData();
 
@@ -194,7 +207,9 @@ GameManager::~GameManager()
 	DeleteGraph(m_miniMapHandle);
 	//MV1DeleteModel(m_crystalHandle);
 
+#ifdef _DEBUG
 	m_drawPos.clear();
+#endif
 }
 
 /// <summary>
@@ -372,18 +387,17 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 	EffectManager::GetInstance().Update();
 
 	auto playerPos = m_pPlayer->GetPos();
-	m_tempPlayerPosX = playerPos.x;
-	m_tempPlayerPosZ = playerPos.z;
 
-	m_miniMapPlayerPosX = static_cast<int>(kMiniMapX + kMiniMapWidth / 2 + m_tempPlayerPosX * 0.45f);
-	m_miniMapPlayerPosY = static_cast<int>(kMiniMapY + kMiniMapHeight - m_offsetY - m_tempPlayerPosZ * 0.45f);
+	m_miniMapPlayerPos.x = kMiniMapX + kMiniMapWidth / 2 + playerPos.x * 0.45f;
+	m_miniMapPlayerPos.y = kMiniMapY + kMiniMapHeight - m_offsetY - playerPos.z * 0.45f;
 
+#ifdef _DEBUG
 	if (m_frame % 5 == 0)
 	{
 		//m_drawPos.push_back(MyLib::Vec3(m_miniMapPlayerPosX, m_miniMapPlayerPosY, 0.0f));
 	}
-
 	m_frame++;
+#endif
 }
 
 /// <summary>
@@ -392,10 +406,6 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 void GameManager::Draw()
 {
 	MapDataLoad::GetInstance().Draw();
-
-	//MV1DrawModel(m_crystalHandle);
-
-
 
 	m_pTrapManager->PreviewDraw();
 	m_pTrapManager->Draw();
@@ -491,10 +501,7 @@ void GameManager::Draw()
 
 	DrawCircle(kMiniMapX + static_cast<int>(kMiniMapWidth / 2 + m_crystalPos.x * 0.45f), kMiniMapY + kMiniMapHeight + static_cast<int>(m_crystalPos.z * 0.45f), 4, 0xaaaaff, true);
 	
-	for (auto& pos : m_drawPos)
-	{
-		DrawBox(static_cast<int>(pos.x) - 2, static_cast<int>(pos.y) - 2, static_cast<int>(pos.x) + 2, static_cast<int>(pos.y) + 2, 0x0000ff, true);
-	}
+
 
 	for (auto& enemyPos : m_pEnemyManager->GetEnemyPos())
 	{
@@ -510,7 +517,7 @@ void GameManager::Draw()
 
 	DrawFormatStringToHandle(1105, 40, 0xffffff, m_fontHandle, "%d/3", waveNum);
 
-	DrawCircle(m_miniMapPlayerPosX, m_miniMapPlayerPosY,2, 0x00ff00, true);
+	DrawCircle(static_cast<int>(m_miniMapPlayerPos.x), static_cast<int>(m_miniMapPlayerPos.y), 2, 0x00ff00, true);
 
 
 	//オブジェクトの残りHPの描画
@@ -532,6 +539,12 @@ void GameManager::Draw()
 	DrawFormatString(1000, 0, 0xff0000, "オブジェクトHP:%d", m_objectHP);
 	DrawFormatString(1000, 16, 0xff0000, "罠ポイント:%d", m_trapPoint);
 	//DrawFormatString(1000, 16, 0xff0000, "プレイヤーダウンカウント:%d", m_playerDownCount);
+
+	//ミニマップを作成する用
+	for (auto& pos : m_drawPos)
+	{
+		DrawBox(static_cast<int>(pos.x) - 2, static_cast<int>(pos.y) - 2, static_cast<int>(pos.x) + 2, static_cast<int>(pos.y) + 2, 0x0000ff, true);
+	}
 
 #endif
 }

@@ -11,7 +11,7 @@ public:
 
 	void Init(std::shared_ptr<MyLib::Physics> physics, int model);
 	void Finalize(std::shared_ptr<MyLib::Physics> physics) override;
-	void Set(const MyLib::Vec3& pos,const MyLib::Vec3& dir,const int& atk);
+	void Set(const MyLib::Vec3& pos,const MyLib::Vec3& m_dir,const int& atk);
 	void Update();
 	void Draw();
 

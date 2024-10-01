@@ -62,6 +62,7 @@ EnemyManager::EnemyManager() :
 	m_enemyHandle["SkeletonWarrior"] = MV1LoadModel("data/model/SkeletonWarrior.mv1");
 	m_swordHandle = MV1LoadModel("data/model/SkeletonBlade.mv1");
 
+	//サウンドのロード
 	SoundManager::GetInstance().Load("EnemyHit", "data/sound/se/enemyHit.mp3", false);
 	SoundManager::GetInstance().Load("EnemyCriticalHit", "data/sound/se/enemyHit2.mp3", false);
 

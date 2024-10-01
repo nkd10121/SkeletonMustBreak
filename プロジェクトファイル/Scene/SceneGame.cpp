@@ -62,16 +62,6 @@ void SceneGame::Update(std::shared_ptr<Input>& input)
 			m_manager.PushScene(std::make_shared<ScenePause>(m_manager));
 		}
 	}
-
-
-	if (input->IsTriggered("DEBUG2"))
-	{
-
-		//if (IsFineshFadeOut())
-		{
-			m_manager.PushScene(std::make_shared<SceneResult>(m_manager));
-		}
-	}
 }
 
 void SceneGame::Draw()

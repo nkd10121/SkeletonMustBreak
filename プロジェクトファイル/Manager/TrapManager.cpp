@@ -11,6 +11,7 @@
 
 namespace
 {
+	//罠モデル
 	enum modelIdx :int
 	{
 		SpikeFrame,
@@ -29,29 +30,46 @@ namespace
 		"data/model/hammer.mv1",
 	};
 
+	//それぞれの罠のコスト
+	//TODO:外部データ化
 	constexpr int kSpikeCost = 400;
 	constexpr int kCutterCost = 250;
 }
 
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="trapNum">トラップの総数</param>
+/// <param name="trapPositions">罠設置可能座標</param>
 TrapManager::TrapManager(int trapNum, std::list<MyLib::Vec3>& trapPositions) :
+	m_modelHandles(),
+	m_traps(),
+	m_trapPositions(),
 	m_previewPos(),
-	m_slotNum(0),
+	m_nowSlotIdx(0),
 	m_isAlreadyPlaced(false),
 	m_angle(0.0f),
 	m_transparency(0.0f),
 	m_pushZLCount(0)
 {
+	//モデルハンドルを取得する
+	//TODO:そのステージで使用する罠のモデルのみをロードするようにしたい
 	for (int i = 0; i < trapNum; i++)
 	{
 		int handle = MV1LoadModel(kFileName[i]);
 		m_modelHandles.emplace_back(handle);
 	}
 
+	//罠設置可能座標の取得
 	m_trapPositions = trapPositions;
 
+	//罠設置時のエフェクトをロード
 	EffectManager::GetInstance().Load("CreateTrap", "data/effect/create_trap.efk",120);
 }
 
+/// <summary>
+/// デストラクタ
+/// </summary>
 TrapManager::~TrapManager()
 {
 	for (auto& trap : m_modelHandles)
@@ -64,19 +82,33 @@ TrapManager::~TrapManager()
 	m_trapPositions.clear();
 }
 
+/// <summary>
+/// 初期化
+/// </summary>
 void TrapManager::Init()
 {
 }
 
+/// <summary>
+/// 更新
+/// </summary>
+/// <param name="input">入力情報</param>
+/// <param name="slotNum">現在選択しているカーソルのインデックス</param>
+/// <param name="playerPos">プレイヤー座標</param>
+/// <param name="playerVec">プレイヤーの向き</param>
+/// <param name="isPlayerSurvival">プレイヤーが生存中かどうか</param>
+/// <param name="trapPoint">トラップ設置ポイント</param>
+/// <param name="nowPhase">現在のフェーズ</param>
+/// <param name="physics">物理クラス</param>
 void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3 playerPos, MyLib::Vec3 playerVec, bool isPlayerSurvival, int* trapPoint, int nowPhase, std::shared_ptr<MyLib::Physics> physics)
 {
 	//現在のプレイヤーのスロットを取得
-	m_slotNum = slotNum;
+	m_nowSlotIdx = slotNum;
 
 	float defaultLength = 100.0f;
 
 	//0のときはクロスボウを持っているため何も処理しない
-	if (m_slotNum != 0)
+	if (m_nowSlotIdx != 0)
 	{
 		m_angle += 0.04f;
 		m_transparency = abs(sinf(m_angle) / 2.5f) + 0.1f;
@@ -101,7 +133,7 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 		}
 
 		//攻撃ボタンを押したとき
-		if (input->GetIsPushedZR())
+		if (input->GetIsPushedTriggerButton(true))
 		{
 			if (m_pushZLCount == 0 && !isPlayerSurvival)
 			{
@@ -161,6 +193,9 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 	}
 }
 
+/// <summary>
+/// 描画
+/// </summary>
 void TrapManager::Draw()
 {
 	//すでに設置された罠の座標を見て
@@ -174,9 +209,12 @@ void TrapManager::Draw()
 #endif
 }
 
+/// <summary>
+/// トラップのどこに設置するか見るための描画
+/// </summary>
 void TrapManager::PreviewDraw()
 {
-	switch (m_slotNum)
+	switch (m_nowSlotIdx)
 	{
 	case 0:
 		//0の時はクロスボウを持っているため何も描画しない
@@ -207,6 +245,13 @@ void TrapManager::PreviewDraw()
 	}
 }
 
+/// <summary>
+/// トラップの生成
+/// </summary>
+/// <param name="slotNum">現在選択しているスロット</param>
+/// <param name="physics">物理クラス</param>
+/// <param name="trapPoint">罠ポイント</param>
+/// <returns></returns>
 bool TrapManager::CreateTrap(int slotNum, std::shared_ptr<MyLib::Physics> physics, int* trapPoint)
 {
 

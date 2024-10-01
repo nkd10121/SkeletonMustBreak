@@ -12,27 +12,39 @@ namespace
 	constexpr int kMaxColHitTryNum = 16;
 	//壁押し出し時にスライドさせる距離
 	constexpr float kColHitSlideLength = 0.2f;
-	//移動したかを判断するための変数
-	constexpr float kMove = 0.01f;
 	//壁ポリゴンか床ポリゴンかを判断するための変数
 	constexpr float kWallPolyBorder = 0.4f;
 	//壁ポリゴンと判断するための高さ変数
 	constexpr float kWallPolyHeight = 5.0f;
 
-	//死んでからの時間
-	constexpr int kEnableTimeCount = 10;
+	//重力
+	constexpr float kGravity = -0.018f;
+	//最大重力加速度
+	constexpr float kMaxGravityAccel = -2.00f;
 
-	//頭の高さを設定
-	constexpr float kHeadHeight = 40.0f;
-	//
+	//補正前情報色
+	const int kBeforeFixInfoColor = 0x0000ff;
+	//補正前予定情報色
+	const int kAimInfoColor = 0x00ff00;
+	//補正後情報色
+	const int kAfterFixInfoColor = 0xff00ff;
 }
 
-MyLib::Physics::Physics(int stageCollisionHandle,int stageCollisionHandle2)
+/// <summary>
+/// コンストラクタ
+/// </summary>
+/// <param name="normalStageCollisionHandle">プレイヤーなどのステージ当たり判定ハンドル</param>
+/// <param name="enemyStageCollisionHandle">敵のステージ当たり判定ハンドル</param>
+MyLib::Physics::Physics(int normalStageCollisionHandle,int enemyStageCollisionHandle)
 {
-	m_stageCollisionHandle = stageCollisionHandle;
-	m_enemyCollisionHandle = stageCollisionHandle2;
+	m_stageCollisionHandle = normalStageCollisionHandle;
+	m_enemyCollisionHandle = enemyStageCollisionHandle;
 }
 
+/// <summary>
+/// 衝突物の登録
+/// </summary>
+/// <param name="collidable">追加する当たり判定</param>
 void MyLib::Physics::Entry(std::shared_ptr<Collidable> collidable)
 {
 	// 登録
@@ -49,6 +61,10 @@ void MyLib::Physics::Entry(std::shared_ptr<Collidable> collidable)
 	}
 }
 
+/// <summary>
+/// 衝突物の登録削除
+/// </summary>
+/// <param name="collidable">削除する当たり判定</param>
 void MyLib::Physics::Exit(std::shared_ptr<Collidable> collidable)
 {
 	bool found = (std::find(m_collidables.begin(), m_collidables.end(), collidable) != m_collidables.end());
@@ -63,8 +79,12 @@ void MyLib::Physics::Exit(std::shared_ptr<Collidable> collidable)
 	}
 }
 
+/// <summary>
+/// 更新（登録オブジェクトの物理移動、衝突通知）
+/// </summary>
 void MyLib::Physics::Update()
 {
+	//当たり判定のログを残す
 	m_preCollideInfo = m_newCollideInfo;
 	m_newCollideInfo.clear();
 	m_preTirrigerInfo = m_newTirrigerInfo;
@@ -76,23 +96,23 @@ void MyLib::Physics::Update()
 	{
 		// ポジションに移動力を足す
 		auto pos = item->rigidbody.GetPos();
-		auto velocity = item->rigidbody.GetVelocity();
+		auto m_velocity = item->rigidbody.GetVelocity();
 
 		// 重力を利用する設定なら、重力を追加する
-		if (item->rigidbody.UseGravity())
+		if (item->rigidbody.GetUseGravity())
 		{
-			velocity = velocity + Vec3(0.0f, Gravity, 0.0f);
+			m_velocity = m_velocity + Vec3(0.0f, kGravity, 0.0f);
 
 			// 最大重力加速度より大きかったらクランプ
-			if (velocity.y < MaxGravityAccel)
+			if (m_velocity.y < kMaxGravityAccel)
 			{
-				velocity = MyLib::Vec3(velocity.x, MaxGravityAccel, velocity.z);
+				m_velocity = MyLib::Vec3(m_velocity.x, kMaxGravityAccel, m_velocity.z);
 			}
 		}
 
-		auto nextPos = pos + velocity;
+		auto nextPos = pos + m_velocity;
 
-		item->rigidbody.SetVelocity(velocity);
+		item->rigidbody.SetVelocity(m_velocity);
 
 		// もともとの情報、予定情報をデバッグ表示
 #if _DEBUG
@@ -104,8 +124,8 @@ void MyLib::Physics::Update()
 			{
 				auto sphereData = dynamic_cast<MyLib::ColliderDataSphere*> (collider.get());
 				auto radius = sphereData->m_radius;
-				MyLib::DebugDraw::DrawSphere(pos, radius, BeforeFixInfoColor);
-				MyLib::DebugDraw::DrawSphere(nextPos, radius, AimInfoColor);
+				MyLib::DebugDraw::AddDrawSphere(pos, radius, kBeforeFixInfoColor);
+				MyLib::DebugDraw::AddDrawSphere(nextPos, radius, kAimInfoColor);
 			}
 		}
 
@@ -144,16 +164,12 @@ void MyLib::Physics::Update()
 			continue;
 		}
 
-
-
-		////////////////////////////////
 		//壁と床の当たり判定を行う
 		CheckWallAndFloor(item);
 		//壁との当たり判定処理
 		FixPositionWithWall(item);
 		//床との当たり判定処理
 		FixNowPositionWithFloor(item);
-		////////////////////////////////
 
 		// 検出したプレイヤーの周囲のポリゴン情報を開放する
 		MV1CollResultPolyDimTerminate(m_hitDim);
@@ -192,10 +208,11 @@ void MyLib::Physics::Update()
 			info.own->OnTriggerExit(info.send);
 		}
 	}
-
-
 }
 
+/// <summary>
+/// 当たり判定チェック
+/// </summary>
 void MyLib::Physics::CheckColide()
 {
 	std::vector<OnCollideInfoData> onCollideInfo;
@@ -276,6 +293,14 @@ void MyLib::Physics::CheckColide()
 	}
 }
 
+/// <summary>
+/// /二つのオブジェクトが接触しているかどうか
+/// </summary>
+/// <param name="rigidA">オブジェクトAの物理データ</param>
+/// <param name="rigidB">オブジェクトBの物理データ</param>
+/// <param name="colliderA">オブジェクトAの当たり判定データ</param>
+/// <param name="colliderB">オブジェクトBの当たり判定データ</param>
+/// <returns></returns>
 bool MyLib::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rigidB, ColliderData* colliderA, ColliderData* colliderB) const
 {
 	bool isCollide = false;
@@ -297,6 +322,12 @@ bool MyLib::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rigidB,
 	return isCollide;
 }
 
+/// <summary>
+/// 当たったオブジェクトのペアを登録する
+/// </summary>
+/// <param name="objA">オブジェクトA</param>
+/// <param name="objB">オブジェクトB</param>
+/// <param name="info">登録する配列</param>
 void MyLib::Physics::AddNewCollideInfo(const std::shared_ptr<Collidable>& objA, const std::shared_ptr<Collidable>& objB, SendCollideInfo& info)
 {
 	bool isParentA = info.find(objA) != info.end();
@@ -322,7 +353,13 @@ void MyLib::Physics::AddNewCollideInfo(const std::shared_ptr<Collidable>& objA, 
 	}
 }
 
-
+/// <summary>
+/// 移動予定の座標を修正する
+/// </summary>
+/// <param name="primaryRigid">優先度高オブジェクトの物理データ</param>
+/// <param name="secondaryRigid">優先度低オブジェクトの物理データ</param>
+/// <param name="primaryCollider">優先度高オブジェクトの当たり判定データ</param>
+/// <param name="secondaryCollider">優先度低オブジェクトの当たり判定データ</param>
 void MyLib::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& secondaryRigid, ColliderData* primaryCollider, ColliderData* secondaryCollider) const
 {
 	// 当たり判定の種別ごとに補正方法を変える
@@ -344,6 +381,12 @@ void MyLib::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& s
 	}
 }
 
+/// <summary>
+/// 種類ごとに衝突通知を飛ばす配列に追加する
+/// </summary>
+/// <param name="preSendInfo">衝突したオブジェクトのリストのログ</param>
+/// <param name="newSendInfo">衝突したオブジェクトのリスト</param>
+/// <param name="isTrigger">無視するかどうか</param>
 void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCollideInfo& newSendInfo, bool isTrigger)
 {
 	for (auto& parent : newSendInfo)
@@ -427,6 +470,12 @@ void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCo
 	}
 }
 
+/// <summary>
+/// 衝突通知を飛ばす配列に追加する
+/// </summary>
+/// <param name="own">自身</param>
+/// <param name="send">衝突した相手</param>
+/// <param name="kind">当たり判定の種類</param>
 void MyLib::Physics::AddOnCollideInfo(const std::shared_ptr<Collidable>& own, const std::shared_ptr<Collidable>& send, eOnCollideInfoKind kind)
 {
 	OnCollideInfoData addInfo;
@@ -436,6 +485,9 @@ void MyLib::Physics::AddOnCollideInfo(const std::shared_ptr<Collidable>& own, co
 	m_onCollideInfo.emplace_back(addInfo);
 }
 
+/// <summary>
+/// 最終的な位置を決定する
+/// </summary>
 void MyLib::Physics::FixPosition()
 {
 	for (auto& item : m_collidables)
@@ -460,32 +512,36 @@ void MyLib::Physics::FixPosition()
 }
 
 
-MyLib::Vec3 MyLib::Physics::GetClosestPtOnSegment(Vec3 pt, Vec3 start, Vec3 end)
-{
-	// 最近接点がstart側線分外領域の場合
-	auto startToPt = pt - start;
-	auto startToEnd = end - start;
-	auto startToEndN = startToEnd.Normalize();
-	if (startToPt.Dot(startToEndN) < 0)
-	{
-		return start;
-	}
-	auto endToPt = pt - end;
-	auto endToStart = start - end;
-	auto endToStartN = endToStart.Normalize();
-	// 最近接点がend側線分外領域の場合
-	if (endToPt.Dot(endToStartN) < 0)
-	{
-		return end;
-	}
-	// 中間領域の場合
-	else
-	{
-		float t = startToEndN.Dot(startToPt);
-		return start + startToEndN * t;
-	}
-}
+//MyLib::Vec3 MyLib::Physics::GetClosestPtOnSegment(Vec3 pt, Vec3 start, Vec3 end)
+//{
+//	// 最近接点がstart側線分外領域の場合
+//	auto startToPt = pt - start;
+//	auto startToEnd = end - start;
+//	auto startToEndN = startToEnd.Normalize();
+//	if (startToPt.Dot(startToEndN) < 0)
+//	{
+//		return start;
+//	}
+//	auto endToPt = pt - end;
+//	auto endToStart = start - end;
+//	auto endToStartN = endToStart.Normalize();
+//	// 最近接点がend側線分外領域の場合
+//	if (endToPt.Dot(endToStartN) < 0)
+//	{
+//		return end;
+//	}
+//	// 中間領域の場合
+//	else
+//	{
+//		float t = startToEndN.Dot(startToPt);
+//		return start + startToEndN * t;
+//	}
+//}
 
+/// <summary>
+/// チェックしたポリゴンが壁ポリゴンか床ポリゴンかを判断し保存する
+/// </summary>
+/// <param name="col">チェックするオブジェクト</param>
 void MyLib::Physics::CheckWallAndFloor(std::shared_ptr<Collidable>& col)
 {
 	// 壁ポリゴンと床ポリゴンの数を初期化する
@@ -529,6 +585,10 @@ void MyLib::Physics::CheckWallAndFloor(std::shared_ptr<Collidable>& col)
 	}
 }
 
+/// <summary>
+/// 壁ポリゴンとの当たり判定をチェックし、移動させる
+/// </summary>
+/// <param name="col">チェックするオブジェクト</param>
 void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 {
 	float radius = 0.0f;
@@ -633,6 +693,10 @@ void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 	}
 }
 
+/// <summary>
+/// 壁の中から押し出す
+/// </summary>
+/// <param name="col">チェックするオブジェクト</param>
 void MyLib::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& col)
 {
 	float radius = 0.0f;
@@ -686,6 +750,10 @@ void MyLib::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& co
 	}
 }
 
+/// <summary>
+/// 床ポリゴンとの当たり判定をチェックし、移動させる
+/// </summary>
+/// <param name="col">チェックするオブジェクト</param>
 void MyLib::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& col)
 {
 	//床ポリゴンがない場合は何もしない

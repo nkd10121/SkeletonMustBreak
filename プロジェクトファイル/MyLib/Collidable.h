@@ -25,13 +25,16 @@ public:
 	};
 
 public:
-	Collidable(Priority priority, GameObjectTag tag);	// コンストラクタ
-	virtual ~Collidable();													// デストラクタ
+	//コンストラクタ
+	Collidable(Priority priority, GameObjectTag tag);	
+	//デストラクタ
+	virtual ~Collidable();												
+	//初期化
 	virtual void Init(std::shared_ptr<MyLib::Physics> physics);
+	//終了
 	virtual void Finalize(std::shared_ptr<MyLib::Physics> physics);
 
-	//virtual void OnCollide(const Collidable& colider) abstract;				// 衝突したとき
-
+	//当たり判定関数
 	virtual void OnCollideEnter(const std::shared_ptr<Collidable>& colider) {}
 	virtual void OnCollideStay(const std::shared_ptr<Collidable>& colider) {}
 	virtual void OnCollideExit(const std::shared_ptr<Collidable>& colider) {}
@@ -39,42 +42,35 @@ public:
 	virtual void OnTriggerStay(const std::shared_ptr<Collidable>& colider) {}
 	virtual void OnTriggerExit(const std::shared_ptr<Collidable>& colider) {}
 
-	GameObjectTag	GetTag()		const { return tag; }					// タグ情報
-	Priority		GetPriority()	const { return priority; }				// 優先度
+	//タグを取得
+	GameObjectTag GetTag() const { return tag; }					
+	//優先度を取得
+	Priority GetPriority() const { return priority; }				
 
-	// 当たり判定を無視（スルー）するタグの追加/削除
+	//当たり判定を無視（スルー）するタグの追加/削除
 	void AddThroughTag(GameObjectTag tag);
 	void RemoveThroughTag(GameObjectTag tag);
 
-	// 当たり判定を無視（スルー）する対象かどうか
+	//当たり判定を無視（スルー）する対象かどうか
 	bool IsThroughTarget(const std::shared_ptr<Collidable> target) const;
 
 protected:
-	Rigidbody		rigidbody;		// 物理データ
+	//当たり判定を追加
+	std::shared_ptr<ColliderData> AddCollider(const ColliderData::Kind& kind, bool isTrigger);
+
+protected:
+	// 物理データ
+	Rigidbody rigidbody;		
+	//当たり判定情報
 	std::list<std::shared_ptr<ColliderData>> m_colliders;
 
-	std::shared_ptr<ColliderData> AddCollider(const ColliderData::Kind& kind, bool isTrigger);
 private:
-	//ColliderData* CreateColliderData(ColliderData::Kind kind, bool isTrigger);
-
-
-
-	GameObjectTag	tag;
-	Priority		priority;
-
-
+	//タグ
+	GameObjectTag tag;
+	//優先度
+	Priority priority;
 
 	// 当たり判定を無視（スルー）するタグのリスト
-	// HACK: Unityみたいにレイヤーの追加の方がスマート
-	// FIXME: 本来ColliderData側じゃない？
 	std::list<GameObjectTag>	throughTags;
-
-	// PhysicsがCollidableを自由に管理するためにフレンド化
-
-	// 以下、フレンドであるPhisicsのみが扱う型や変数
-private:
-	// FIXME: これはPhysicsが持つ方が望ましい
 };
 }
-
-

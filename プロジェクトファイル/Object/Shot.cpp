@@ -46,10 +46,10 @@ void Shot::Finalize(std::shared_ptr<MyLib::Physics> physics)
 	Collidable::Finalize(physics);
 }
 
-void Shot::Set(const MyLib::Vec3& pos, const MyLib::Vec3& dir, const int& atk)
+void Shot::Set(const MyLib::Vec3& pos, const MyLib::Vec3& m_dir, const int& atk)
 {
-	rigidbody.SetPos(pos+dir);
-	m_moveDir = dir;
+	rigidbody.SetPos(pos+m_dir);
+	m_moveDir = m_dir;
 	m_atk = atk;
 
 	//‰ñ“]‚³‚¹‚é•ûŒü‚ðŒvŽZ‚·‚é

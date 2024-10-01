@@ -69,7 +69,7 @@ Player::Player() :
 	m_jumpCount(0),
 	m_weponAttachFrameNum(-1),
 	m_weponFrameMat(MGetIdent()),
-	m_slotNum(0),
+	m_nowSlotIdx(0),
 	m_slotNumMax(0)
 {
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, false);
@@ -205,19 +205,19 @@ void Player::Update(std::shared_ptr<Input>& input)
 	{
 		if (input->IsTriggered("R"))
 		{
-			m_slotNum += 1;
-			if (m_slotNum > m_slotNumMax)
+			m_nowSlotIdx += 1;
+			if (m_nowSlotIdx > m_slotNumMax)
 			{
-				m_slotNum = 0;
+				m_nowSlotIdx = 0;
 			}
 		}
 
 		if (input->IsTriggered("L"))
 		{
-			m_slotNum -= 1;
-			if (m_slotNum < 0)
+			m_nowSlotIdx -= 1;
+			if (m_nowSlotIdx < 0)
 			{
-				m_slotNum = m_slotNumMax;
+				m_nowSlotIdx = m_slotNumMax;
 			}
 		}
 	}
@@ -233,7 +233,7 @@ void Player::Update(std::shared_ptr<Input>& input)
 
 	if (!m_isDown && !m_isClear)
 	{	//コントローラーの左スティック入力を受け取る
-		stick = input->GetLeftStick();
+		stick = input->GetInputStick(false);
 	}
 
 	//移動方向を設定する
@@ -318,8 +318,7 @@ void Player::Update(std::shared_ptr<Input>& input)
 	MATRIX temp = MMult(MGetRotY(-DX_PI_F / 2), m_weponFrameMat);
 	MV1SetMatrix(m_weponHandle, temp);
 
-	//if (input->IsPushed("ATTACK"))
-	if (input->GetIsPushedZR() && m_slotNum == 0 && m_status.hp > 0)
+	if (input->GetIsPushedTriggerButton(true) && m_nowSlotIdx == 0 && m_status.hp > 0)
 	{
 		if (shotTime % kShotIntervalFrame == 0)
 		{

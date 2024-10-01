@@ -11,42 +11,57 @@ namespace MyLib
 class Rigidbody
 {
 public:
+	//コンストラクタ
 	Rigidbody();
-	void Init(bool useGravity = false);	// 初期化
+	// 初期化
+	void Init(bool m_useGravity = false);	
 
 	// velocityに力を加える
 	void AddForce(const Vec3& force);
 
-	// Getter/Setter
+	/*Getter*/
+	//現在座標を取得
 	const Vec3& GetPos() const { return m_pos; }
+	//移動予定座標
 	const Vec3& GetNextPos() const { return m_nextPos; }
-	const Vec3& GetOffsetPos() const { return m_offsetPos; }
-	const Vec3& GetDir() const { return dir; }
-	const Vec3& GetVelocity() const { return velocity; }
+	//向きを取得
+	const Vec3& GetDir() const { return m_dir; }
+	//移動速度を取得
+	const Vec3& GetVelocity() const { return m_velocity; }
 
+	//現在座標を取得
 	const VECTOR GetPosVECTOR() { return m_pos.ConvertToVECTOR(); }
+	//移動予定座標を取得
 	const VECTOR GetNextPosVECTOR() { return m_nextPos.ConvertToVECTOR(); }
-	const VECTOR GetOffsetPosVECTOR() { return m_offsetPos.ConvertToVECTOR(); }
-	const VECTOR GetDirVECTOR() { return dir.ConvertToVECTOR(); }
-	const VECTOR GetVelocityVECTOR(){ return velocity.ConvertToVECTOR(); }
-	bool UseGravity() const { return useGravity; }
+	//向きを取得
+	const VECTOR GetDirVECTOR() { return m_dir.ConvertToVECTOR(); }
+	//移動速度を取得
+	const VECTOR GetVelocityVECTOR(){ return m_velocity.ConvertToVECTOR(); }
 
-	void SetPos(const Vec3& set);
+	//重力を与えるかどうか取得
+	bool GetUseGravity() const { return m_useGravity; }		
+
+	/*Setter*/
+	//現在座標を設定
+	void SetPos(const Vec3& set) { m_pos = set; }
+	//移動予定座標を設定
 	void SetNextPos(const Vec3& set) { m_nextPos = set; }
-	void SetOffsetPos(const Vec3& set) { m_offsetPos = set; }
-	void MV1SetPos(const int& handle);
+	//向きを設定
 	void SetVelocity(Vec3 set,float mul = 1.0f);
-	void SetUseGravity(bool set) { useGravity = set; }
+	//移動速度を設定
+	void SetUseGravity(bool set) { m_useGravity = set; }
 
 private:
-	Vec3	m_pos;
-	Vec3	m_nextPos;
-	//モデルの中心座標と当たり判定がずれているとき用
-	Vec3 m_offsetPos;
+	//現在座標
+	Vec3 m_pos;
+	//移動予定座標
+	Vec3 m_nextPos;
 
-	Vec3	dir;
-	Vec3	velocity;
-	bool	useGravity;
+	//向き
+	Vec3 m_dir;
+	//移動速度
+	Vec3 m_velocity;
+	//重力を与えるかどうか
+	bool m_useGravity;
 };
-
 }

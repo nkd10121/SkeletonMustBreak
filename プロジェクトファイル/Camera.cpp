@@ -12,7 +12,7 @@ namespace
 	constexpr float kCameraNear = 3.0f;
 	constexpr float kCameraFar = 360.0f;
 
-	constexpr float kCameraRadius = kCameraNear;
+	constexpr float kCameraRadius = kCameraNear + 0.2f;
 
 	constexpr float kAngleMoveScaleMax = 3.2f;
 
@@ -62,7 +62,7 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 	std::pair<float,float> rightStickVec;
 	if (!m_isClear)
 	{
-		rightStickVec = input->GetRightStick();
+		rightStickVec = input->GetInputStick(true);
 	}
 
 	//“ü—Í‚©‚çŠp“x‚ðŒvŽZ‚·‚é
