@@ -1,56 +1,70 @@
-#include "TitlePlayer.h"
+ï»¿#include "TitlePlayer.h"
 #include "DxLib.h"
+#include "ModelManager.h"
 
 namespace
 {
-	constexpr float kModelSize =80.0f;
+	constexpr float kModelSizeScale =80.0f;
 
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦‚É‚©‚©‚éƒtƒŒ[ƒ€”
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆã«ã‹ã‹ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	constexpr float kAnimChangeFrame = 10.0f;
 	constexpr float kAnimChangeRateSpeed = 1.0f / kAnimChangeFrame;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒuƒŒƒ“ƒh—¦‚ÌÅ‘å
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡ã®æœ€å¤§
 	constexpr float kAnimBlendRateMax = 1.0f;
 }
 
+/// <summary>
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 TitlePlayer::TitlePlayer():
 	m_currentAnimNo(-1),
 	m_prevAnimNo(-1),
 	m_animBlendRate(1.0f),
 	m_animSpeed(0.5f)
 {
-	m_modelHandle = MV1LoadModel("data/model/player.mv1");
-	MV1SetScale(m_modelHandle,VECTOR(kModelSize, kModelSize, kModelSize));
+	m_modelHandle = ModelManager::GetInstance().GetModelHandle("data/model/player.mv1",true);
+	MV1SetScale(m_modelHandle,VECTOR(kModelSizeScale, kModelSizeScale, kModelSizeScale));
 	MV1SetRotationXYZ(m_modelHandle, VECTOR(0.0f, DX_PI_F, 0.0f));
 
-	//‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
+	//å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¨­å®š
 	m_currentAnimNo = MV1AttachAnim(m_modelHandle, 69);
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 TitlePlayer::~TitlePlayer()
 {
 	MV1DeleteModel(m_modelHandle);
 }
 
+/// <summary>
+/// åˆæœŸåŒ–
+/// </summary>
+/// <param name="pos">åº§æ¨™</param>
 void TitlePlayer::Init(MyLib::Vec3 pos)
 {
 	MV1SetPosition(m_modelHandle,pos.ConvertToVECTOR());
 }
 
+/// <summary>
+/// æ›´æ–°
+/// </summary>
 void TitlePlayer::Update()
 {
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆ
 	if (m_prevAnimNo != -1)
 	{
-		//ƒtƒŒ[ƒ€‚ÅƒAƒjƒ[ƒVƒ‡ƒ“‚ğØ‚è‘Ö‚¦‚é
+		//ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 		m_animBlendRate += kAnimChangeRateSpeed;
 		if (m_animBlendRate >= kAnimBlendRateMax)
 		{
 			m_animBlendRate = kAnimBlendRateMax;
 		}
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒuƒŒƒ“ƒh—¦‚ğİ’è‚·‚é
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡ã‚’è¨­å®šã™ã‚‹
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, kAnimBlendRateMax - m_animBlendRate);
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
 	}
@@ -58,60 +72,73 @@ void TitlePlayer::Update()
 	UpdateAnim(m_currentAnimNo);
 }
 
+/// <summary>
+/// æç”»
+/// </summary>
 void TitlePlayer::Draw()
 {
 	MV1DrawModel(m_modelHandle);
 }
 
+/// <summary>
+/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
+/// </summary>
+/// <param name="attachNo">é€²è¡Œã•ã›ãŸã„ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç•ªå·</param>
+/// <returns>ãƒ«ãƒ¼ãƒ—ã—ãŸã‹ã©ã†ã‹</returns>
 bool TitlePlayer::UpdateAnim(int attachNo, float startTime)
 {
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç‘ŠúƒŠƒ^[ƒ“
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒè¨­å®šã•ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰æ—©æœŸãƒªã‚¿ãƒ¼ãƒ³
 	if (attachNo == -1)	return false;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğis‚³‚¹‚é
-	float nowFrame = MV1GetAttachAnimTime(m_modelHandle, attachNo);	//Œ»İ‚ÌÄ¶ƒJƒEƒ“ƒg‚ğæ“¾
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²è¡Œã•ã›ã‚‹
+	float nowFrame = MV1GetAttachAnimTime(m_modelHandle, attachNo);	//ç¾åœ¨ã®å†ç”Ÿã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—
 	nowFrame += m_animSpeed;
 
-	//Œ»İÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‘ƒJƒEƒ“ƒg‚ğæ“¾‚·‚é
+	//ç¾åœ¨å†ç”Ÿä¸­ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ç·ã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—ã™ã‚‹
 	float totalAnimframe = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
 	bool isLoop = false;
 
-	//NOTE:‚à‚µ‚©‚µ‚½‚ç‘ƒtƒŒ[ƒ€•ªˆø‚¢‚Ä‚à‘ƒtƒŒ[ƒ€‚æ‚è‘å‚«‚¢‚©‚à‚µ‚ê‚È‚¢‚©‚çwhile‚Å‘å‚«‚¢ŠÔˆø‚«‘±‚¯‚é
+	//NOTE:ã‚‚ã—ã‹ã—ãŸã‚‰ç·ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†å¼•ã„ã¦ã‚‚ç·ãƒ•ãƒ¬ãƒ¼ãƒ ã‚ˆã‚Šå¤§ãã„ã‹ã‚‚ã—ã‚Œãªã„ã‹ã‚‰whileã§å¤§ãã„é–“å¼•ãç¶šã‘ã‚‹
 	while (totalAnimframe <= nowFrame)
 	{
-		//NOTE:nowFrame‚ğ0‚ÉƒŠƒZƒbƒg‚·‚é‚ÆƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€‚Ì”ò‚Ñ‚ª‚Å‚é‚©‚ç‘ƒtƒŒ[ƒ€•ªˆø‚­
+		//NOTE:nowFrameã‚’0ã«ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã¨ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ•ãƒ¬ãƒ¼ãƒ ã®é£›ã³ãŒã§ã‚‹ã‹ã‚‰ç·ãƒ•ãƒ¬ãƒ¼ãƒ åˆ†å¼•ã
 		nowFrame -= totalAnimframe;
 		nowFrame += startTime;
 		isLoop = true;
 	}
 
-	//i‚ß‚½ŠÔ‚Éİ’è
+	//é€²ã‚ãŸæ™‚é–“ã«è¨­å®š
 	MV1SetAttachAnimTime(m_modelHandle, attachNo, nowFrame);
 
 	return isLoop;
 }
 
+
+/// <summary>
+///	ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å¤‰æ›´
+/// </summary>
+/// <param name="animIndex">å¤‰æ›´å¾Œã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ç•ªå·</param>
 void TitlePlayer::ChangeAnim(int animIndex, float animSpeed)
 {
-	//‚³‚ç‚ÉŒÃ‚¢ƒAƒjƒ[ƒVƒ‡ƒ“‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚éê‡‚Í‚±‚Ì“_‚ÅÁ‚µ‚Ä‚¨‚­
+	//ã•ã‚‰ã«å¤ã„ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒã‚¢ã‚¿ãƒƒãƒã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã“ã®æ™‚ç‚¹ã§æ¶ˆã—ã¦ãŠã
 	if (m_prevAnimNo != -1)
 	{
 		MV1DetachAnim(m_modelHandle, m_prevAnimNo);
 	}
 
-	//Œ»İÄ¶’†‚Ì‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“‚Í•ÏX–Ú‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìˆµ‚¢‚É‚·‚é
+	//ç¾åœ¨å†ç”Ÿä¸­ã®å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¯å¤‰æ›´ç›®ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ‰±ã„ã«ã™ã‚‹
 	m_prevAnimNo = m_currentAnimNo;
 
-	//•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Æ‚µ‚ÄUŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‰ü‚ß‚Äİ’è‚·‚é
+	//å¤‰æ›´å¾Œã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¨ã—ã¦æ”»æ’ƒã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ”¹ã‚ã¦è¨­å®šã™ã‚‹
 	m_currentAnimNo = MV1AttachAnim(m_modelHandle, animIndex);
 
-	//Ø‚è‘Ö‚¦‚ÌuŠÔ‚Í•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ªÄ¶‚³‚ê‚éó‘Ô‚É‚·‚é
+	//åˆ‡ã‚Šæ›¿ãˆã®ç¬é–“ã¯å¤‰æ›´å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒå†ç”Ÿã•ã‚Œã‚‹çŠ¶æ…‹ã«ã™ã‚‹
 	m_animBlendRate = 0.0f;
 
 	m_animSpeed = animSpeed;
 
-	//•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“100%
+	//å¤‰æ›´å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³100%
 	MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, 1.0f - m_animBlendRate);
-	//•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“0%
+	//å¤‰æ›´å¾Œã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³0%
 	MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
 }

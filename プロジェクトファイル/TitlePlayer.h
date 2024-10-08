@@ -1,39 +1,46 @@
-#pragma once
+ï»¿#pragma once
 #include "Vec3.h"
 
+/// <summary>
+/// ã‚¿ã‚¤ãƒˆãƒ«ã‚„ã‚¹ãƒ†ãƒ¼ã‚¸ã‚»ãƒ¬ã‚¯ãƒˆã®èƒŒæ™¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+/// TODO:ã‚¯ãƒ©ã‚¹åã‚’BGCharacterã¨ã‹ã«ã—ã¦ã‚‚ã„ã„ã‹ã‚‚
+/// </summary>
 class TitlePlayer
 {
 public:
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	TitlePlayer();
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~TitlePlayer();
 
+	//åˆæœŸåŒ–
 	void Init(MyLib::Vec3 pos);
+	//æ›´æ–°
 	void Update();
+	//æç”»
 	void Draw();
 
 private:
-	/// <summary>
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXVˆ—
-	/// </summary>
-	/// <param name="attachNo">is‚³‚¹‚½‚¢ƒAƒjƒ[ƒVƒ‡ƒ“”Ô†</param>
-	/// <returns>ƒ‹[ƒv‚µ‚½‚©‚Ç‚¤‚©</returns>
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
 	bool UpdateAnim(int attachNo, float startTime = 0.0f);
-
-	/// <summary>
-	///	ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì•ÏX
-	/// </summary>
-	/// <param name="animIndex">•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“”Ô†</param>
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å¤‰æ›´
 	void ChangeAnim(int animIndex, float animSpeed = 0.5f);
 
 private:
+	//ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«
 	int m_modelHandle;
+	//ãƒ¢ãƒ‡ãƒ«åº§æ¨™
 	MyLib::Vec3 m_pos;
 
-	/*ƒAƒjƒ[ƒVƒ‡ƒ“î•ñ*/
+	/*ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±*/
+	//ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒŠãƒ³ãƒãƒ¼
 	int m_currentAnimNo;
+	//ç›´å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒŠãƒ³ãƒãƒ¼
 	int m_prevAnimNo;
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ–ãƒ¬ãƒ³ãƒ‰å‰²åˆ
 	float m_animBlendRate;
-	float m_animSpeed;		//ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‘¬“x
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å†ç”Ÿé€Ÿåº¦
+	float m_animSpeed;
 
 };
 

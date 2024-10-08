@@ -1,4 +1,4 @@
-#include "EffectManager.h"
+ï»¿#include "EffectManager.h"
 #include "EffekseerForDXLib.h"
 
 #include <cassert>
@@ -7,16 +7,23 @@ EffectManager* EffectManager::m_instance = nullptr;
 
 EffectManager::~EffectManager()
 {
-	//‚Ü‚¸‚·‚Å‚É“¯‚¶ƒpƒX‚ÌƒGƒtƒFƒNƒg‚ªƒ[ƒh‚³‚ê‚Ä‚¢‚È‚¢‚©Šm”F‚·‚é
+	//ã¾ãšã™ã§ã«åŒã˜ãƒ‘ã‚¹ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ãªã„ã‹ç¢ºèªã™ã‚‹
 	for (auto& effect : m_effect)
 	{
 		DeleteEffekseerEffect(effect.second->emitterHandle);
 	}
 }
 
+/// <summary>
+/// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ãƒ­ãƒ¼ãƒ‰
+/// </summary>
+/// <param name="name">ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå</param>
+/// <param name="path">ãƒ‘ã‚¹</param>
+/// <param name="endFrame">çµ‚äº†ãƒ•ãƒ¬ãƒ¼ãƒ æ•°</param>
+/// <param name="scale">æ‹¡å¤§ç‡</param>
 void EffectManager::Load(std::string name, const char* path, int endFrame, float scale)
 {
-	//‚Ü‚¸‚·‚Å‚É“¯‚¶ƒpƒX‚ÌƒGƒtƒFƒNƒg‚ªƒ[ƒh‚³‚ê‚Ä‚¢‚È‚¢‚©Šm”F‚·‚é
+	//ã¾ãšã™ã§ã«åŒã˜ãƒ‘ã‚¹ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãŒãƒ­ãƒ¼ãƒ‰ã•ã‚Œã¦ã„ãªã„ã‹ç¢ºèªã™ã‚‹
 	for (auto& effect : m_effect)
 	{
 		if (effect.second->effectPath == path)
@@ -25,21 +32,24 @@ void EffectManager::Load(std::string name, const char* path, int endFrame, float
 		}
 	}
 
-	//‚±‚±‚Ü‚Å—ˆ‚½‚çƒGƒtƒFƒNƒg‚ğƒ[ƒh‚·‚é
+	//ã“ã“ã¾ã§æ¥ãŸã‚‰ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
 	std::shared_ptr<EffectEmitter> add = std::make_shared<EffectEmitter>();
 	add->emitterHandle = LoadEffekseerEffect(path, scale);
-	assert(add->emitterHandle != -1 && "ƒGƒtƒFƒNƒgƒ[ƒh¸”s");
+	assert(add->emitterHandle != -1 && "ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ­ãƒ¼ãƒ‰å¤±æ•—");
 	add->endFrame = endFrame;
 
 	m_effect[name] = add;
 
 }
 
+/// <summary>
+/// æ›´æ–°
+/// </summary>
 void EffectManager::Update()
 {
 	UpdateEffekseer3D();
 
-	//ƒGƒtƒFƒNƒg‚ÌXV
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®æ›´æ–°
 	for (auto& effects : m_effect)
 	{
 		for (auto& ef : effects.second->effects)
@@ -53,7 +63,7 @@ void EffectManager::Update()
 			ef.frame++;
 		}
 
-		//isExist‚ªfalse‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ
+		//isExistãŒfalseã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤
 		auto it = std::remove_if(effects.second->effects.begin(), effects.second->effects.end(), [](auto& v)
 			{
 				return v.isExist == false;
@@ -62,11 +72,20 @@ void EffectManager::Update()
 	}
 }
 
+/// <summary>
+/// æç”»
+/// </summary>
 void EffectManager::Draw()
 {
 	DrawEffekseer3D();
 }
 
+/// <summary>
+/// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ç”Ÿæˆ
+/// </summary>
+/// <param name="name">ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå</param>
+/// <param name="pos">æç”»åº§æ¨™</param>
+/// <param name="rot">å›è»¢è§’åº¦</param>
 void EffectManager::CreateEffect(std::string name, MyLib::Vec3 pos, MyLib::Vec3 rot)
 {
 	int handle = -1;
@@ -78,7 +97,7 @@ void EffectManager::CreateEffect(std::string name, MyLib::Vec3 pos, MyLib::Vec3 
 		}
 	}
 
-	//‚à‚µ’Ç‰Á‚µ‚æ‚¤‚Æ‚µ‚Ä‚¢‚éƒGƒtƒFƒNƒg‚Ì–¼‘O‚Ìƒnƒ“ƒhƒ‹‚ª‚È‚¯‚ê‚ÎI‚í‚é
+	//ã‚‚ã—è¿½åŠ ã—ã‚ˆã†ã¨ã—ã¦ã„ã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åå‰ã®ãƒãƒ³ãƒ‰ãƒ«ãŒãªã‘ã‚Œã°çµ‚ã‚ã‚‹
 	if (handle == -1)
 	{
 		return;
@@ -101,10 +120,10 @@ void EffectManager::CreateEffect(std::string name, MyLib::Vec3 pos, MyLib::Vec3 
 }
 
 /// <summary>
-/// w’è‚µ‚½–¼‘O‚Ì‚·‚×‚Ä‚ÌƒGƒtƒFƒNƒg‚ÌÀ•W‚ğˆÚ“®‚³‚¹‚é
+/// æŒ‡å®šã—ãŸåå‰ã®ã™ã¹ã¦ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åº§æ¨™ã‚’ç§»å‹•ã•ã›ã‚‹
 /// </summary>
-/// <param name="name">ˆÚ“®‚³‚¹‚½‚¢ƒGƒtƒFƒNƒg‚Ì–¼‘O</param>
-/// <param name="pos">ˆÚ“®æÀ•W</param>
+/// <param name="name">ç§»å‹•ã•ã›ãŸã„ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®åå‰</param>
+/// <param name="pos">ç§»å‹•å…ˆåº§æ¨™</param>
 void EffectManager::SetPos(std::string name, MyLib::Vec3 pos)
 {
 	std::shared_ptr<EffectEmitter> emit;
@@ -128,6 +147,11 @@ void EffectManager::SetPos(std::string name, MyLib::Vec3 pos)
 	return;
 }
 
+/// <summary>
+/// æŒ‡å®šã—ãŸåå‰ã®ã™ã¹ã¦ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å›è»¢ã•ã›ã‚‹
+/// </summary>
+/// <param name="name">ã‚¨ãƒ•ã‚§ã‚¯ãƒˆå</param>
+/// <param name="rot">å›è»¢è§’åº¦</param>
 void EffectManager::SetRotation(std::string name, MyLib::Vec3 rot)
 {
 	for (auto& effects : m_effect)

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "CharacterBase.h"
 #include "EnemyManager.h"
 
@@ -7,45 +7,48 @@
 
 namespace LoadData
 {
-	//ƒXƒe[ƒ^ƒXî•ñ‚Ì•À‚Ñ—ñ‹“Œ^
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±ã®ä¸¦ã³åˆ—æŒ™å‹
 	enum eStatusOrder : int
 	{
-		name,	//ƒLƒƒƒ‰ƒNƒ^[–¼
-		hp,		//‘Ì—Í
-		atk,	//UŒ‚—Í
-		def,	//–hŒä—Í
+		name,	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å
+		hp,		//ä½“åŠ›
+		atk,	//æ”»æ’ƒåŠ›
+		def,	//é˜²å¾¡åŠ›
 		speed,
 		point
 	};
 
-	//ƒXƒe[ƒ^ƒXî•ñ‚Ì•À‚Ñ—ñ‹“Œ^
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±ã®ä¸¦ã³åˆ—æŒ™å‹
 	enum eStageOrder : int
 	{
-		ID,						//“GID
-		phase,					//oŒ»ƒtƒF[ƒY
-		frame,					//oŒ»ƒtƒŒ[ƒ€
-		AppearanceLocation,		//oŒ»êŠ
+		ID,						//æ•µID
+		phase,					//å‡ºç¾ãƒ•ã‚§ãƒ¼ã‚º
+		frame,					//å‡ºç¾ãƒ•ãƒ¬ãƒ¼ãƒ 
+		AppearanceLocation,		//å‡ºç¾å ´æ‰€
 	};
 }
 
+/// <summary>
+/// CSVã‚’èª­ã¿è¾¼ã‚€ã‚¯ãƒ©ã‚¹
+/// </summary>
 class CsvLoad
 {
 private:
-	// ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“‚È‚Ì‚ÅƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Íprivate‚É’u‚­
+	// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ãªã®ã§ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯privateã«ç½®ã
 	CsvLoad() {};
 
 public:
 	virtual ~CsvLoad() {};
 
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çÀ‘Ì‚Ì¶¬‚ª‚Å‚«‚Ä‚µ‚Ü‚¤‚½‚ß
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‹Ö~‚·‚é
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‹ã‚‰å®Ÿä½“ã®ç”ŸæˆãŒã§ãã¦ã—ã¾ã†ãŸã‚
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ç¦æ­¢ã™ã‚‹
 	CsvLoad(const CsvLoad&) = delete;
 	CsvLoad& operator=(const CsvLoad&) = delete;
 	CsvLoad(CsvLoad&&) = delete;
 	CsvLoad& operator= (const CsvLoad&&) = delete;
 
 	/// <summary>
-	/// CsvLoad‚ÍGetInstance()‚ğ’Ê‚µ‚½QÆ‚©‚ç‚µ‚©—˜—p‚Å‚«‚È‚¢
+	/// CsvLoadã¯GetInstance()ã‚’é€šã—ãŸå‚ç…§ã‹ã‚‰ã—ã‹åˆ©ç”¨ã§ããªã„
 	/// </summary>
 	/// <returns></returns>
 	static CsvLoad& GetInstance()
@@ -58,7 +61,7 @@ public:
 		return *m_instance;
 	}
 
-	//‚±‚ê‚ğ‚µ–Y‚ê‚é‚Æ•’Ê‚Éƒƒ‚ƒŠƒŠ[ƒN
+	//ã“ã‚Œã‚’ã—å¿˜ã‚Œã‚‹ã¨æ™®é€šã«ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯
 	static void Destroy()
 	{
 		delete m_instance;
@@ -66,23 +69,17 @@ public:
 	}
 
 public:
-	/// <summary>
-	/// ƒXƒe[ƒ^ƒXî•ñƒ[ƒh
-	/// </summary>
-	/// <param name="Data">ƒXƒe[ƒ^ƒXî•ñ</param>
-	/// <param name="charcterName">ƒLƒƒƒ‰ƒNƒ^[‚Ì–¼‘O</param>
-	void StatusLoad(CharacterBase::Status& data, const char* charcterName);
+	//ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±ãƒ­ãƒ¼ãƒ‰
+	void StatusLoad(CharacterBase::Status& data, const char* characterName);
 
-	/// <summary>
-	/// ƒXƒe[ƒWî•ñƒ[ƒh
-	/// </summary>
-	/// <param name="Data">ƒXƒe[ƒ^ƒXî•ñ</param>
-	/// <param name="charcterName">ƒLƒƒƒ‰ƒNƒ^[‚Ì–¼‘O</param>
+	//ã‚¹ãƒ†ãƒ¼ã‚¸æƒ…å ±ãƒ­ãƒ¼ãƒ‰
 	void StageEnenyDataLoad(const char* stageName, std::list<std::shared_ptr<EnemyManager::EnemyGenerateInfo>>& pGenerateInfo);
 
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ãƒ­ãƒ¼ãƒ‰
+	void AnimDataLoad(std::string characterName, std::map<std::string, int>& anim);
 private:
-	//static‚É‚·‚é‚±‚Æ‚Å
-	//Singleton‚Ìƒ|ƒCƒ“ƒ^‚ªƒvƒƒOƒ‰ƒ€‹N“®‚Éˆê‚Âì‚ç‚ê‚é‚æ‚¤‚É‚·‚é
+	//staticã«ã™ã‚‹ã“ã¨ã§
+	//Singletonã®ãƒã‚¤ãƒ³ã‚¿ãŒãƒ—ãƒ­ã‚°ãƒ©ãƒ èµ·å‹•æ™‚ã«ä¸€ã¤ä½œã‚‰ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹
 	static CsvLoad* m_instance;
 
 };

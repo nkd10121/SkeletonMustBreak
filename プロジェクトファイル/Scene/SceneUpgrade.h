@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "SceneBase.h"
 class SceneUpgrade : public SceneBase
 {
@@ -7,13 +7,13 @@ public:
 	virtual ~SceneUpgrade();
 
 	/// <summary>
-	/// XVˆ—
+	/// æ›´æ–°å‡¦ç†
 	/// </summary>
 	/// <param name="input"></param>
 	void Update(std::shared_ptr<Input>& input);
 
 	/// <summary>
-	/// •`‰æˆ—
+	/// æç”»å‡¦ç†
 	/// </summary>
 	void Draw();
 

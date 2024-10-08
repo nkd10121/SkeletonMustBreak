@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "GameObjectTag.h"
 #include <List>
 #include <memory>
@@ -15,26 +15,26 @@ class Collidable : public std::enable_shared_from_this<Collidable>
 	friend Physics;
 public:
 
-	// ˆÊ’u•â³‚Ì—Dæ“x‚Ì”»•Ê‚Ég‚¤
+	// ä½ç½®è£œæ­£ã®å„ªå…ˆåº¦ã®åˆ¤åˆ¥ã«ä½¿ã†
 	enum class Priority : int
 	{
-		Low,		// ’á
-		Middle,		// ’†
-		High,		// ‚
-		Static,		// “®‚©‚È‚¢iÅ‚j
+		Low,		// ä½
+		Middle,		// ä¸­
+		High,		// é«˜
+		Static,		// å‹•ã‹ãªã„ï¼ˆæœ€é«˜ï¼‰
 	};
 
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Collidable(Priority priority, GameObjectTag tag);	
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	virtual ~Collidable();												
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	virtual void Init(std::shared_ptr<MyLib::Physics> physics);
-	//I—¹
+	//çµ‚äº†
 	virtual void Finalize(std::shared_ptr<MyLib::Physics> physics);
 
-	//“–‚½‚è”»’èŠÖ”
+	//å½“ãŸã‚Šåˆ¤å®šé–¢æ•°
 	virtual void OnCollideEnter(const std::shared_ptr<Collidable>& colider) {}
 	virtual void OnCollideStay(const std::shared_ptr<Collidable>& colider) {}
 	virtual void OnCollideExit(const std::shared_ptr<Collidable>& colider) {}
@@ -42,35 +42,35 @@ public:
 	virtual void OnTriggerStay(const std::shared_ptr<Collidable>& colider) {}
 	virtual void OnTriggerExit(const std::shared_ptr<Collidable>& colider) {}
 
-	//ƒ^ƒO‚ğæ“¾
+	//ã‚¿ã‚°ã‚’å–å¾—
 	GameObjectTag GetTag() const { return tag; }					
-	//—Dæ“x‚ğæ“¾
+	//å„ªå…ˆåº¦ã‚’å–å¾—
 	Priority GetPriority() const { return priority; }				
 
-	//“–‚½‚è”»’è‚ğ–³‹iƒXƒ‹[j‚·‚éƒ^ƒO‚Ì’Ç‰Á/íœ
+	//å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ï¼ˆã‚¹ãƒ«ãƒ¼ï¼‰ã™ã‚‹ã‚¿ã‚°ã®è¿½åŠ /å‰Šé™¤
 	void AddThroughTag(GameObjectTag tag);
 	void RemoveThroughTag(GameObjectTag tag);
 
-	//“–‚½‚è”»’è‚ğ–³‹iƒXƒ‹[j‚·‚é‘ÎÛ‚©‚Ç‚¤‚©
+	//å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ï¼ˆã‚¹ãƒ«ãƒ¼ï¼‰ã™ã‚‹å¯¾è±¡ã‹ã©ã†ã‹
 	bool IsThroughTarget(const std::shared_ptr<Collidable> target) const;
 
 protected:
-	//“–‚½‚è”»’è‚ğ’Ç‰Á
+	//å½“ãŸã‚Šåˆ¤å®šã‚’è¿½åŠ 
 	std::shared_ptr<ColliderData> AddCollider(const ColliderData::Kind& kind, bool isTrigger);
 
 protected:
-	// •¨—ƒf[ƒ^
+	// ç‰©ç†ãƒ‡ãƒ¼ã‚¿
 	Rigidbody rigidbody;		
-	//“–‚½‚è”»’èî•ñ
+	//å½“ãŸã‚Šåˆ¤å®šæƒ…å ±
 	std::list<std::shared_ptr<ColliderData>> m_colliders;
 
 private:
-	//ƒ^ƒO
+	//ã‚¿ã‚°
 	GameObjectTag tag;
-	//—Dæ“x
+	//å„ªå…ˆåº¦
 	Priority priority;
 
-	// “–‚½‚è”»’è‚ğ–³‹iƒXƒ‹[j‚·‚éƒ^ƒO‚ÌƒŠƒXƒg
+	// å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ï¼ˆã‚¹ãƒ«ãƒ¼ï¼‰ã™ã‚‹ã‚¿ã‚°ã®ãƒªã‚¹ãƒˆ
 	std::list<GameObjectTag>	throughTags;
 };
 }

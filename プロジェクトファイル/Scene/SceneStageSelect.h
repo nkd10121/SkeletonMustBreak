@@ -1,31 +1,31 @@
-#pragma once
+﻿#pragma once
 #include "SceneBase.h"
 
 #include <vector>
 #include <map>
 
 class TitlePlayer;
+class UICursor;
 
+/// <summary>
+/// ステージセレクトシーン
+/// </summary>
 class SceneStageSelect : public SceneBase
 {
 public:
+	//コンストラクタ
 	SceneStageSelect(SceneManager& mgr);
+	//デストラクタ
 	virtual ~SceneStageSelect();
 
-	/// <summary>
-	/// �X�V����
-	/// </summary>
-	/// <param name="input"></param>
+	//更新
 	void Update(std::shared_ptr<Input>& input);
-
-	/// <summary>
-	/// �`�揈��
-	/// </summary>
+	//描画
 	void Draw();
 
 private:
-	//�J�ڐ�
-	enum class e_Destination : int
+	//遷移先
+	enum class eDestination : int
 	{
 		Title,
 		stage1,
@@ -34,23 +34,19 @@ private:
 		Upgrade,
 	};
 
-	e_Destination m_destinationScene;
+	//カーソルクラスのポインタ
+	std::shared_ptr<UICursor> m_pCursor;
 
+	//遷移先
+	eDestination m_destinationScene;
+	//UI座標
 	std::vector<std::pair<int, int>> m_uiPos;
+	//UIの画像ハンドル
+	std::vector<int> m_UIHandles;
 
-	std::vector<int> m_handles;
-
-	float m_angle;
-	int m_cursorOffsetX;
-
-	int m_fontHandle;
-	int m_textHandle;
-
+	//ライトハンドル
 	int m_lightHandle;
-	std::shared_ptr<TitlePlayer> m_player;
-
-	int m_stage1Score;
-	int m_stage2Score;
-	int m_stage3Score;
+	//背景のプレイヤークラスのポインタ
+	std::shared_ptr<TitlePlayer> m_pPlayer;
 };
 

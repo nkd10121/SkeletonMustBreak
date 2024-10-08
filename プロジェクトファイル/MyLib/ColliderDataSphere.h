@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 #include "ColliderData.h"
 namespace MyLib
 {
 class ColliderDataSphere : public ColliderData
 {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	ColliderDataSphere(bool isTrigger);
 
-	//”¼Œa
+	//åŠå¾„
 	float m_radius;
 
 protected:

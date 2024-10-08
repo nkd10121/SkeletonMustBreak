@@ -1,4 +1,4 @@
-#include "EnemyFast.h"
+ï»¿#include "EnemyFast.h"
 #include "CsvLoad.h"
 #include "DxLib.h"
 
@@ -6,446 +6,156 @@
 #include "SearchObject.h"
 
 #include "SoundManager.h"
+#include "ModelManager.h"
 
 namespace
 {
+	//ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å
+	constexpr const char* kCharacterName = "FastSkelton";
+	//ãƒ¢ãƒ‡ãƒ«ãƒ‘ã‚¹
+	constexpr const char* kModelPath = "data/model/Skeleton_Minion.mv1";
+	//æŠ¼ã—å‡ºã—å½“ãŸã‚Šåˆ¤å®šã®åŠå¾„
+	constexpr float kCollisionRadius = 1.4f;
+	//ãƒ¢ãƒ‡ãƒ«ã®å…ƒã®ã‚µã‚¤ã‚º
 	constexpr float kModelDefaultSize = 2.166f;
-
-	//ƒ‚ƒfƒ‹ƒTƒCƒY
-	constexpr float kModelSize = 3.2f;
+	//ãƒ¢ãƒ‡ãƒ«ã‚µã‚¤ã‚ºã®æ‹¡å¤§ç‡
+	constexpr float kModelSizeScale = 3.2f;
 	constexpr float kModelOffsetY = 0.3f;
-
+	//æ­¦å™¨ã®ãƒ¢ãƒ‡ãƒ«ã‚µã‚¤ã‚º
 	constexpr float kWeaponModelSize = 0.01f;
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦‚É‚©‚©‚éƒtƒŒ[ƒ€”
-	constexpr float kAnimChangeFrame = 10.0f;
-	constexpr float kAnimChangeRateSpeed = 1.0f / kAnimChangeFrame;
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒuƒŒƒ“ƒh—¦‚ÌÅ‘å
-	constexpr float kAnimBlendRateMax = 1.0f;
-
-	constexpr float kSearchingRange = 30.0f;
+	//å½“ãŸã‚Šåˆ¤å®šã®åŠå¾„
+	constexpr float kHitBoxRadius = 3.0f;
 }
 
-
-EnemyFast::EnemyFast(int modelH):
-	EnemyBase(Collidable::Priority::Middle),
-	m_nowAnimIdx(eAnimIdx::Run),
-	m_weponHandle(-1),
-	m_tempFrameCount(0),
-	m_weponAttachFrameNum(-1),
-	m_attackWaitFrame(0),
-	m_knockCount(0),
-	m_currentAnimNo(-1),
-	m_prevAnimNo(-1),
-	m_animBlendRate(1.0f),
-	m_animSpeed(0.5f),
-	m_isAnimationFinish(false),
-	m_isChasing(false)
+/// <summary>
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
+EnemyFast::EnemyFast():
+	EnemyBase(Collidable::Priority::Middle)
 {
-	//“–‚½‚è”»’è‚Ìİ’è
-	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, false);
-	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
-	sphereCol->m_radius = 1.4f;
-
-	//MV1SetDifColorScale(modelH, GetColorF(0.2f, 1.0f, 0.4f, 1.0f));
-
-	CsvLoad::GetInstance().StatusLoad(m_status, "NormalSkelton");
-	m_maxHp = m_status.hp;
-
-	//ƒ‚ƒfƒ‹‚Ì“Ç‚İ‚İ
-	m_modelHandle = modelH;
-	//m_weponHandle = weponH;
-
-	m_dropPoint = m_status.point;
+	//å½“ãŸã‚Šåˆ¤å®šã®è¨­å®š
+	InitCollision(kCollisionRadius);
+	//ãƒ¢ãƒ‡ãƒ«ã®èª­ã¿è¾¼ã¿
+	LoadModel(kModelPath);
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚„ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹ã‚’å–å¾—
+	LoadData(kCharacterName);
+	//ã“ã®æ•µã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’è¿½è·¡ã—ãªã„
+	m_isChase = false;
+	//ç´¢æ•µç¯„å›²ã®è¨­å®š
+	m_searchRange = 0.0f;
 }
 
-
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 EnemyFast::~EnemyFast()
 {
-	//ƒƒ‚ƒŠ‚Ì‰ğ•ú
-	MV1DeleteModel(m_modelHandle);
 }
 
+/// <summary>
+/// åˆæœŸåŒ–
+/// </summary>
+/// <param name="physics">ç‰©ç†ã‚¯ãƒ©ã‚¹ã®ãƒã‚¤ãƒ³ã‚¿</param>
+/// <param name="route">ç§»å‹•ãƒ«ãƒ¼ãƒˆ</param>
 void EnemyFast::Init(std::shared_ptr<MyLib::Physics> physics, std::vector<MyLib::Vec3> route)
 {
-	m_pPhisics = physics;
-
+	//ä»£å…¥
+	m_pPhysics = physics;
 	m_route = route;
 
-	for (int i = 0; i < m_route.size(); i++)
-	{
-		m_route[i].y += kModelOffsetY * kModelSize;
-	}
+	//ãƒ«ãƒ¼ãƒˆã®yåº§æ¨™ã‚’èª¿æ•´
+	AdjustmentRoute(kModelOffsetY, kModelSizeScale);
 
 
-	//Å‰‚Ì–Ú“I’n‚ğİ’è‚·‚é
-	m_routeNum = 1;
-	m_destinationPos = m_route[m_routeNum];
+	//æœ€åˆã®ç›®çš„åœ°ã‚’è¨­å®šã™ã‚‹
+	m_routeIdx = 1;
+	m_destinationPos = m_route[m_routeIdx];
 
-	//‘¶İ‚µ‚Ä‚¢‚éó‘Ô‚É‚·‚é
+	//å­˜åœ¨ã—ã¦ã„ã‚‹çŠ¶æ…‹ã«ã™ã‚‹
 	m_isExist = true;
 
-	Collidable::Init(m_pPhisics);
+	Collidable::Init(m_pPhysics);
 
-	rigidbody.Init(true);
-	rigidbody.SetPos(m_route[0]);
-	rigidbody.SetNextPos(rigidbody.GetPos());
-	m_moveVec = (m_destinationPos - rigidbody.GetPos()).Normalize();
+	//ç‰©ç†ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–
+	InitRigidbody();
 
+	//ä¸­å¿ƒåº§æ¨™ã®è¨­å®š
+	CalculationCenterPos(kModelDefaultSize, kModelSizeScale);
+
+	//å½“ãŸã‚Šåˆ¤å®šã®åº§æ¨™ã‚’è¨­å®š
 	m_collisionPos = rigidbody.GetPos();
-	SetModelPos();
+
+	//ãƒ¢ãƒ‡ãƒ«ã®åº§æ¨™ã‚’è¨­å®š
+	SetModelPos(kModelOffsetY * kModelSizeScale);
 	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
 
-	MyLib::Vec3 hitboxPos = rigidbody.GetPos();
-	hitboxPos.y += kModelDefaultSize * kModelSize / 2 * 0.7f;
-	m_hitbox = std::make_shared<HitBox>(3.0f);
-	m_hitbox->Init(m_pPhisics, hitboxPos, true);
+	//ãƒ€ãƒ¡ãƒ¼ã‚¸åˆ¤å®šã‚’ã™ã‚‹å½“ãŸã‚Šåˆ¤å®šã‚’ä½œæˆ
+	InitHitBox(kHitBoxRadius);
 
-	//’†SÀ•W‚Ìİ’è
-	m_centerPos = rigidbody.GetPos();
-	m_centerPos.y += kModelDefaultSize * kModelSize * 0.5f;
+	//ãƒ¢ãƒ‡ãƒ«ã®ã‚µã‚¤ã‚ºè¨­å®š
+	MV1SetScale(m_modelHandle, VGet(kModelSizeScale, kModelSizeScale, kModelSizeScale));
 
-	//ƒ‚ƒfƒ‹‚ÌƒTƒCƒYİ’è
-	MV1SetScale(m_modelHandle, VGet(kModelSize, kModelSize, kModelSize));
-	//m_weponAttachFrameNum = MV1SearchFrame(m_modelHandle, "handslot.r");
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¨­å®š
+	m_currentAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Move"]);
+	m_nowAnimIdx = m_animIdx["Move"];
 
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
-	m_currentAnimNo = MV1AttachAnim(m_modelHandle, eAnimIdx::Run);
-
-
-	//’Êíó‘Ô‚Éİ’è‚µ‚Ä‚¨‚­
+	//é€šå¸¸çŠ¶æ…‹ã«è¨­å®šã—ã¦ãŠã
 	m_updateFunc = &EnemyFast::WalkUpdate;
 }
 
-void EnemyFast::Finalize(std::shared_ptr<MyLib::Physics> physics)
-{
-	Collidable::Finalize(physics);
-
-	m_hitbox->Finalize(m_pPhisics);
-}
-
+/// <summary>
+/// æ›´æ–°
+/// </summary>
+/// <param name="playerPos">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™</param>
+/// <param name="isChase">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒè¿½è·¡ã§ãã‚‹çŠ¶æ…‹ã‹ã©ã†ã‹</param>
 void EnemyFast::Update(MyLib::Vec3 playerPos, bool isChase)
 {
-	//‘¶İ‚µ‚Ä‚¢‚È‚¢ó‘Ô‚È‚ç‰½‚à‚³‚¹‚È‚¢
+	//å­˜åœ¨ã—ã¦ã„ãªã„çŠ¶æ…‹ãªã‚‰ä½•ã‚‚ã•ã›ãªã„
 	if (!m_isExist)return;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXV
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
 	m_isAnimationFinish = UpdateAnim(m_currentAnimNo);
 
-	MyLib::Vec3 centerPos = rigidbody.GetPos();
-	centerPos.y += kModelDefaultSize / 2 * kModelSize * 0.8f;
-	m_hitbox->Update(centerPos);
-
-	//ó‘Ô‚ÌXV
+	//çŠ¶æ…‹ã®æ›´æ–°
 	(this->*m_updateFunc)(playerPos, isChase);
 
+	//ä¸­å¿ƒåº§æ¨™ã®è¨­å®š(ãƒŸãƒ‹ãƒãƒƒãƒ—ã«è¡¨ç¤ºã™ã‚‹ãŸã‚ã«å¿…è¦)
+	CalculationCenterPos(kModelDefaultSize, kModelSizeScale);
 
-	if (m_hitbox->GetIsHit() != 0)
+	//åˆ¤å®šã®æ›´æ–°
+	MyLib::Vec3 centerPos = rigidbody.GetPos();
+	centerPos.y += kModelDefaultSize / 2 * kModelSizeScale * 0.8f;
+	m_pHitbox->Update(centerPos);
+
+	//æ•µ(ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼)ã®æ”»æ’ƒã«ã‚ãŸã£ãŸæ™‚
+	if (m_pHitbox->GetIsHit())
 	{
-		//HP‚ğŒ¸‚ç‚·
-		m_status.hp -= m_hitbox->GetIsAttackNum() - m_status.def;
-
-		m_lastHitObjectTag = m_hitbox->GetHitObjectTag();
-
-		//EnemyManager‚ªƒGƒtƒFƒNƒg‚ğ¶¬‚·‚é‚½‚ß‚Ìƒtƒ‰ƒO
-		m_isHit = true;
-
-		SoundManager::GetInstance().PlaySE("EnemyHit");
-
-		if (!m_isKnock && !m_isAttack)
-		{
-			m_isKnock = true;
-			m_updateFunc = &EnemyFast::HitUpdate;
-			m_nowAnimIdx = eAnimIdx::Hit;
-
-			ChangeAnim(m_nowAnimIdx);
-		}
+		//HPã‚’æ¸›ã‚‰ã™å‡¦ç†ã‚’è¡Œã†
+		OnDamage();
 	}
 
-	//HP‚ªˆÈ‰º‚É‚È‚Á‚½‚ç€–S‚·‚é
+	//HPãŒ0ä»¥ä¸‹ã«ãªã£ãŸã‚‰æ­»äº¡ã™ã‚‹
 	if (m_status.hp <= 0)
 	{
-		if (!m_isDead)
-		{
-			m_isDead = true;
-			Finalize(m_pPhisics);
-
-			m_updateFunc = &EnemyFast::DeathUpdate;
-
-			auto deathAnimIdx = GetRand(2);
-			auto deathAnimSpeed = 0.66f;
-
-			switch (deathAnimIdx)
-			{
-			case 0:
-				m_nowAnimIdx = eAnimIdx::DeathA;
-				deathAnimSpeed = 0.33f;
-				break;
-			case 1:
-				m_nowAnimIdx = eAnimIdx::DeathB;
-				break;
-			case 2:
-				m_nowAnimIdx = eAnimIdx::DeathC;
-				break;
-			}
-
-
-
-			ChangeAnim(m_nowAnimIdx, deathAnimSpeed);
-		}
+		//æ­»äº¡å‡¦ç†ã‚’è¡Œã†
+		Death();
 	}
 
-	//’†SÀ•W‚Ìİ’è
-	m_centerPos = rigidbody.GetPos();
-	m_centerPos.y += kModelDefaultSize * kModelSize * 0.5f;
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦
-	if (m_prevAnimNo != -1)
-	{
-		//ƒtƒŒ[ƒ€‚ÅƒAƒjƒ[ƒVƒ‡ƒ“‚ğØ‚è‘Ö‚¦‚é
-		m_animBlendRate += kAnimChangeRateSpeed;
-		if (m_animBlendRate >= kAnimBlendRateMax)
-		{
-			m_animBlendRate = kAnimBlendRateMax;
-		}
-
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒuƒŒƒ“ƒh—¦‚ğİ’è‚·‚é
-		MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, kAnimBlendRateMax - m_animBlendRate);
-		MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
-	}
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ–ãƒ¬ãƒ³ãƒ‰ã®æ›´æ–°ã‚’ã™ã‚‹
+	UpdateAnimationBlend();
 }
 
+/// <summary>
+/// æç”»
+/// </summary>
 void EnemyFast::Draw()
 {
-	//‘¶İ‚µ‚Ä‚¢‚È‚¢ó‘Ô‚È‚ç‰½‚à‚³‚¹‚È‚¢
+	//å­˜åœ¨ã—ã¦ã„ãªã„çŠ¶æ…‹ãªã‚‰ä½•ã‚‚ã•ã›ãªã„
 	if (!m_isExist)return;
 
-	rigidbody.SetPos(rigidbody.GetNextPos());
-	m_collisionPos = rigidbody.GetPos();
-	SetModelPos();
-	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
-	//ƒ‚ƒfƒ‹‚Ì•`‰æ
+	//å½“ãŸã‚Šåˆ¤å®šåº§æ¨™ã‚’å–å¾—ã—ã¦ãƒ¢ãƒ‡ãƒ«ã®æç”»åº§æ¨™ã‚’è¨­å®šã™ã‚‹
+	SetDrawModelPos(kModelOffsetY * kModelSizeScale);
+	//ãƒ¢ãƒ‡ãƒ«ã®æç”»
 	MV1DrawModel(m_modelHandle);
 	//MV1DrawModel(m_weponHandle);
-}
-
-void EnemyFast::SetModelPos()
-{
-	m_modelPos = m_collisionPos;
-	m_modelPos.y -= kModelOffsetY * kModelSize;
-}
-
-bool EnemyFast::UpdateAnim(int attachNo, float startTime)
-{
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç‘ŠúƒŠƒ^[ƒ“
-	if (attachNo == -1)	return false;
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğis‚³‚¹‚é
-	float nowFrame = MV1GetAttachAnimTime(m_modelHandle, attachNo);	//Œ»İ‚ÌÄ¶ƒJƒEƒ“ƒg‚ğæ“¾
-	nowFrame += m_animSpeed;
-
-	//Œ»İÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‘ƒJƒEƒ“ƒg‚ğæ“¾‚·‚é
-	float totalAnimframe = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
-	bool isLoop = false;
-
-	//NOTE:‚à‚µ‚©‚µ‚½‚ç‘ƒtƒŒ[ƒ€•ªˆø‚¢‚Ä‚à‘ƒtƒŒ[ƒ€‚æ‚è‘å‚«‚¢‚©‚à‚µ‚ê‚È‚¢‚©‚çwhile‚Å‘å‚«‚¢ŠÔˆø‚«‘±‚¯‚é
-	while (totalAnimframe <= nowFrame)
-	{
-		//NOTE:nowFrame‚ğ0‚ÉƒŠƒZƒbƒg‚·‚é‚ÆƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€‚Ì”ò‚Ñ‚ª‚Å‚é‚©‚ç‘ƒtƒŒ[ƒ€•ªˆø‚­
-		nowFrame -= totalAnimframe;
-		nowFrame += startTime;
-		isLoop = true;
-	}
-
-	//i‚ß‚½ŠÔ‚Éİ’è
-	MV1SetAttachAnimTime(m_modelHandle, attachNo, nowFrame);
-
-	return isLoop;
-}
-
-void EnemyFast::ChangeAnim(int animIndex, float animSpeed)
-{
-	//‚³‚ç‚ÉŒÃ‚¢ƒAƒjƒ[ƒVƒ‡ƒ“‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚éê‡‚Í‚±‚Ì“_‚ÅÁ‚µ‚Ä‚¨‚­
-	if (m_prevAnimNo != -1)
-	{
-		MV1DetachAnim(m_modelHandle, m_prevAnimNo);
-	}
-
-	//Œ»İÄ¶’†‚Ì‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“‚Í•ÏX–Ú‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìˆµ‚¢‚É‚·‚é
-	m_prevAnimNo = m_currentAnimNo;
-
-	//•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Æ‚µ‚ÄUŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‰ü‚ß‚Äİ’è‚·‚é
-	m_currentAnimNo = MV1AttachAnim(m_modelHandle, animIndex);
-
-	//Ø‚è‘Ö‚¦‚ÌuŠÔ‚Í•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ªÄ¶‚³‚ê‚éó‘Ô‚É‚·‚é
-	m_animBlendRate = 0.0f;
-
-	m_animSpeed = animSpeed;
-
-	//•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“100%
-	MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, 1.0f - m_animBlendRate);
-	//•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“0%
-	MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
-}
-
-void EnemyFast::AttackUpdate(MyLib::Vec3 playerPos, bool isChase)
-{
-	rigidbody.SetVelocity(MyLib::Vec3());
-	////ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXV
-	//m_isAnimationFinish = UpdateAnim(m_currentAnimNo);
-
-	if (m_attackWaitFrame >= 20)
-	{
-		if (m_attackWaitFrame == 20)
-		{
-			m_nowAnimIdx = eAnimIdx::Attack;
-			ChangeAnim(m_nowAnimIdx, 0.3f);
-		}
-
-
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚µ‚½‚ç•à‚«ó‘Ô‚É–ß‚·
-		if (m_isAnimationFinish)
-		{
-			m_attackWaitFrame = 0;
-
-			m_isAttack = false;
-
-			m_updateFunc = &EnemyFast::WalkUpdate;
-			ChangeAnim(eAnimIdx::Run);
-		}
-
-	}
-
-	m_attackWaitFrame++;
-}
-
-void EnemyFast::WalkUpdate(MyLib::Vec3 playerPos, bool isChase)
-{
-	////UŒ‚ƒtƒ‰ƒO‚ªtrue‚É‚È‚Á‚Ä‚¢‚½‚çUŒ‚‚ğ‚·‚é
-	//if (m_isAttack)
-	//{
-	//	m_moveVec = (playerPos - m_collisionPos).Normalize();
-
-	//	m_updateFunc = &EnemyFast::AttackUpdate;
-
-	//	m_nowAnimIdx = eAnimIdx::Idle;
-	//	ChangeAnim(m_nowAnimIdx);
-	//	return;
-	//}
-
-	if (m_isKnock)
-	{
-		m_knockCount++;
-
-		if (m_knockCount > 90)
-		{
-			m_isKnock = false;
-			m_knockCount = 0;
-		}
-
-	}
-
-	auto temp = (rigidbody.GetPos() - m_route[m_routeNum]).Size();
-	if (temp < kDistance)
-	{
-		m_routeNum++;
-		if (m_routeNum == m_route.size())
-		{
-			Finalize(m_pPhisics);
-			m_isExist = false;
-			m_isReach = true;
-		}
-		else
-		{
-			m_destinationPos = m_route[m_routeNum];
-			//m_moveVec = (m_destinationPos - rigidbody.GetPos()).Normalize();
-		}
-	}
-
-	//ƒoƒO‚ğ¡‚·‚½‚ß‚É‚¢‚Á‚½‚ñ‚±‚±‚Å—lqŒ©
-	m_moveVec = (m_destinationPos - rigidbody.GetPos()).Normalize();
-
-	//if (!isChase)
-	//{
-	//	bool isChesed = m_isChasing;
-	//	m_isChasing = false;
-
-	//	auto len = playerPos - m_collisionPos;
-	//	auto dis = len.Size();
-
-	//	//ˆê’è”ÍˆÍ‚æ‚è‹ß‚¯‚ê‚Î’ÇÕ‚·‚é
-	//	if (dis < kSearchingRange)
-	//	{
-	//		m_isChasing = true;
-	//		m_moveVec = len.Normalize();
-	//	}
-	//	//
-	//	else
-	//	{
-	//		//’ÇÕ‚ğI‚¦‚½‚Æ‚«
-	//		if (isChesed != m_isChasing)
-	//		{
-	//			//ƒ‹[ƒg‚ğŒ©‚ÄAˆê”Ô‹ß‚¢À•W‚ÉŒü‚©‚¤
-	//			float distanceMin = 1000.0f;
-	//			int retRouteNum = 0;
-
-	//			for (int i = 0; i < m_route.size(); i++)
-	//			{
-	//				//Œ»İÀ•W‚©‚ç‚Ì‹——£‚ğŒ©‚é
-	//				auto dis = (m_route[i] - rigidbody.GetPos()).Size();
-
-	//				if (distanceMin > dis)
-	//				{
-	//					distanceMin = dis;
-	//					retRouteNum = i;
-	//				}
-	//			}
-
-	//			if (retRouteNum != m_routeNum - 1)
-	//			{
-	//				m_routeNum = retRouteNum;
-
-	//			}
-
-	//			//
-	//			m_destinationPos = m_route[m_routeNum];
-	//			m_moveVec = (m_destinationPos - rigidbody.GetPos()).Normalize();
-	//		}
-	//	}
-	//}
-
-
-	//ˆÚ“®‘¬“x‚ğ‚±‚±‚Åİ’è‚Å‚«‚é‚Á‚Û‚¢H
-	rigidbody.SetVelocity(m_moveVec, m_status.speed);
-
-	//atan2‚ğg—p‚µ‚ÄŒü‚¢‚Ä‚¢‚éŠp“x‚ğæ“¾
-	auto angle = atan2(m_moveVec.x, m_moveVec.z);
-	auto rotation = VGet(0.0f, angle + DX_PI_F, 0.0f);
-	//ˆÚ“®•ûŒü‚É‘Ì‚ğ‰ñ“]‚³‚¹‚é
-	MV1SetRotationXYZ(m_modelHandle, rotation);
-}
-
-void EnemyFast::HitUpdate(MyLib::Vec3 playerPos, bool isChase)
-{
-	rigidbody.SetVelocity(MyLib::Vec3());
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXV
-	m_isAnimationFinish = UpdateAnim(m_currentAnimNo);
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªI—¹‚µ‚½‚ç•à‚«ó‘Ô‚É–ß‚·
-	if (m_isAnimationFinish)
-	{
-
-		m_updateFunc = &EnemyFast::WalkUpdate;
-		ChangeAnim(eAnimIdx::Run);
-	}
-}
-
-void EnemyFast::DeathUpdate(MyLib::Vec3 playerPos, bool isChase)
-{
-	if (m_isAnimationFinish)
-	{
-		m_isExist = false;
-	}
 }

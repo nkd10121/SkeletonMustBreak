@@ -1,6 +1,8 @@
-#include "MapDataLoad.h"
+ï»¿#include "MapDataLoad.h"
 #include <fstream>
 #include <sstream>
+
+#include "ModelManager.h"
 
 MapDataLoad* MapDataLoad::m_instance = nullptr;
 
@@ -18,20 +20,26 @@ namespace
 	const std::string kStageDataPathBack = ".loc";
 }
 
+/// <summary>
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 MapDataLoad::MapDataLoad() :
 	m_collisionHandle(-1),
 	m_enemyCollisionHandle(-1)
 {
-	m_models["floor"] = MV1LoadModel((kModelPathFront + "floor" + kModelPathBack).c_str());
-	m_models["wall"] = MV1LoadModel((kModelPathFront + "wall" + kModelPathBack).c_str());
-	m_models["doorFrame"] = MV1LoadModel((kModelPathFront + "doorFrame" + kModelPathBack).c_str());
+	m_models["floor"] = ModelManager::GetInstance().GetModelHandle((kModelPathFront + "floor" + kModelPathBack));
+	m_models["wall"] = ModelManager::GetInstance().GetModelHandle((kModelPathFront + "wall" + kModelPathBack));
+	m_models["doorFrame"] = ModelManager::GetInstance().GetModelHandle((kModelPathFront + "doorFrame" + kModelPathBack));
 
-	m_models["crystal"] = MV1LoadModel((kModelPathFront + "crystal" + kModelPathBack).c_str());
-	m_models["Blocks"] = MV1LoadModel((kModelPathFront + "Blocks" + kModelPathBack).c_str());
+	m_models["crystal"] = ModelManager::GetInstance().GetModelHandle((kModelPathFront + "crystal" + kModelPathBack));
+	m_models["Blocks"] = ModelManager::GetInstance().GetModelHandle((kModelPathFront + "Blocks" + kModelPathBack));
 
 	m_enemyRoute.pos.resize(10);
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 MapDataLoad::~MapDataLoad()
 {
 	for (auto& model : m_models)
@@ -52,57 +60,61 @@ MapDataLoad::~MapDataLoad()
 	MV1DeleteModel(m_enemyCollisionHandle);
 }
 
+/// <summary>
+/// ã‚¹ãƒ†ãƒ¼ã‚¸æƒ…å ±ã‚’èª­ã¿è¾¼ã‚€
+/// </summary>
+/// <param name="stageName">ã‚¹ãƒ†ãƒ¼ã‚¸å</param>
 void MapDataLoad::Load(const char* stageName)
 {
-	//ƒXƒe[ƒW‚Ì“–‚½‚è”»’èƒ‚ƒfƒ‹‚ğæ“¾@
+	//ã‚¹ãƒ†ãƒ¼ã‚¸ã®å½“ãŸã‚Šåˆ¤å®šãƒ¢ãƒ‡ãƒ«ã‚’å–å¾—ã€€
 	std::string check = kStageDataPathFront + stageName + "_col" + kModelPathBack;
-	m_collisionHandle = MV1LoadModel(check.c_str());
+	m_collisionHandle = ModelManager::GetInstance().GetModelHandle(check);
 	MV1SetPosition(m_collisionHandle, VECTOR(0.0f, 0.0f, 0.0f));
 	MV1SetScale(m_collisionHandle, VECTOR(0.01f, 0.01f, 0.01f));
 	MV1SetRotationXYZ(m_collisionHandle, VECTOR(0.0f, static_cast<float>(DX_PI), 0.0f));
 
-	//ƒXƒe[ƒW‚Ì“–‚½‚è”»’èƒ‚ƒfƒ‹‚ğæ“¾@
+	//ã‚¹ãƒ†ãƒ¼ã‚¸ã®å½“ãŸã‚Šåˆ¤å®šãƒ¢ãƒ‡ãƒ«ã‚’å–å¾—ã€€
 	std::string enemyCheck = kStageDataPathFront + stageName +"_enemy"+ "_col" + kModelPathBack;
-	m_enemyCollisionHandle = MV1LoadModel(enemyCheck.c_str());
+	m_enemyCollisionHandle = ModelManager::GetInstance().GetModelHandle(enemyCheck);
 	MV1SetPosition(m_enemyCollisionHandle, VECTOR(0.0f, 0.0f, 0.0f));
 	MV1SetScale(m_enemyCollisionHandle, VECTOR(0.01f, 0.01f, 0.01f));
 	MV1SetRotationXYZ(m_enemyCollisionHandle, VECTOR(0.0f, static_cast<float>(DX_PI), 0.0f));
 
 
 
-	//ŠJ‚­ƒtƒ@ƒCƒ‹‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾
+	//é–‹ããƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—
 	int handle = FileRead_open((kStageDataPathFront + stageName + kStageDataPathBack).c_str());
 
-	//“Ç‚İ‚ŞƒIƒuƒWƒFƒNƒg”‚ª‰½ŒÂ‚ ‚é‚©æ“¾
+	//èª­ã¿è¾¼ã‚€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæ•°ãŒä½•å€‹ã‚ã‚‹ã‹å–å¾—
 	int dataCnt = 0;
 	FileRead_read(&dataCnt, sizeof(dataCnt), handle);
-	//“Ç‚İ‚ŞƒIƒuƒWƒFƒNƒg”•ª‚Ì”z—ñ‚É•ÏX‚·‚é
+	//èª­ã¿è¾¼ã‚€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæ•°åˆ†ã®é…åˆ—ã«å¤‰æ›´ã™ã‚‹
 	m_data.resize(dataCnt);
 
-	//”z—ñ‚Ì”•ª‰ñ‚·
+	//é…åˆ—ã®æ•°åˆ†å›ã™
 	for (auto& loc : m_data)
 	{
-		//–¼‘O‚ÌƒoƒCƒg”‚ğæ“¾‚·‚é
+		//åå‰ã®ãƒã‚¤ãƒˆæ•°ã‚’å–å¾—ã™ã‚‹
 		byte nameCnt = 0;
 		FileRead_read(&nameCnt, sizeof(nameCnt), handle);
-		//–¼‘O‚ÌƒTƒCƒY‚ğ•ÏX‚·‚é
+		//åå‰ã®ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹
 		loc.name.resize(nameCnt);
-		//–¼‘O‚ğæ“¾‚·‚é
+		//åå‰ã‚’å–å¾—ã™ã‚‹
 		FileRead_read(loc.name.data(), sizeof(char) * static_cast<int>(loc.name.size()), handle);
 
-		//ƒ^ƒO‚ÌƒoƒCƒg”‚ğæ“¾‚·‚é
+		//ã‚¿ã‚°ã®ãƒã‚¤ãƒˆæ•°ã‚’å–å¾—ã™ã‚‹
 		byte tagCnt = 0;
 		FileRead_read(&tagCnt, sizeof(tagCnt), handle);
-		//ƒ^ƒO‚ÌƒTƒCƒY‚ğ•ÏX‚·‚é
+		//ã‚¿ã‚°ã®ã‚µã‚¤ã‚ºã‚’å¤‰æ›´ã™ã‚‹
 		loc.tag.resize(tagCnt);
-		//ƒ^ƒO‚ğæ“¾‚·‚é
+		//ã‚¿ã‚°ã‚’å–å¾—ã™ã‚‹
 		FileRead_read(loc.tag.data(), sizeof(char) * static_cast<int>(loc.tag.size()), handle);
 
-		//À•W‚ğæ“¾‚·‚é
+		//åº§æ¨™ã‚’å–å¾—ã™ã‚‹
 		FileRead_read(&loc.pos, sizeof(loc.pos), handle);
-		//‰ñ“]‚ğæ“¾‚·‚é
+		//å›è»¢ã‚’å–å¾—ã™ã‚‹
 		FileRead_read(&loc.rot, sizeof(loc.rot), handle);
-		//‘å‚«‚³‚ğæ“¾‚·‚é
+		//å¤§ãã•ã‚’å–å¾—ã™ã‚‹
 		FileRead_read(&loc.scale, sizeof(loc.scale), handle);
 
 		if (loc.tag == "trapPos")
@@ -136,6 +148,9 @@ void MapDataLoad::Load(const char* stageName)
 	}
 }
 
+/// <summary>
+/// ã‚¹ãƒ†ãƒ¼ã‚¸ã‚’æç”»ã™ã‚‹
+/// </summary>
 void MapDataLoad::Draw()
 {
 	m_angle += 0.025f;
@@ -160,7 +175,7 @@ void MapDataLoad::Draw()
 
 		y += 20;
 #endif
-		//ƒNƒŠƒXƒ^ƒ‹‚ğ“®‚©‚·
+		//ã‚¯ãƒªã‚¹ã‚¿ãƒ«ã‚’å‹•ã‹ã™
 		if (loc.tag == "crystal")
 		{
 			MV1SetPosition(loc.handle, VECTOR(loc.pos.x, loc.pos.y + posY, loc.pos.z));
@@ -175,6 +190,9 @@ void MapDataLoad::Draw()
 #endif
 	}
 
+/// <summary>
+/// èª­ã¿è¾¼ã‚“ã ãƒãƒƒãƒ—ãƒ‡ãƒ¼ã‚¿ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
+/// </summary>
 void MapDataLoad::ResetStageData()
 {
 	for (auto& data : m_data)
@@ -195,6 +213,10 @@ void MapDataLoad::ResetStageData()
 	m_enemyRoute.end = MyLib::Vec3();
 }
 
+/// <summary>
+/// æ•µã®ç§»å‹•äºˆå®šãƒ«ãƒ¼ãƒˆã‚’èª­ã¿è¾¼ã‚€
+/// </summary>
+/// <param name="data">åº§æ¨™æƒ…å ±</param>
 void MapDataLoad::LoadEnemyRoute(LocationData& data)
 {
 	std::string route = "route";
@@ -218,62 +240,4 @@ void MapDataLoad::LoadEnemyRoute(LocationData& data)
 			return;
 		}
 	}
-
-
-	//if (data.tag == "enemyStartPos")
-	//{
-	//	m_enemyRoute.pos[0].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route1")
-	//{
-	//	m_enemyRoute.pos[1].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route2")
-	//{
-	//	m_enemyRoute.pos[2].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route3")
-	//{
-	//	m_enemyRoute.pos[3].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route4")
-	//{
-	//	m_enemyRoute.pos[4].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route5")
-	//{
-	//	m_enemyRoute.pos[6].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route6")
-	//{
-	//	m_enemyRoute.pos[7].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route7")
-	//{
-	//	m_enemyRoute.pos[8].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route8")
-	//{
-	//	m_enemyRoute.pos[9].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route9")
-	//{
-	//	m_enemyRoute.pos[10].push_back(data.pos);
-	//	return;
-	//}
-	//if (data.tag == "route10")
-	//{
-	//	m_enemyRoute.pos[5].push_back(data.pos);
-	//	return;
-	//}
-
 }

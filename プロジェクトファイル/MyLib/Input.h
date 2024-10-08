@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<map>
 #include<string>
 #include<unordered_map>
@@ -8,44 +8,44 @@
 class Input
 {
 private:
-	//“ü—ÍƒfƒoƒCƒX
+	//å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹
 	enum class InputType
 	{
-		keyboard,	//ƒL[ƒ{[ƒh
-		pad			//ƒpƒbƒh
+		keyboard,	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
+		pad			//ãƒ‘ãƒƒãƒ‰
 	};
 
-	//“ü—Íî•ñ‚ÌŒ^
+	//å…¥åŠ›æƒ…å ±ã®å‹
 	using InputTable_t = std::unordered_map<std::string, std::map<InputType, int>>;
 
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Input();
 
-	//“ü—Íî•ñ‚ğXV‚·‚é
+	//å…¥åŠ›æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 	void Update();
 
-	//w’è‚ÌƒRƒ}ƒ“ƒh‚ª‰Ÿ‚³‚ê‚½uŠÔ‚È‚Ì‚©
+	//æŒ‡å®šã®ã‚³ãƒãƒ³ãƒ‰ãŒæŠ¼ã•ã‚ŒãŸç¬é–“ãªã®ã‹
 	bool IsTriggered(const char* command)const;
 
-	//w’è‚ÌƒRƒ}ƒ“ƒh‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éó‘Ô‚È‚Ì‚©
+	//æŒ‡å®šã®ã‚³ãƒãƒ³ãƒ‰ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹çŠ¶æ…‹ãªã®ã‹
 	bool IsPushed(const char* command)const;
 
-	//ƒXƒeƒBƒbƒN‚Ì“ü—Íî•ñ‚ğæ“¾
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›æƒ…å ±ã‚’å–å¾—
 	std::pair<float, float> GetInputStick(bool isRight)const;
 
-	//ZR,ZLƒ{ƒ^ƒ“‚Ì“ü—Íî•ñ‚ğæ“¾
+	//ZR,ZLãƒœã‚¿ãƒ³ã®å…¥åŠ›æƒ…å ±ã‚’å–å¾—
 	bool GetIsPushedTriggerButton(bool isRight)const;
 
 private:
-	//ƒRƒ}ƒ“ƒh
+	//ã‚³ãƒãƒ³ãƒ‰
 	InputTable_t m_commandTable;
 
-	//ƒRƒ}ƒ“ƒh‚Ì“ü—Í‚ğŠo‚¦‚Ä‚¨‚­
-	std::map < std::string, bool> m_inputData;		//Œ»İ‚Ì“ü—Í
-	std::map < std::string, bool> m_lastInputData;	//’¼‘O‚Ì“ü—Í
+	//ã‚³ãƒãƒ³ãƒ‰ã®å…¥åŠ›ã‚’è¦šãˆã¦ãŠã
+	std::map < std::string, bool> m_inputData;		//ç¾åœ¨ã®å…¥åŠ›
+	std::map < std::string, bool> m_lastInputData;	//ç›´å‰ã®å…¥åŠ›
 
-	//ƒRƒ“ƒgƒ[ƒ‰[‚Ì“ü—Íî•ñ
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®å…¥åŠ›æƒ…å ±
 	DINPUT_JOYSTATE m_padState;
 	XINPUT_STATE* XInputState;
 };

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <List>
 #include <string>
 #include <map>
@@ -8,87 +8,85 @@
 class EnemyBase;
 class GameManager;
 
+/// <summary>
+/// æ•µé–¢ä¿‚ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// </summary>
 class EnemyManager
 {
 public:
 	/// <summary>
-	/// “G¶¬î•ñ
+	/// æ•µç”Ÿæˆæƒ…å ±
 	/// </summary>
 	struct EnemyGenerateInfo
 	{
-		std::string enemyName;		//“G‚Ì–¼‘O
-		int appearPhase;			//oŒ»ƒtƒF[ƒY
-		int appearFrame;			//oŒ»ƒtƒŒ[ƒ€
-		int appearPos;				//¶¬êŠ(Œ»İ‚Í–¢g—p)
+		std::string enemyName;		//æ•µã®åå‰
+		int appearPhase;			//å‡ºç¾ãƒ•ã‚§ãƒ¼ã‚º
+		int appearFrame;			//å‡ºç¾ãƒ•ãƒ¬ãƒ¼ãƒ 
+		int appearPos;				//ç”Ÿæˆå ´æ‰€(ç¾åœ¨ã¯æœªä½¿ç”¨)
 
-		bool isCreated = false;		//¶¬Ï‚İ‚©‚Ç‚¤‚©
+		bool isCreated = false;		//ç”Ÿæˆæ¸ˆã¿ã‹ã©ã†ã‹
 	};
 
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	EnemyManager();
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	virtual ~EnemyManager();
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	void Init(int* playerKillCount, int* trapKillCount,int* comboMax,const char* stageName);
-	//XV
+	//æ›´æ–°
 	void Update(std::shared_ptr<MyLib::Physics> physics,GameManager* gameManager,MyLib::Vec3 playerPos, MyLib::Vec3 playerDir, bool isPlayerChase);
-	//•`‰æ
+	//æç”»
 	void Draw();
 
-	//³–Ê‚Ì“G‚ÌŒ»İ‚ÌHP‚ğ•Ô‚·
+	//æ­£é¢ã®æ•µã®ç¾åœ¨ã®HPã‚’è¿”ã™
 	const int GetFrontEnemyHp()const { return m_frontEnemyHp; }
-	//³–Ê‚Ì“G‚ÌÅ‘åHP‚ğ•Ô‚·
+	//æ­£é¢ã®æ•µã®æœ€å¤§HPã‚’è¿”ã™
 	const int GetFrontEnemyMaxHp()const { return m_frontEnemyMaxHp; }
-	//“G‚ÌÀ•W‚ğ•Ô‚·
+	//æ•µã®åº§æ¨™ã‚’è¿”ã™
 	const std::list<MyLib::Vec3> GetEnemyPos()const { return m_enemyPos; }
 
 private:
-	//“G‚ÌˆÚ“®ƒ‹[ƒg‚Ìì¬
+	//æ•µã®ç§»å‹•ãƒ«ãƒ¼ãƒˆã®ä½œæˆ
 	std::vector<MyLib::Vec3> CreateEnemyRoute();
-	//“G‚Ì¶¬
+	//æ•µã®ç”Ÿæˆ
 	void CreateEnemy(std::string name,std::shared_ptr<MyLib::Physics> physics);
 
 private:
-	//“G‚ÌŠÇ—
+	//æ•µã®ç®¡ç†
 	std::list<std::shared_ptr<EnemyBase>> m_pEnemys;
-	//“G‚Ì¶¬î•ñ
+	//æ•µã®ç”Ÿæˆæƒ…å ±
 	std::list<std::shared_ptr<EnemyGenerateInfo>> m_pGenerateInfo;
 
-	//ƒXƒe[ƒW–¼
+	//ã‚¹ãƒ†ãƒ¼ã‚¸å
 	const char* m_stageName;
 
-	//1ƒtƒF[ƒY“–‚½‚è‚Ì“G‚Ì¶¬”
+	//1ãƒ•ã‚§ãƒ¼ã‚ºå½“ãŸã‚Šã®æ•µã®ç”Ÿæˆæ•°
 	std::unordered_map<int, int> m_enemyGenerationCountPerOnePhase;
 
-	//“G‚Ìƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é
-	std::map<std::string,int> m_enemyHandle;
-	//•Ší‚Ìƒnƒ“ƒhƒ‹
-	int m_swordHandle;
-
-	//€‚ñ‚¾“G‚Ì”
+	//æ­»ã‚“ã æ•µã®æ•°
 	int m_deletedEnemyNum;
 
-	/*ƒXƒRƒAŠÖŒW*/
-	int* m_playerKillCount;	//ƒvƒŒƒCƒ„[ƒLƒ‹”
-	int* m_trapKillCount;	//ƒgƒ‰ƒbƒvƒLƒ‹”
-	int* m_comboMax;		//Å‘åƒRƒ“ƒ{”
+	/*ã‚¹ã‚³ã‚¢é–¢ä¿‚*/
+	int* m_playerKillCount;	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚­ãƒ«æ•°
+	int* m_trapKillCount;	//ãƒˆãƒ©ãƒƒãƒ—ã‚­ãƒ«æ•°
+	int* m_comboMax;		//æœ€å¤§ã‚³ãƒ³ãƒœæ•°
 
-	//ƒRƒ“ƒ{”
+	//ã‚³ãƒ³ãƒœæ•°
 	int m_comboCount;
-	//ƒRƒ“ƒ{‚ÌŠÔ§ŒÀ
+	//ã‚³ãƒ³ãƒœã®æ™‚é–“åˆ¶é™
 	int m_combTimeLimit;
 
-	//ƒtƒHƒ“ƒg‚Ì”{—¦
+	//ãƒ•ã‚©ãƒ³ãƒˆã®å€ç‡
 	float m_fontMag;
 
-	//³–Ê‚Ì“G‚ÌHP
+	//æ­£é¢ã®æ•µã®HP
 	int m_frontEnemyHp;
-	//³–Ê‚Ì“G‚ÌÅ‘åHP
+	//æ­£é¢ã®æ•µã®æœ€å¤§HP
 	int m_frontEnemyMaxHp;
 
-	//“G‚ÌÀ•W
+	//æ•µã®åº§æ¨™
 	std::list<MyLib::Vec3> m_enemyPos;
 };
 

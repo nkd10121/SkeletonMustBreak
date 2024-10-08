@@ -1,24 +1,24 @@
-#include "MyLib.h"
+ï»¿#include "MyLib.h"
 #include "DxLib.h"
 
 std::list<MyLib::DebugDraw::SphereInfo>	MyLib::DebugDraw::m_sphereInfo;
 
 /// <summary>
-/// •`‰æî•ñ‚Ìíœ
+/// æç”»æƒ…å ±ã®å‰Šé™¤
 /// </summary>
 void MyLib::DebugDraw::Clear()
 {
-	//‹…‘Ì‚Ì•`‰æî•ñƒŠƒXƒg‚Ì’†g‚ğ‘Síœ
+	//çƒä½“ã®æç”»æƒ…å ±ãƒªã‚¹ãƒˆã®ä¸­èº«ã‚’å…¨å‰Šé™¤
 	m_sphereInfo.clear();
 }
 
 /// <summary>
-/// •`‰æ
+/// æç”»
 /// </summary>
 void MyLib::DebugDraw::Draw3D()
 {
 #ifdef _DEBUG
-	//‹…‘Ì‚Ì•`‰æî•ñƒŠƒXƒg‚É‚ ‚éî•ñ•ª•`‰æ‚·‚é
+	//çƒä½“ã®æç”»æƒ…å ±ãƒªã‚¹ãƒˆã«ã‚ã‚‹æƒ…å ±åˆ†æç”»ã™ã‚‹
 	for (auto& sphere : m_sphereInfo)
 	{
 		DrawSphere3D(sphere.center.ConvertToVECTOR(), sphere.radius, 8, sphere.color, sphere.color, false);
@@ -27,14 +27,14 @@ void MyLib::DebugDraw::Draw3D()
 }
 
 /// <summary>
-/// ‹…‘Ì‚Ì•`‰æƒŠƒXƒg‚É’Ç‰Á‚·‚é
+/// çƒä½“ã®æç”»ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
 /// </summary>
-/// <param name="center">’†SÀ•W</param>
-/// <param name="radius">”¼Œa</param>
-/// <param name="color">F</param>
+/// <param name="center">ä¸­å¿ƒåº§æ¨™</param>
+/// <param name="radius">åŠå¾„</param>
+/// <param name="color">è‰²</param>
 void MyLib::DebugDraw::AddDrawSphere(const Vec3& center, const float& radius, const unsigned int& color)
 {
-	//‹…‘Ì‚Ì•`‰æƒŠƒXƒg‚É’Ç‰Á‚·‚é
+	//çƒä½“ã®æç”»ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
 	SphereInfo addInfo;
 	addInfo.center = center;
 	addInfo.radius = radius;

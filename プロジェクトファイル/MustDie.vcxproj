@@ -32,6 +32,7 @@
     <ClCompile Include="Object\EnemyBig.cpp" />
     <ClCompile Include="Manager\EnemyManager.cpp" />
     <ClCompile Include="ScoreManager.cpp" />
+    <ClCompile Include="UICursor.cpp" />
     <ClCompile Include="Util\Font.cpp" />
     <ClCompile Include="Manager\GameManager.cpp" />
     <ClCompile Include="MapDataLoad.cpp" />
@@ -68,7 +69,6 @@
     <ClCompile Include="Scene\SceneResult.cpp" />
     <ClCompile Include="Scene\SceneTitle.cpp" />
     <ClCompile Include="Object\Shot.cpp" />
-    <ClCompile Include="TrapGrid.cpp" />
     <ClCompile Include="Util\WeaponBase.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -85,6 +85,7 @@
     <ClInclude Include="Object\EnemyBig.h" />
     <ClInclude Include="Manager\EnemyManager.h" />
     <ClInclude Include="ScoreManager.h" />
+    <ClInclude Include="UICursor.h" />
     <ClInclude Include="Util\Font.h" />
     <ClInclude Include="Util\Game.h" />
     <ClInclude Include="Manager\GameManager.h" />
@@ -125,7 +126,6 @@
     <ClInclude Include="Scene\SceneResult.h" />
     <ClInclude Include="Scene\SceneTitle.h" />
     <ClInclude Include="Object\Shot.h" />
-    <ClInclude Include="TrapGrid.h" />
     <ClInclude Include="Util\WeaponBase.h" />
   </ItemGroup>
   <ItemGroup>
@@ -189,7 +189,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -198,7 +198,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -209,7 +209,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -220,7 +220,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -229,7 +229,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -238,7 +238,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -249,7 +249,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -260,7 +260,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

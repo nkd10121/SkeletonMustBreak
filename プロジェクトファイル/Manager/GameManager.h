@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <memory>
 #include <string>
 #include "MyLib.h"
@@ -13,158 +13,152 @@ class SceneGame;
 struct ScoreInfo;
 
 /// <summary>
-/// ƒQ[ƒ€ƒ‹[ƒ‹‚ğŠÇ—‚·‚éƒNƒ‰ƒX
-//	ƒEƒF[ƒu‚ÌŠÇ—‚¾‚Á‚½‚èƒQ[ƒ€ƒI[ƒo[‚Æ‚©
+/// ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ«ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 /// </summary>
 class GameManager
 {
 public:
 	enum ePhaseName : int
 	{
-		FirstPrePhase,		//‘æ1€”õƒtƒF[ƒY
-		FirstBattlePhase,	//‘æ1í“¬ƒtƒF[ƒY
-		SecondPrePhase,		//‘æ2€”õƒtƒF[ƒY
-		SecondBattlePhase,	//‘æ2í“¬ƒtƒF[ƒY
-		ThirdPrePhase,		//‘æ3€”õƒtƒF[ƒY
-		ThirdBattlePhase,	//‘æ3í“¬ƒtƒF[ƒY
+		FirstPrePhase,		//ç¬¬1æº–å‚™ãƒ•ã‚§ãƒ¼ã‚º
+		FirstBattlePhase,	//ç¬¬1æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚º
+		SecondPrePhase,		//ç¬¬2æº–å‚™ãƒ•ã‚§ãƒ¼ã‚º
+		SecondBattlePhase,	//ç¬¬2æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚º
+		ThirdPrePhase,		//ç¬¬3æº–å‚™ãƒ•ã‚§ãƒ¼ã‚º
+		ThirdBattlePhase,	//ç¬¬3æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚º
 
-		GameClear,			//ƒQ[ƒ€ƒNƒŠƒA
-		Gameover			//ƒQ[ƒ€ƒI[ƒo[
+		GameClear,			//ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢
+		Gameover			//ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼
 	};
 
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	GameManager(std::string stageName);
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	virtual ~GameManager();
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	void Init(std::shared_ptr<ScoreInfo> pScore);
-	//XV
+	//æ›´æ–°
 	void Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame);
-	//•`‰æ
+	//æç”»
 	void Draw();
-	//ƒfƒoƒbƒO•`‰æ
+	//ãƒ‡ãƒãƒƒã‚°æç”»
 	void DebugDraw();
 
-	//ƒtƒF[ƒY‚ği‚ß‚é
+	//ãƒ•ã‚§ãƒ¼ã‚ºã‚’é€²ã‚ã‚‹
 	void ChangeNextPhase();
 
-	//ƒNƒŠƒXƒ^ƒ‹HP‚ğŒ¸‚ç‚·
+	//ã‚¯ãƒªã‚¹ã‚¿ãƒ«HPã‚’æ¸›ã‚‰ã™
 	const void SubCrystalHP();
 
-	//Œ»İ‚ÌƒtƒF[ƒY”‚ğæ“¾
+	//ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚ºæ•°ã‚’å–å¾—
 	const int GetThisPhaseCount()const { return m_phaseFrame; }
-	//Œ»İ‚ÌƒtƒF[ƒY–¼‚ğæ“¾
+	//ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚ºåã‚’å–å¾—
 	const int GetThisPhaseName()const { return m_nowPhase; }
-	//ƒQ[ƒ€ƒV[ƒ“‚ªI—¹‚µ‚½‚©‚ğæ“¾
+	//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ãŒçµ‚äº†ã—ãŸã‹ã‚’å–å¾—
 	const int GetThisSceneEnd()const { return m_isThisSceneEnd; }
 
-	//ƒvƒŒƒCƒ„[À•W‚ğæ“¾
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™ã‚’å–å¾—
 	const MyLib::Vec3 GetPlayerPos()const;
 
-	//“G‚ğƒLƒ‹‚µ‚½‚Æ‚«‚Éã©ƒ|ƒCƒ“ƒg‚ğæ“¾
+	//æ•µã‚’ã‚­ãƒ«ã—ãŸã¨ãã«ç½ ãƒã‚¤ãƒ³ãƒˆã‚’å–å¾—
 	void AddTrapPoint(int point);
 
-	//‰ñ•œƒ|[ƒVƒ‡ƒ“‚ğ¶¬
+	//å›å¾©ãƒãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç”Ÿæˆ
 	void CreatePortion(MyLib::Vec3 pos);
 
 private:
-	//ƒXƒe[ƒW–¼
+	//ã‚¹ãƒ†ãƒ¼ã‚¸å
 	std::string m_stageName;
 
-	//ƒvƒŒƒCƒ„[ƒNƒ‰ƒXƒ|ƒCƒ“ƒ^
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¯ãƒ©ã‚¹ãƒã‚¤ãƒ³ã‚¿
 	std::shared_ptr<Player> m_pPlayer;
-	//“GŠÇ—ƒNƒ‰ƒXƒ|ƒCƒ“ƒ^
+	//æ•µç®¡ç†ã‚¯ãƒ©ã‚¹ãƒã‚¤ãƒ³ã‚¿
 	std::shared_ptr<EnemyManager> m_pEnemyManager;
-	//ƒJƒƒ‰ƒNƒ‰ƒXƒ|ƒCƒ“ƒ^
+	//ã‚«ãƒ¡ãƒ©ã‚¯ãƒ©ã‚¹ãƒã‚¤ãƒ³ã‚¿
 	std::shared_ptr<Camera> m_pCamera;
-	//ã©ŠÇ—ƒNƒ‰ƒXƒ|ƒCƒ“ƒ^
+	//ç½ ç®¡ç†ã‚¯ãƒ©ã‚¹ãƒã‚¤ãƒ³ã‚¿
 	std::shared_ptr<TrapManager> m_pTrapManager;
 
-	//ƒ|[ƒVƒ‡ƒ“ƒNƒ‰ƒXƒ|ƒCƒ“ƒ^
+	//ãƒãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒ©ã‚¹ãƒã‚¤ãƒ³ã‚¿
 	std::list<std::shared_ptr<HealPortion>> m_pPortion;
-	//ƒ|[ƒVƒ‡ƒ“‚Ìƒhƒƒbƒv”
+	//ãƒãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ‰ãƒ­ãƒƒãƒ—æ•°
 	int m_potionNum;
 
-	//ƒXƒRƒAŒvZ‚É•K—v‚Èî•ñ
+	//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±
 	std::shared_ptr<ScoreInfo> m_score;
 	int* m_playerKillCount;
 	int* m_trapKillCount;
 
-	//–î‚Ìƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
-	int m_arrowHandle;
-	//ƒ|[ƒVƒ‡ƒ“ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
-	int m_portionHandle;
-
-	//UI‚ÌƒOƒ‰ƒtƒnƒ“ƒhƒ‹
+	//UIã®ã‚°ãƒ©ãƒ•ãƒãƒ³ãƒ‰ãƒ«
 	int m_uiHandle;
 
-	// •¨—
+	// ç‰©ç†
 	std::shared_ptr<MyLib::Physics> m_pPhysics;
 
-	//ƒIƒuƒWƒFƒNƒgHP
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆHP
 	int m_objectHP;
-	//ƒIƒuƒWƒFƒNƒgHP‚Ì•`‰æ‚Ì”wŒi
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆHPã®æç”»ã®èƒŒæ™¯
 	int m_objectUIBgHandle;	
 
-	//Œ»İ‚ÌƒtƒF[ƒY
+	//ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚º
 	ePhaseName m_nowPhase;
-	//ƒtƒF[ƒY’†‚ÌƒtƒŒ[ƒ€”
+	//ãƒ•ã‚§ãƒ¼ã‚ºä¸­ã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	int m_phaseFrame;
-	//Œo‰ßƒtƒŒ[ƒ€”
+	//çµŒéãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	int m_allFrame;
 
-	//ƒvƒŒƒCƒ„[‚ª€–S‚µ‚Ä‚©‚ç‚ÌƒJƒEƒ“ƒg
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ­»äº¡ã—ã¦ã‹ã‚‰ã®ã‚«ã‚¦ãƒ³ãƒˆ
 	int m_playerDownCount;
 
-	//ƒQ[ƒ€ƒV[ƒ“‚ªI—¹‚µ‚½‚©‚Ç‚¤‚©
+	//ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ãŒçµ‚äº†ã—ãŸã‹ã©ã†ã‹
 	bool m_isThisSceneEnd;
 
-	//ã©ƒ|ƒCƒ“ƒg
+	//ç½ ãƒã‚¤ãƒ³ãƒˆ
 	int m_trapPoint;
 
-	//ƒAƒCƒeƒ€‚Ìƒnƒ“ƒhƒ‹
+	//ã‚¢ã‚¤ãƒ†ãƒ ã®ãƒãƒ³ãƒ‰ãƒ«
 	std::vector<int> m_slotHandle;
-	//Œ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒAƒCƒeƒ€ƒXƒƒbƒg‚Ì”Ô†
+	//ç¾åœ¨é¸æŠã—ã¦ã„ã‚‹ã‚¢ã‚¤ãƒ†ãƒ ã‚¹ãƒ­ãƒƒãƒˆã®ç•ªå·
 	int m_playerSlotIdx;
 
-	//HPƒo[ŠÖ˜A
+	//HPãƒãƒ¼é–¢é€£
 	std::vector<int> m_hpBarHandle;
-	//HPƒo[‚Ì‰¡•
+	//HPãƒãƒ¼ã®æ¨ªå¹…
 	int m_hpBarWidth;
-	//HPƒo[‚Ì‚‚³
+	//HPãƒãƒ¼ã®é«˜ã•
 	int m_hpBarHeight;
-	//ƒvƒŒƒCƒ„[HP
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼HP
 	int m_playerHp;
-	//ƒvƒŒƒCƒ„[‚ÌÅ‘åHP
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æœ€å¤§HP
 	int m_playerMaxHp;
 
-	//ƒtƒHƒ“ƒgƒnƒ“ƒhƒ‹
+	//ãƒ•ã‚©ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ«
 	int m_fontHandle;
 	int m_trapPointHandle;
 
-	//ƒNƒŠƒA‚µ‚½‚©‚Ç‚¤‚©
+	//ã‚¯ãƒªã‚¢ã—ãŸã‹ã©ã†ã‹
 	bool m_isClear;
 
-	//ƒGƒtƒFƒNƒg‚Ì¶¬ƒtƒŒ[ƒ€
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ç”Ÿæˆãƒ•ãƒ¬ãƒ¼ãƒ 
 	int m_effectFrame;
 
-	//ƒ~ƒjƒ}ƒbƒvƒnƒ“ƒhƒ‹
+	//ãƒŸãƒ‹ãƒãƒƒãƒ—ãƒãƒ³ãƒ‰ãƒ«
 	int m_miniMapHandle;
-	//ƒNƒŠƒXƒ^ƒ‹‚ÌÀ•W
+	//ã‚¯ãƒªã‚¹ã‚¿ãƒ«ã®åº§æ¨™
 	MyLib::Vec3 m_crystalPos;
 
 #ifdef _DEBUG
-	//ƒ~ƒjƒ}ƒbƒv‚ğì¬‚·‚é‚É–ÚˆÀ‚É‚·‚éÀ•W
+	//ãƒŸãƒ‹ãƒãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹æ™‚ã«ç›®å®‰ã«ã™ã‚‹åº§æ¨™
 	std::list<MyLib::Vec3> m_drawPos;
-	//ƒtƒŒ[ƒ€”
+	//ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	int m_frame;
 #endif
 
-	//ƒ~ƒjƒ}ƒbƒvã‚ÌƒvƒŒƒCƒ„[À•W
+	//ãƒŸãƒ‹ãƒãƒƒãƒ—ä¸Šã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™
 	MyLib::Vec3 m_miniMapPlayerPos;
-	//ƒ}ƒbƒv‚²‚Æ‚ÉYÀ•W‚Ì’†S‚ªˆÙ‚È‚é‚½‚ß•â³
+	//ãƒãƒƒãƒ—ã”ã¨ã«Yåº§æ¨™ã®ä¸­å¿ƒãŒç•°ãªã‚‹ãŸã‚è£œæ­£
 	int m_offsetY;
 
 

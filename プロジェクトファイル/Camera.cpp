@@ -1,4 +1,4 @@
-#include "Camera.h"
+ï»¿#include "Camera.h"
 #include "Input.h"
 
 #include <cmath>
@@ -16,56 +16,71 @@ namespace
 
 	constexpr float kAngleMoveScaleMax = 3.2f;
 
-	constexpr float kAnalogInputMax = 1000.0f;	//ƒAƒiƒƒOƒXƒeƒBƒbƒN‚©‚ç“ü—Í‚³‚ê‚éƒxƒNƒgƒ‹‚ÌÅ‘å
+	constexpr float kAnalogInputMax = 1000.0f;	//ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã‹ã‚‰å…¥åŠ›ã•ã‚Œã‚‹ãƒ™ã‚¯ãƒˆãƒ«ã®æœ€å¤§
 
-	// ƒJƒƒ‰‚Ìù‰ñƒXƒs[ƒh
+	// ã‚«ãƒ¡ãƒ©ã®æ—‹å›ã‚¹ãƒ”ãƒ¼ãƒ‰
 	constexpr float kCameraAngleSpeedX = 0.1f;
 	constexpr float kCameraAngleSpeedY = 0.05f;
 
-	//ƒJƒƒ‰‚ÌŠp“x§ŒÀ
+	//ã‚«ãƒ¡ãƒ©ã®è§’åº¦åˆ¶é™
 	constexpr float kCameraAngleVLimitMin = -DX_PI_F / 2.0f + 0.6f;
 	constexpr float kCameraAngleVLimitMax = DX_PI_F / 2.0f - 0.6f;
 
-	// ƒJƒƒ‰‚©‚çƒvƒŒƒCƒ„[‚Ü‚Å‚ÌÅ‘å‹——£
+	// ã‚«ãƒ¡ãƒ©ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¾ã§ã®æœ€å¤§è·é›¢
 	constexpr float kCameraToPlayerLenghtMax = 175.0f;
 }
 
+/// <summary>
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 Camera::Camera() :
 	m_cameraAngleX(0.0f),
 	m_cameraAngleY(0.0f),
 	m_cameraPos(),
 	m_aimPos(),
 	m_playerPos(),
+	m_angleMoveScale(kAngleMoveScaleMax),
+	m_lightHandle(-1),
 	m_isClear(false),
-	m_angleMoveScale(kAngleMoveScaleMax)
+	m_hitDim()
 {
 	m_lightHandle = CreateDirLightHandle((m_aimPos - m_cameraPos).ConvertToVECTOR());
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 Camera::~Camera()
 {
 	DeleteLightHandle(m_lightHandle);
 }
 
+/// <summary>
+/// åˆæœŸåŒ–
+/// </summary>
 void Camera::Init()
 {
 	m_cameraAngleX = 0.0f;
 	m_cameraAngleY = 12.0f;
 	SetCameraNearFar(kCameraNear, kCameraFar);
-
 }
 
+/// <summary>
+/// æ›´æ–°
+/// </summary>
+/// <param name="input">å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
+/// <param name="stageHandle">ã‚«ãƒ¡ãƒ©ã¨å½“ãŸã‚Šåˆ¤å®šã‚’ã¨ã‚‹ã‚¹ãƒ†ãƒ¼ã‚¸ã®ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«</param>
 void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 {
 	m_angleMoveScale = kAngleMoveScaleMax * Setting::GetInstance().GetSensitivity();
-	//‰EƒXƒeƒBƒbƒN‚Ì“ü—Í‚ğ‚à‚ç‚¤
+	//å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ã‚’ã‚‚ã‚‰ã†
 	std::pair<float,float> rightStickVec;
 	if (!m_isClear)
 	{
 		rightStickVec = input->GetInputStick(true);
 	}
 
-	//“ü—Í‚©‚çŠp“x‚ğŒvZ‚·‚é
+	//å…¥åŠ›ã‹ã‚‰è§’åº¦ã‚’è¨ˆç®—ã™ã‚‹
 	float inputRateX = rightStickVec.first / kAnalogInputMax;
 	float inputRateY = rightStickVec.second / kAnalogInputMax;
 
@@ -96,8 +111,8 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 	}
 
 
-	// ƒJƒƒ‰‚ÌˆÊ’u‚ÍƒJƒƒ‰‚Ì…•½Šp“x‚Æ‚’¼Šp“x‚©‚çZo
-	// Å‰‚É‚’¼Šp“x‚ğ”½‰f‚µ‚½ˆÊ’u‚ğZo
+	// ã‚«ãƒ¡ãƒ©ã®ä½ç½®ã¯ã‚«ãƒ¡ãƒ©ã®æ°´å¹³è§’åº¦ã¨å‚ç›´è§’åº¦ã‹ã‚‰ç®—å‡º
+	// æœ€åˆã«å‚ç›´è§’åº¦ã‚’åæ˜ ã—ãŸä½ç½®ã‚’ç®—å‡º
 	MyLib::Vec3 tempPos1;
 	float sinParam = sinf(m_cameraAngleY / 180.0f * DX_PI_F);
 	float cosParam = cosf(m_cameraAngleY / 180.0f * DX_PI_F);
@@ -105,7 +120,7 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 	tempPos1.y = sinParam * kCameraDist;
 	tempPos1.z = -cosParam * kCameraDist;
 
-	// Ÿ‚É…•½Šp“x‚ğ”½‰f‚µ‚½ˆÊ’u‚ğZo
+	// æ¬¡ã«æ°´å¹³è§’åº¦ã‚’åæ˜ ã—ãŸä½ç½®ã‚’ç®—å‡º
 	MyLib::Vec3 tempPos2;
 	sinParam = sinf(m_cameraAngleX / 180.0f * DX_PI_F);
 	cosParam = cosf(m_cameraAngleX / 180.0f * DX_PI_F);
@@ -115,21 +130,19 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 
 	m_aimPos = MyLib::Vec3(m_playerPos.x, m_playerPos.y + 9.0f, m_playerPos.z);
 
-	// Zo‚µ‚½À•W‚É’‹“_‚ÌˆÊ’u‚ğ‰ÁZ‚µ‚½‚à‚Ì‚ªƒJƒƒ‰‚ÌˆÊ’u‚É‚È‚é
+	// ç®—å‡ºã—ãŸåº§æ¨™ã«æ³¨è¦–ç‚¹ã®ä½ç½®ã‚’åŠ ç®—ã—ãŸã‚‚ã®ãŒã‚«ãƒ¡ãƒ©ã®ä½ç½®ã«ãªã‚‹
 	m_cameraPos = tempPos2 + m_aimPos;
 
-	auto nextPos = m_cameraPos;
-
-	// Å‰‚ÍƒXƒe[ƒW©‘Ì‚Æ”»’è
+	// æœ€åˆã¯ã‚¹ãƒ†ãƒ¼ã‚¸è‡ªä½“ã¨åˆ¤å®š
 	m_hitDim = MV1CollCheck_Capsule(stageHandle, -1, m_aimPos.ConvertToVECTOR(), m_cameraPos.ConvertToVECTOR(), kCameraRadius);
 
-	// ŒŸo‚µ‚½üˆÍ‚Ìƒ|ƒŠƒSƒ“î•ñ‚ğŠJ•ú‚·‚é
+	// æ¤œå‡ºã—ãŸå‘¨å›²ã®ãƒãƒªã‚´ãƒ³æƒ…å ±ã‚’é–‹æ”¾ã™ã‚‹
 	MV1CollResultPolyDimTerminate(m_hitDim);
 
-	// ƒXƒe[ƒW‚Ìƒ|ƒŠƒSƒ“‚ÍüˆÍ‚É–³‚©‚Á‚½‚ç¡“x‚ÍƒRƒŠƒWƒ‡ƒ“ƒIƒuƒWƒFƒNƒg‚Ìƒ|ƒŠƒSƒ“‚ªüˆÍ‚É‚ ‚é‚©’²‚×‚é
+	// ã‚¹ãƒ†ãƒ¼ã‚¸ã®ãƒãƒªã‚´ãƒ³ã¯å‘¨å›²ã«ç„¡ã‹ã£ãŸã‚‰ä»Šåº¦ã¯ã‚³ãƒªã‚¸ãƒ§ãƒ³ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒãƒªã‚´ãƒ³ãŒå‘¨å›²ã«ã‚ã‚‹ã‹èª¿ã¹ã‚‹
 	if (m_hitDim.HitNum == 0)
 	{
-		// ŒŸo‚µ‚½üˆÍ‚Ìƒ|ƒŠƒSƒ“î•ñ‚ğŠJ•ú‚·‚é
+		// æ¤œå‡ºã—ãŸå‘¨å›²ã®ãƒãƒªã‚´ãƒ³æƒ…å ±ã‚’é–‹æ”¾ã™ã‚‹
 		MV1CollResultPolyDimTerminate(m_hitDim);
 	}
 	else if (m_hitDim.HitNum != 0)
@@ -141,19 +154,19 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 
 			doCheck = false;
 
-			//ƒvƒŒƒCƒ„[‚ÌÀ•W‚©‚çƒJƒƒ‰‚ÌˆÚ“®—\’èŒãÀ•W‚Ì•ûŒüƒxƒNƒgƒ‹‚ğŒvZ‚·‚é
+			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åº§æ¨™ã‹ã‚‰ã‚«ãƒ¡ãƒ©ã®ç§»å‹•äºˆå®šå¾Œåº§æ¨™ã®æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—ã™ã‚‹
 			auto playerToCamera = (m_cameraPos - m_aimPos);
 
-			//Œü‚«‚Æ‘å‚«‚³‚É•ª‚¯‚é
+			//å‘ãã¨å¤§ãã•ã«åˆ†ã‘ã‚‹
 			auto vec = playerToCamera.Normalize();
 			auto length = playerToCamera.Size();
 
-			//‹——£‚ğk‚ß‚é
+			//è·é›¢ã‚’ç¸®ã‚ã‚‹
 			length *= 0.998f;
 
 			auto checkPos = m_aimPos + vec * length;
 
-			// Å‰‚ÍƒXƒe[ƒW©‘Ì‚Æ”»’è
+			// æœ€åˆã¯ã‚¹ãƒ†ãƒ¼ã‚¸è‡ªä½“ã¨åˆ¤å®š
 			m_hitDim = MV1CollCheck_Capsule(stageHandle, -1, m_aimPos.ConvertToVECTOR(), checkPos.ConvertToVECTOR(), kCameraRadius);
 			MV1CollResultPolyDimTerminate(m_hitDim);
 
@@ -166,11 +179,8 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 			{
 				doCheck = false;
 			}
-
-			// HitLength ‚Æ NoHitLength ‚ª\•ª‚É‹ß‚Ã‚¢‚Ä‚¢‚È‚©‚Á‚½‚çƒ‹[ƒv
+			// HitLength ã¨ NoHitLength ãŒååˆ†ã«è¿‘ã¥ã„ã¦ã„ãªã‹ã£ãŸã‚‰ãƒ«ãƒ¼ãƒ—
 		}
-
-		nextPos = MyLib::Vec3(TestPosition.x, TestPosition.y, TestPosition.z);
 	}
 
 	SetLightDirectionHandle(m_lightHandle, (m_aimPos - m_cameraPos).ConvertToVECTOR());
@@ -178,19 +188,21 @@ void Camera::Update(std::shared_ptr<Input>& input, int stageHandle)
 	SetCameraPositionAndTarget_UpVecY(m_cameraPos.ConvertToVECTOR(), m_aimPos.ConvertToVECTOR());
 }
 
+#ifdef _DEBUG
+/// <summary>
+/// ãƒ‡ãƒãƒƒã‚°æç”»
+/// </summary>
 void Camera::DebugDraw()
 {
-#ifdef _DEBUG
 	DrawFormatString(640, 460, 0xffffff, "%f,%f,%f", m_cameraPos.x, m_cameraPos.y, m_cameraPos.z);
-#endif
 }
+#endif
 
+/// <summary>
+/// ã‚«ãƒ¡ãƒ©ãŒå‘ã„ã¦ã„ã‚‹æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—
+/// </summary>
+/// <returns>ã‚«ãƒ¡ãƒ©ãŒå‘ã„ã¦ã„ã‚‹æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«</returns>
 const MyLib::Vec3 Camera::GetDirection() const
 {
 	return (m_aimPos - m_cameraPos).Normalize();
 }
-
-//const float Camera::GetAngle() const
-//{
-//	return m_cameraAngleY;
-//}

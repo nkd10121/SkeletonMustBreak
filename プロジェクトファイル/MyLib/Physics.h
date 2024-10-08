@@ -1,4 +1,4 @@
-// 2024 Takeru Yui All Rights Reserved.
+ï»¿// 2024 Takeru Yui All Rights Reserved.
 #pragma once
 #include "Vec3.h"
 
@@ -12,21 +12,21 @@ class Collidable;
 
 namespace ColInfo
 {
-	//Å‘å“–‚½‚è”»’èƒ|ƒŠƒSƒ“”
+	//æœ€å¤§å½“ãŸã‚Šåˆ¤å®šãƒãƒªã‚´ãƒ³æ•°
 	constexpr int kMaxColHitPolyNum = 2000;
-	//•Ç‰Ÿ‚µo‚µˆ—‚ÌÅ‘ås‰ñ”
+	//å£æŠ¼ã—å‡ºã—å‡¦ç†ã®æœ€å¤§è©¦è¡Œå›æ•°
 	constexpr int kMaxColHitTryNum = 16;
-	//•Ç‰Ÿ‚µo‚µ‚ÉƒXƒ‰ƒCƒh‚³‚¹‚é‹——£
+	//å£æŠ¼ã—å‡ºã—æ™‚ã«ã‚¹ãƒ©ã‚¤ãƒ‰ã•ã›ã‚‹è·é›¢
 	constexpr float kColHitSlideLength = 1.0f;
 }
 
 /// <summary>
-/// •¨—EÕ“Ë”»’è‚·‚éƒIƒuƒWƒFƒNƒg‚ğ“o˜^‚µA•¨—ˆÚ“®EÕ“Ë‚ğ’Ê’m‚·‚é
+/// ç‰©ç†ãƒ»è¡çªåˆ¤å®šã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç™»éŒ²ã—ã€ç‰©ç†ç§»å‹•ãƒ»è¡çªã‚’é€šçŸ¥ã™ã‚‹
 /// </summary>
 class Physics final
 {
 private:
-	//“–‚½‚è”»’è‚Ìí—Ş
+	//å½“ãŸã‚Šåˆ¤å®šã®ç¨®é¡
 	enum class eOnCollideInfoKind
 	{
 		CollideEnter,
@@ -37,94 +37,94 @@ private:
 		TriggerExit
 	};
 
-	//‚È‚É‚©‚Æ“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒg‚Ìî•ñ
+	//ãªã«ã‹ã¨å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æƒ…å ±
 	struct OnCollideInfoData
 	{
-		std::shared_ptr<Collidable> own;	//©•ª©g
-		std::shared_ptr<Collidable> send;	//“–‚½‚Á‚½‘Šè
-		eOnCollideInfoKind kind;			//í—Ş
+		std::shared_ptr<Collidable> own;	//è‡ªåˆ†è‡ªèº«
+		std::shared_ptr<Collidable> send;	//å½“ãŸã£ãŸç›¸æ‰‹
+		eOnCollideInfoKind kind;			//ç¨®é¡
 	};
 
 	using SendCollideInfo = std::unordered_map<std::shared_ptr<Collidable>, std::list<std::shared_ptr<Collidable>>>;
 
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Physics(int normalStageCollisionHandle, int enemyStageCollisionHandle);
 
-	//Õ“Ë•¨‚Ì“o˜^E“o˜^‰ğœ
+	//è¡çªç‰©ã®ç™»éŒ²ãƒ»ç™»éŒ²è§£é™¤
 	void Entry(std::shared_ptr<Collidable> collidable);
 	void Exit(std::shared_ptr<Collidable> collidable);
 
-	//XVi“o˜^ƒIƒuƒWƒFƒNƒg‚Ì•¨—ˆÚ“®AÕ“Ë’Ê’mj
+	//æ›´æ–°ï¼ˆç™»éŒ²ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç‰©ç†ç§»å‹•ã€è¡çªé€šçŸ¥ï¼‰
 	void Update();	
 
 private:
-	//“–‚½‚è”»’èƒ`ƒFƒbƒN
+	//å½“ãŸã‚Šåˆ¤å®šãƒã‚§ãƒƒã‚¯
 	void CheckColide();
-	//“ñ‚Â‚ÌƒIƒuƒWƒFƒNƒg‚ªÚG‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	//äºŒã¤ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ¥è§¦ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹
 	bool IsCollide(const Rigidbody& rigidA, const Rigidbody& rigidB, ColliderData* colliderA, ColliderData* colliderB) const;
-	//“–‚½‚Á‚½ƒIƒuƒWƒFƒNƒg‚ÌƒyƒA‚ğ“o˜^‚·‚é
+	//å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒšã‚¢ã‚’ç™»éŒ²ã™ã‚‹
 	void AddNewCollideInfo(const std::shared_ptr<Collidable>& objA, const std::shared_ptr<Collidable>& objB, SendCollideInfo& info);
-	//ˆÚ“®—\’è‚ÌÀ•W‚ğC³‚·‚é
+	//ç§»å‹•äºˆå®šã®åº§æ¨™ã‚’ä¿®æ­£ã™ã‚‹
 	void FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& secondaryRigid, ColliderData* primaryCollider, ColliderData* secondaryCollider) const;
-	//í—Ş‚²‚Æ‚ÉÕ“Ë’Ê’m‚ğ”ò‚Î‚·”z—ñ‚É’Ç‰Á‚·‚é
+	//ç¨®é¡ã”ã¨ã«è¡çªé€šçŸ¥ã‚’é£›ã°ã™é…åˆ—ã«è¿½åŠ ã™ã‚‹
 	void CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCollideInfo& newSendInfo, bool isTrigger);
-	//Õ“Ë’Ê’m‚ğ”ò‚Î‚·”z—ñ‚É’Ç‰Á‚·‚é
+	//è¡çªé€šçŸ¥ã‚’é£›ã°ã™é…åˆ—ã«è¿½åŠ ã™ã‚‹
 	void AddOnCollideInfo(const std::shared_ptr<Collidable>& own, const std::shared_ptr<Collidable>& send, eOnCollideInfoKind kind);
-	//ÅI“I‚ÈˆÊ’u‚ğŒˆ’è‚·‚é
+	//æœ€çµ‚çš„ãªä½ç½®ã‚’æ±ºå®šã™ã‚‹
 	void FixPosition();
 
 	//Vec3 GetClosestPtOnSegment(Vec3 pt, Vec3 start, Vec3 end);
 
 private:
-	//ƒ`ƒFƒbƒN‚µ‚½ƒ|ƒŠƒSƒ“‚ª•Çƒ|ƒŠƒSƒ“‚©°ƒ|ƒŠƒSƒ“‚©‚ğ”»’f‚µ•Û‘¶‚·‚é
+	//ãƒã‚§ãƒƒã‚¯ã—ãŸãƒãƒªã‚´ãƒ³ãŒå£ãƒãƒªã‚´ãƒ³ã‹åºŠãƒãƒªã‚´ãƒ³ã‹ã‚’åˆ¤æ–­ã—ä¿å­˜ã™ã‚‹
 	void CheckWallAndFloor(std::shared_ptr<Collidable>& col);
-	//•Çƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’è‚ğƒ`ƒFƒbƒN‚µAˆÚ“®‚³‚¹‚é
+	//å£ãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’ãƒã‚§ãƒƒã‚¯ã—ã€ç§»å‹•ã•ã›ã‚‹
 	void FixPositionWithWall(std::shared_ptr<Collidable>& col);
-	//•Ç‚Ì’†‚©‚ç‰Ÿ‚µo‚·
+	//å£ã®ä¸­ã‹ã‚‰æŠ¼ã—å‡ºã™
 	void FixPositionWithWallInternal(std::shared_ptr<Collidable>& col);
-	//°ƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’è‚ğƒ`ƒFƒbƒN‚µAˆÚ“®‚³‚¹‚é
+	//åºŠãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’ãƒã‚§ãƒƒã‚¯ã—ã€ç§»å‹•ã•ã›ã‚‹
 	void FixNowPositionWithFloor(std::shared_ptr<Collidable>& col);
 
 private:
-	//“o˜^‚³‚ê‚½Collidable‚ÌƒŠƒXƒg
+	//ç™»éŒ²ã•ã‚ŒãŸCollidableã®ãƒªã‚¹ãƒˆ
 	std::list<std::shared_ptr<Collidable>> m_collidables;	
-	//Õ“Ë‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg
+	//è¡çªã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆ
 	std::list<OnCollideInfoData> m_onCollideInfo;
 
-	//Õ“Ë‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg
+	//è¡çªã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆ
 	SendCollideInfo m_newCollideInfo;
-	//Õ“Ë‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg‚ÌƒƒO
+	//è¡çªã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆã®ãƒ­ã‚°
 	SendCollideInfo m_preCollideInfo;
-	//Õ“Ë‚µ‚½‰Ÿ‚µo‚µ‚µ‚È‚¢ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg
+	//è¡çªã—ãŸæŠ¼ã—å‡ºã—ã—ãªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆ
 	SendCollideInfo m_newTirrigerInfo;
-	//Õ“Ë‚µ‚½‰Ÿ‚µo‚µ‚µ‚È‚¢ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg‚ÌƒƒO
+	//è¡çªã—ãŸæŠ¼ã—å‡ºã—ã—ãªã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆã®ãƒ­ã‚°
 	SendCollideInfo m_preTirrigerInfo;
 
-	//’Êí‚Ìƒ}ƒbƒv“–‚½‚è”»’è‚Ìƒnƒ“ƒhƒ‹
+	//é€šå¸¸ã®ãƒãƒƒãƒ—å½“ãŸã‚Šåˆ¤å®šã®ãƒãƒ³ãƒ‰ãƒ«
 	int m_stageCollisionHandle;
-	//“G‚Ìƒ}ƒbƒv“–‚½‚è”»’è‚Ìƒnƒ“ƒhƒ‹
+	//æ•µã®ãƒãƒƒãƒ—å½“ãŸã‚Šåˆ¤å®šã®ãƒãƒ³ãƒ‰ãƒ«
 	int m_enemyCollisionHandle;
 
 private:
-	//ˆÚ“®‚µ‚½‚©‚Ç‚¤‚©
+	//ç§»å‹•ã—ãŸã‹ã©ã†ã‹
 	bool m_isMoveFlag = false;
-	//ƒ|ƒŠƒSƒ“‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©
+	//ãƒãƒªã‚´ãƒ³ã«å½“ãŸã£ãŸã‹ã©ã†ã‹
 	bool m_isHitFlag = false;
-	//•Çƒ|ƒŠƒSƒ“‚Æ”»’f‚³‚ê‚½ƒ|ƒŠƒSƒ“”
+	//å£ãƒãƒªã‚´ãƒ³ã¨åˆ¤æ–­ã•ã‚ŒãŸãƒãƒªã‚´ãƒ³æ•°
 	int m_wallNum = 0;
-	//°ƒ|ƒŠƒSƒ“‚Æ”»’f‚³‚ê‚½ƒ|ƒŠƒSƒ“”
+	//åºŠãƒãƒªã‚´ãƒ³ã¨åˆ¤æ–­ã•ã‚ŒãŸãƒãƒªã‚´ãƒ³æ•°
 	int m_floorNum = 0;
 
-	//“–‚½‚è”»’èŒ‹‰Ê\‘¢‘Ì
+	//å½“ãŸã‚Šåˆ¤å®šçµæœæ§‹é€ ä½“
 	MV1_COLL_RESULT_POLY_DIM m_hitDim{};
-	// •Çƒ|ƒŠƒSƒ“‚Æ”»’f‚³‚ê‚½ƒ|ƒŠƒSƒ“‚Ì\‘¢‘Ì‚ÌƒAƒhƒŒƒX‚ğ•Û‘¶‚µ‚Ä‚¨‚­‚½‚ß‚Ìƒ|ƒCƒ“ƒ^”z—ñ
+	// å£ãƒãƒªã‚´ãƒ³ã¨åˆ¤æ–­ã•ã‚ŒãŸãƒãƒªã‚´ãƒ³ã®æ§‹é€ ä½“ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ä¿å­˜ã—ã¦ãŠããŸã‚ã®ãƒã‚¤ãƒ³ã‚¿é…åˆ—
 	MV1_COLL_RESULT_POLY* m_pWallPoly[ColInfo::kMaxColHitPolyNum]{};
-	// °ƒ|ƒŠƒSƒ“‚Æ”»’f‚³‚ê‚½ƒ|ƒŠƒSƒ“‚Ì\‘¢‘Ì‚ÌƒAƒhƒŒƒX‚ğ•Û‘¶‚µ‚Ä‚¨‚­‚½‚ß‚Ìƒ|ƒCƒ“ƒ^”z—ñ
+	// åºŠãƒãƒªã‚´ãƒ³ã¨åˆ¤æ–­ã•ã‚ŒãŸãƒãƒªã‚´ãƒ³ã®æ§‹é€ ä½“ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’ä¿å­˜ã—ã¦ãŠããŸã‚ã®ãƒã‚¤ãƒ³ã‚¿é…åˆ—
 	MV1_COLL_RESULT_POLY* m_pFloorPoly[ColInfo::kMaxColHitPolyNum]{};
-	// ƒ|ƒŠƒSƒ“‚Ì\‘¢‘Ì‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚Ég—p‚·‚éƒ|ƒCƒ“ƒ^
+	// ãƒãƒªã‚´ãƒ³ã®æ§‹é€ ä½“ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã«ä½¿ç”¨ã™ã‚‹ãƒã‚¤ãƒ³ã‚¿
 	MV1_COLL_RESULT_POLY* m_pPoly = nullptr;
-	// ü•ª‚Æƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’è‚ÌŒ‹‰Ê‚ğ‘ã“ü‚·‚é\‘¢‘Ì
+	// ç·šåˆ†ã¨ãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šã®çµæœã‚’ä»£å…¥ã™ã‚‹æ§‹é€ ä½“
 	HITRESULT_LINE m_lineRes{};
 };
 

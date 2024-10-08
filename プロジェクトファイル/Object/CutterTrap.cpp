@@ -1,8 +1,8 @@
-#include "CutterTrap.h"
+ï»¿#include "CutterTrap.h"
 
 namespace
 {
-	constexpr float kModelSize = 0.08f;
+	constexpr float kModelSizeScale = 0.08f;
 
 	constexpr int kCollisionResetFrame = 60;
 }
@@ -16,12 +16,12 @@ CutterTrap::CutterTrap(std::shared_ptr<MyLib::Physics> physics) :
 {
 	m_pPhysics = physics;
 
-	//“–‚½‚è”»’è‚Ìİ’è
+	//å½“ãŸã‚Šåˆ¤å®šã®è¨­å®š
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, true);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
 	sphereCol->m_radius = 10.0f;
 
-	//UŒ‚—Í‚Ìİ’è
+	//æ”»æ’ƒåŠ›ã®è¨­å®š
 	m_attack = 8;
 }
 
@@ -33,17 +33,17 @@ CutterTrap::~CutterTrap()
 void CutterTrap::Init(int handle, int subHandle)
 {
 	m_modelHandle = handle;
-	MV1SetScale(m_modelHandle, VECTOR(kModelSize, kModelSize, kModelSize));
+	MV1SetScale(m_modelHandle, VECTOR(kModelSizeScale, kModelSizeScale, kModelSizeScale));
 	MV1SetPosition(m_modelHandle, m_pos.ConvertToVECTOR());
 }
 
 void CutterTrap::Update()
 {
-	//ƒ‚ƒfƒ‹‚ğ‰ñ“]‚³‚¹‚é
+	//ãƒ¢ãƒ‡ãƒ«ã‚’å›è»¢ã•ã›ã‚‹
 	m_rotationAngle += 0.08f;
 	MV1SetRotationXYZ(m_modelHandle, VECTOR(0.0f, m_rotationAngle, 0.0f));
 
-	//”•b‚Éˆê‰ñUŒ‚”»’è‚ğÁ‚µ‚Ä‚Â‚¯‚È‚¨‚·
+	//æ•°ç§’ã«ä¸€å›æ”»æ’ƒåˆ¤å®šã‚’æ¶ˆã—ã¦ã¤ã‘ãªãŠã™
 	if (m_frame % kCollisionResetFrame == 0)
 	{
 		Collidable::Init(m_pPhysics);

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "DxLib.h"
 #include "Input.h"
 #include <memory>
@@ -6,54 +6,58 @@
 class SceneManager;
 
 /// <summary>
-/// ƒV[ƒ“Šî’êƒNƒ‰ƒX
-/// ‚¢‚ë‚ñ‚ÈƒV[ƒ“‚ÌŠî‚É‚È‚éƒNƒ‰ƒX
+/// ã‚·ãƒ¼ãƒ³åŸºåº•ã‚¯ãƒ©ã‚¹
+/// ã„ã‚ã‚“ãªã‚·ãƒ¼ãƒ³ã®åŸºã«ãªã‚‹ã‚¯ãƒ©ã‚¹
 /// </summary>
 class SceneBase
 {
 public:
-	/// <summary>
-	/// ¶¬‚ÉSceneManager‚ÌQÆ‚ğó‚¯æ‚Á‚Ä‚¨‚­
-	/// </summary>
-	/// <param name="manager">SceneManager‚ÌQÆ</param>
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SceneBase(SceneManager& manager);
 
-	/// <summary>
-	/// ƒV[ƒ“‚ÌXV
-	/// </summary>
-	/// <param name="input"></param>
+	//æ›´æ–°
 	virtual void Update(std::shared_ptr<Input>& input) = 0;
 
-	/// <summary>
-	/// ƒV[ƒ“‚Ì•`‰æ
-	/// </summary>
+	//æç”»
 	virtual void Draw() = 0;
 
 protected:
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã®æ›´æ–°
 	void UpdateFade();
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã®æç”»
 	void DrawFade() const;
 
-	void StartFadeOut();	// ƒtƒF[ƒhƒAƒEƒgŠJn
-	void StartFadeIn();	// ƒtƒF[ƒhƒCƒ“ŠJn
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆé–‹å§‹
+	void StartFadeOut();
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³é–‹å§‹
+	void StartFadeIn();
 
-	bool IsFadingIn() const;	// ƒtƒF[ƒhƒCƒ“’†
-	bool IsFadingOut() const;	// ƒtƒF[ƒhƒAƒEƒg’†
-	bool IsFading() const { return IsFadingIn() || IsFadingOut(); }	// ƒtƒF[ƒhƒCƒ“orƒAƒEƒg’†
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ä¸­ã‹ã©ã†ã‹ã‚’è¿”ã™
+	bool IsFadingIn() const;
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆä¸­ã‹ã©ã†ã‹ã‚’è¿”ã™
+	bool IsFadingOut() const;
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³orã‚¢ã‚¦ãƒˆä¸­ã‹ã©ã†ã‹ã‚’è¿”ã™
+	bool IsFading() const { return IsFadingIn() || IsFadingOut(); }	
 
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆãŒçµ‚äº†ã—ãŸã‹ã©ã†ã‹
 	bool IsFinishFadeOut()const;
 
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 	void FadeInSkip();
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
 	void FadeOutSkip();
 
 protected:
-	SceneManager& m_manager;	//ƒV[ƒ“ŠÇ—ƒNƒ‰ƒX‚ÌQÆ
-	bool m_isToNextScene;
+	//ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§
+	SceneManager& m_manager;
+	//æ¬¡ã®ã‚·ãƒ¼ãƒ³ã«é·ç§»ã™ã‚‹ã‚¿ã‚¤ãƒŸãƒ³ã‚°
+	bool m_isChangeNextScene;
 
 private:
-	// ƒtƒF[ƒhŠÖ˜Aˆ—
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚«ãƒ©ãƒ¼
 	int m_fadeColor;
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã®æ˜ã‚‹ã•
 	int m_fadeBright;
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¹ãƒ”ãƒ¼ãƒ‰
 	int m_fadeSpeed;
-
 };
-

@@ -1,17 +1,17 @@
-#pragma once
+ï»¿#pragma once
 #include <DxLib.h>
 #include <cmath>
 
 namespace MyLib
 {
-	//OŸŒ³ƒxƒNƒgƒ‹‚ğˆµ‚¤ƒNƒ‰ƒX
+	//ä¸‰æ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«ã‚’æ‰±ã†ã‚¯ãƒ©ã‚¹
 	class Vec3
 	{
 	public:
 		float x, y, z;
 
 	public:
-		//ˆø”‚È‚µƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		//å¼•æ•°ãªã—ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		Vec3() :
 			x(0.0f),
 			y(0.0f),
@@ -20,7 +20,7 @@ namespace MyLib
 
 		}
 
-		//ˆø”—L‚èƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		//å¼•æ•°æœ‰ã‚Šã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		Vec3(const float x, const float y, const float z)
 		{
 			this->x = x;
@@ -28,7 +28,7 @@ namespace MyLib
 			this->z = z;
 		}
 
-		//‘«‚µZ
+		//è¶³ã—ç®—
 		Vec3 operator+(const Vec3& other)const
 		{
 			Vec3 ret;
@@ -38,7 +38,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//‘«‚µZ
+		//è¶³ã—ç®—
 		Vec3 operator+=(const Vec3& other)
 		{
 			this->x += other.x;
@@ -47,7 +47,7 @@ namespace MyLib
 			return *this;
 		}
 
-		//ˆø‚«Z
+		//å¼•ãç®—
 		Vec3 operator-(const Vec3& other)const
 		{
 			Vec3 ret;
@@ -57,7 +57,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//ˆø‚«Z
+		//å¼•ãç®—
 		Vec3 operator-=(const Vec3& other)
 		{
 			this->x -= other.x;
@@ -84,7 +84,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//”äŠr
+		//æ¯”è¼ƒ
 		bool operator==(const Vec3& other)const
 		{
 			bool ret;
@@ -92,7 +92,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//”äŠr
+		//æ¯”è¼ƒ
 		bool operator!=(const Vec3& other)const
 		{
 			bool ret;
@@ -100,7 +100,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//ƒxƒNƒgƒ‹‚ÌƒTƒCƒY‚ğæ“¾‚·‚é
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 		float Size()const
 		{
 			float ret;
@@ -108,7 +108,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//ƒxƒNƒgƒ‹‚ÌƒTƒCƒY‚Ì‚Qæ‚ğæ“¾‚·‚é
+		//ãƒ™ã‚¯ãƒˆãƒ«ã®ã‚µã‚¤ã‚ºã®ï¼’ä¹—ã‚’å–å¾—ã™ã‚‹
 		float SquareSize()const
 		{
 			float ret;
@@ -116,7 +116,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//³‹K‰»ƒxƒNƒgƒ‹‚ğæ“¾‚·‚é
+		//æ­£è¦åŒ–ãƒ™ã‚¯ãƒˆãƒ«ã‚’å–å¾—ã™ã‚‹
 		Vec3 Normalize()const
 		{
 			Vec3 ret;
@@ -131,7 +131,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//“ñ‚Â‚ÌƒxƒNƒgƒ‹‚Ì“àÏ‚ğæ“¾‚·‚é
+		//äºŒã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ã®å†…ç©ã‚’å–å¾—ã™ã‚‹
 		float Dot(const Vec3& other)const
 		{
 			float ret;
@@ -139,7 +139,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//“ñ‚Â‚ÌƒxƒNƒgƒ‹‚ÌŠOÏ‚ğæ“¾‚·‚é
+		//äºŒã¤ã®ãƒ™ã‚¯ãƒˆãƒ«ã®å¤–ç©ã‚’å–å¾—ã™ã‚‹
 		Vec3 Cross(const Vec3& other)const
 		{
 			Vec3 ret;
@@ -149,7 +149,7 @@ namespace MyLib
 			return ret;
 		}
 
-		//DxLib‚ÌVECTORŒ^‚É•ÏŠ·
+		//DxLibã®VECTORå‹ã«å¤‰æ›
 		DxLib::VECTOR ConvertToVECTOR()
 		{
 			DxLib::VECTOR ret = VGet(0.0f, 0.0f, 0.0f);

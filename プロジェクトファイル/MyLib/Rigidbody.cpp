@@ -1,7 +1,7 @@
-#include "Rigidbody.h"
+ï»¿#include "Rigidbody.h"
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 MyLib::Rigidbody::Rigidbody():
 	m_pos(),
@@ -10,11 +10,11 @@ MyLib::Rigidbody::Rigidbody():
 	m_velocity(),
 	m_useGravity(true)
 {
-	// ˆ—‚È‚µ
+	// å‡¦ç†ãªã—
 }
 
 /// <summary>
-/// ‰Šú‰»
+/// åˆæœŸåŒ–
 /// </summary>
 void MyLib::Rigidbody::Init(bool m_useGravity)
 {
@@ -25,7 +25,7 @@ void MyLib::Rigidbody::Init(bool m_useGravity)
 }
 
 /// <summary>
-/// velocity‚É—Í‚ğ‰Á‚¦‚é
+/// velocityã«åŠ›ã‚’åŠ ãˆã‚‹
 /// </summary>
 void MyLib::Rigidbody::AddForce(const Vec3& force)
 {
@@ -33,7 +33,7 @@ void MyLib::Rigidbody::AddForce(const Vec3& force)
 }
 
 /// <summary>
-/// Velocity‚ÌSet‚ÆDir©“®ŒvZ
+/// Velocityã®Setã¨Dirè‡ªå‹•è¨ˆç®—
 /// </summary>
 void MyLib::Rigidbody::SetVelocity(Vec3 set, float mul)
 {

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <List>
 #include "Vec3.h"
 
@@ -6,28 +6,28 @@ namespace MyLib
 {
 
 /// <summary>
-/// ƒfƒoƒbƒO—p‚Ì•`‰æî•ñ‚ğ‚Ü‚Æ‚ßAŒã‚Å•\¦‚·‚é‚½‚ß‚ÌƒNƒ‰ƒX
+/// ãƒ‡ãƒãƒƒã‚°ç”¨ã®æç”»æƒ…å ±ã‚’ã¾ã¨ã‚ã€å¾Œã§è¡¨ç¤ºã™ã‚‹ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 /// </summary>
 class DebugDraw
 {
 public:
-	//•`‰æî•ñ‚Ìíœ
+	//æç”»æƒ…å ±ã®å‰Šé™¤
 	static void Clear();
-	//•`‰æ
+	//æç”»
 	static void Draw3D();
 
-	//‹…‘Ì‚Ì•`‰æƒŠƒXƒg‚É’Ç‰Á‚·‚é
+	//çƒä½“ã®æç”»ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹
 	static void AddDrawSphere(const Vec3& center,const float& radius,const unsigned int& color);
 private:
-	//‹…‘Ì‚Ì•`‰æî•ñ
+	//çƒä½“ã®æç”»æƒ…å ±
 	struct SphereInfo
 	{
-		Vec3 center;		//’†SÀ•W
-		float radius;		//”¼Œa
-		unsigned int color; //F
+		Vec3 center;		//ä¸­å¿ƒåº§æ¨™
+		float radius;		//åŠå¾„
+		unsigned int color; //è‰²
 	};
 
-	//‹…‘Ì‚Ì•`‰æî•ñƒŠƒXƒg
+	//çƒä½“ã®æç”»æƒ…å ±ãƒªã‚¹ãƒˆ
 	static std::list<SphereInfo> m_sphereInfo;
 };
 

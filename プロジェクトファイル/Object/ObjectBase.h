@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "DxLib.h"
 #include "MyLib.h"
 #include "Vec3.h"
@@ -16,14 +16,10 @@ public:
 	virtual void Update() {};
 	virtual void Update(std::shared_ptr<Input> input) {};
 	virtual void Draw() {};
-
-	// Õ“Ë‚µ‚½‚Æ‚«
-	void OnCollideEnter(const std::shared_ptr<Collidable>& colider) = 0;
-
 protected:
-	//Šp“x
+	//è§’åº¦
 	MyLib::Vec3 m_rot;
-	//ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
+	//ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«
 	int m_modelHandle;
 };
 

@@ -1,4 +1,4 @@
-#include "TrapManager.h"
+ï»¿#include "TrapManager.h"
 #include "Input.h"
 #include "TrapBase.h"
 #include "SpikeTrap.h"
@@ -8,10 +8,11 @@
 #include "EffekseerForDXLib.h"
 #include "SoundManager.h"
 #include "EffectManager.h"
+#include "ModelManager.h"
 
 namespace
 {
-	//ã©ƒ‚ƒfƒ‹
+	//ç½ ãƒ¢ãƒ‡ãƒ«
 	enum modelIdx :int
 	{
 		SpikeFrame,
@@ -21,7 +22,7 @@ namespace
 		MAX
 	};
 
-	//ƒgƒ‰ƒbƒvƒtƒ@ƒCƒ‹–¼
+	//ãƒˆãƒ©ãƒƒãƒ—ãƒ•ã‚¡ã‚¤ãƒ«å
 	const char* const kFileName[modelIdx::MAX] =
 	{
 		"data/model/spike_frame.mv1",
@@ -30,17 +31,17 @@ namespace
 		"data/model/hammer.mv1",
 	};
 
-	//‚»‚ê‚¼‚ê‚Ìã©‚ÌƒRƒXƒg
-	//TODO:ŠO•”ƒf[ƒ^‰»
+	//ãã‚Œãã‚Œã®ç½ ã®ã‚³ã‚¹ãƒˆ
+	//TODO:å¤–éƒ¨ãƒ‡ãƒ¼ã‚¿åŒ–
 	constexpr int kSpikeCost = 400;
 	constexpr int kCutterCost = 250;
 }
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
-/// <param name="trapNum">ƒgƒ‰ƒbƒv‚Ì‘”</param>
-/// <param name="trapPositions">ã©İ’u‰Â”\À•W</param>
+/// <param name="trapNum">ãƒˆãƒ©ãƒƒãƒ—ã®ç·æ•°</param>
+/// <param name="trapPositions">ç½ è¨­ç½®å¯èƒ½åº§æ¨™</param>
 TrapManager::TrapManager(int trapNum, std::list<MyLib::Vec3>& trapPositions) :
 	m_modelHandles(),
 	m_traps(),
@@ -52,23 +53,23 @@ TrapManager::TrapManager(int trapNum, std::list<MyLib::Vec3>& trapPositions) :
 	m_transparency(0.0f),
 	m_pushZLCount(0)
 {
-	//ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğæ“¾‚·‚é
-	//TODO:‚»‚ÌƒXƒe[ƒW‚Åg—p‚·‚éã©‚Ìƒ‚ƒfƒ‹‚Ì‚İ‚ğƒ[ƒh‚·‚é‚æ‚¤‚É‚µ‚½‚¢
+	//ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã™ã‚‹
+	//TODO:ãã®ã‚¹ãƒ†ãƒ¼ã‚¸ã§ä½¿ç”¨ã™ã‚‹ç½ ã®ãƒ¢ãƒ‡ãƒ«ã®ã¿ã‚’ãƒ­ãƒ¼ãƒ‰ã™ã‚‹ã‚ˆã†ã«ã—ãŸã„
 	for (int i = 0; i < trapNum; i++)
 	{
-		int handle = MV1LoadModel(kFileName[i]);
+		int handle = ModelManager::GetInstance().GetModelHandle(kFileName[i]);
 		m_modelHandles.emplace_back(handle);
 	}
 
-	//ã©İ’u‰Â”\À•W‚Ìæ“¾
+	//ç½ è¨­ç½®å¯èƒ½åº§æ¨™ã®å–å¾—
 	m_trapPositions = trapPositions;
 
-	//ã©İ’u‚ÌƒGƒtƒFƒNƒg‚ğƒ[ƒh
+	//ç½ è¨­ç½®æ™‚ã®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’ãƒ­ãƒ¼ãƒ‰
 	EffectManager::GetInstance().Load("CreateTrap", "data/effect/create_trap.efk",120);
 }
 
 /// <summary>
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 TrapManager::~TrapManager()
 {
@@ -83,44 +84,44 @@ TrapManager::~TrapManager()
 }
 
 /// <summary>
-/// ‰Šú‰»
+/// åˆæœŸåŒ–
 /// </summary>
 void TrapManager::Init()
 {
 }
 
 /// <summary>
-/// XV
+/// æ›´æ–°
 /// </summary>
-/// <param name="input">“ü—Íî•ñ</param>
-/// <param name="slotNum">Œ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒJ[ƒ\ƒ‹‚ÌƒCƒ“ƒfƒbƒNƒX</param>
-/// <param name="playerPos">ƒvƒŒƒCƒ„[À•W</param>
-/// <param name="playerVec">ƒvƒŒƒCƒ„[‚ÌŒü‚«</param>
-/// <param name="isPlayerSurvival">ƒvƒŒƒCƒ„[‚ª¶‘¶’†‚©‚Ç‚¤‚©</param>
-/// <param name="trapPoint">ƒgƒ‰ƒbƒvİ’uƒ|ƒCƒ“ƒg</param>
-/// <param name="nowPhase">Œ»İ‚ÌƒtƒF[ƒY</param>
-/// <param name="physics">•¨—ƒNƒ‰ƒX</param>
+/// <param name="input">å…¥åŠ›æƒ…å ±</param>
+/// <param name="slotNum">ç¾åœ¨é¸æŠã—ã¦ã„ã‚‹ã‚«ãƒ¼ã‚½ãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹</param>
+/// <param name="playerPos">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™</param>
+/// <param name="playerVec">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘ã</param>
+/// <param name="isPlayerSurvival">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒç”Ÿå­˜ä¸­ã‹ã©ã†ã‹</param>
+/// <param name="trapPoint">ãƒˆãƒ©ãƒƒãƒ—è¨­ç½®ãƒã‚¤ãƒ³ãƒˆ</param>
+/// <param name="nowPhase">ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚º</param>
+/// <param name="physics">ç‰©ç†ã‚¯ãƒ©ã‚¹</param>
 void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3 playerPos, MyLib::Vec3 playerVec, bool isPlayerSurvival, int* trapPoint, int nowPhase, std::shared_ptr<MyLib::Physics> physics)
 {
-	//Œ»İ‚ÌƒvƒŒƒCƒ„[‚ÌƒXƒƒbƒg‚ğæ“¾
+	//ç¾åœ¨ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ã‚¹ãƒ­ãƒƒãƒˆã‚’å–å¾—
 	m_nowSlotIdx = slotNum;
 
 	float defaultLength = 100.0f;
 
-	//0‚Ì‚Æ‚«‚ÍƒNƒƒXƒ{ƒE‚ğ‚Á‚Ä‚¢‚é‚½‚ß‰½‚àˆ—‚µ‚È‚¢
+	//0ã®ã¨ãã¯ã‚¯ãƒ­ã‚¹ãƒœã‚¦ã‚’æŒã£ã¦ã„ã‚‹ãŸã‚ä½•ã‚‚å‡¦ç†ã—ãªã„
 	if (m_nowSlotIdx != 0)
 	{
 		m_angle += 0.04f;
 		m_transparency = abs(sinf(m_angle) / 2.5f) + 0.1f;
 
-		//ü•ª‚Ìn“_‚ÆI“_‚ğİ’è
+		//ç·šåˆ†ã®å§‹ç‚¹ã¨çµ‚ç‚¹ã‚’è¨­å®š
 		auto start = playerPos;
 		auto end = playerPos + playerVec * 30;
 
-		//İ’u‰Â”\‚Èƒgƒ‰ƒbƒv‚ÌÀ•W•ª‰ñ‚·
+		//è¨­ç½®å¯èƒ½ãªãƒˆãƒ©ãƒƒãƒ—ã®åº§æ¨™åˆ†å›ã™
 		for (auto pos : m_trapPositions)
 		{
-			//ü•ª‚Æƒgƒ‰ƒbƒvİ’u‰Â”\À•W‚Ì‹——£‚ğŒvZ‚·‚é
+			//ç·šåˆ†ã¨ãƒˆãƒ©ãƒƒãƒ—è¨­ç½®å¯èƒ½åº§æ¨™ã®è·é›¢ã‚’è¨ˆç®—ã™ã‚‹
 			//float length = Segment_Point_MinLength(start.ConvertToVECTOR(), end.ConvertToVECTOR(), pos.ConvertToVECTOR());
 			float length = (pos - end).Size();
 
@@ -132,7 +133,7 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 
 		}
 
-		//UŒ‚ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚Æ‚«
+		//æ”»æ’ƒãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã¨ã
 		if (input->GetIsPushedTriggerButton(true))
 		{
 			if (m_pushZLCount == 0 && !isPlayerSurvival)
@@ -140,35 +141,35 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 
 				m_isAlreadyPlaced = false;
 
-				//‚·‚Å‚Éİ’u‚³‚ê‚½ã©‚ÌÀ•W‚ğŒ©‚Ä
+				//ã™ã§ã«è¨­ç½®ã•ã‚ŒãŸç½ ã®åº§æ¨™ã‚’è¦‹ã¦
 				for (auto trap : m_traps)
 				{
-					//‚·‚Å‚É‚»‚ÌÀ•W‚Éã©‚ªİ’u‚³‚ê‚Ä‚¢‚½‚ç
+					//ã™ã§ã«ãã®åº§æ¨™ã«ç½ ãŒè¨­ç½®ã•ã‚Œã¦ã„ãŸã‚‰
 					if (trap->GetPos() == m_previewPos)
 					{
-						//‚·‚Å‚É’u‚©‚ê‚Ä‚¢‚éƒtƒ‰ƒO‚ğtrue‚É‚·‚é
+						//ã™ã§ã«ç½®ã‹ã‚Œã¦ã„ã‚‹ãƒ•ãƒ©ã‚°ã‚’trueã«ã™ã‚‹
 						m_isAlreadyPlaced = true;
 
-						//ƒvƒŒƒC‚µ‚Ä‚¢‚él‚É•¶š‚Å
-						// u‚·‚Å‚Éã©‚ª’u‚©‚ê‚Ä‚¢‚Ü‚·v“I‚È‚Ì‚ğ•\¦‚µ‚Ä‚ ‚°‚½‚¢
+						//ãƒ—ãƒ¬ã‚¤ã—ã¦ã„ã‚‹äººã«æ–‡å­—ã§
+						// ã€Œã™ã§ã«ç½ ãŒç½®ã‹ã‚Œã¦ã„ã¾ã™ã€çš„ãªã®ã‚’è¡¨ç¤ºã—ã¦ã‚ã’ãŸã„
 					}
 				}
 
-				//’u‚±‚¤‚Æ‚µ‚Ä‚¢‚éÀ•W‚Éã©‚ª‚·‚Å‚É’u‚©‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç
+				//ç½®ã“ã†ã¨ã—ã¦ã„ã‚‹åº§æ¨™ã«ç½ ãŒã™ã§ã«ç½®ã‹ã‚Œã¦ã„ãªã‹ã£ãŸã‚‰
 				if (!m_isAlreadyPlaced)
 				{
-					//true‚ª‹A‚Á‚Ä‚«‚½‚ç¬Œ÷Afalse‚ª‹A‚Á‚Ä‚«‚½‚ç¸”s(ƒ|ƒCƒ“ƒg•s‘«)
+					//trueãŒå¸°ã£ã¦ããŸã‚‰æˆåŠŸã€falseãŒå¸°ã£ã¦ããŸã‚‰å¤±æ•—(ãƒã‚¤ãƒ³ãƒˆä¸è¶³)
 					if (!CreateTrap(slotNum, physics, trapPoint))
 					{
-						//ƒvƒŒƒC‚µ‚Ä‚¢‚él‚É•¶š‚Å
-						// uƒ|ƒCƒ“ƒg‚ª‘«‚è‚Ü‚¹‚ñv“I‚È‚Ì‚ğ•\¦‚µ‚Ä‚ ‚°‚½‚¢
+						//ãƒ—ãƒ¬ã‚¤ã—ã¦ã„ã‚‹äººã«æ–‡å­—ã§
+						// ã€Œãƒã‚¤ãƒ³ãƒˆãŒè¶³ã‚Šã¾ã›ã‚“ã€çš„ãªã®ã‚’è¡¨ç¤ºã—ã¦ã‚ã’ãŸã„
 
 					}
-					else	//¬Œ÷‚µ‚Ä‚¢‚½‚ç‚±‚±‚ÅƒGƒtƒFƒNƒg‚ğo‚·
+					else	//æˆåŠŸã—ã¦ã„ãŸã‚‰ã“ã“ã§ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å‡ºã™
 					{
-						//İ’uƒGƒtƒFƒNƒg‚Ì¶¬
+						//è¨­ç½®ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ç”Ÿæˆ
 						EffectManager::GetInstance().CreateEffect("CreateTrap", m_previewPos);
-						//İ’u‰¹‚ğ–Â‚ç‚·
+						//è¨­ç½®éŸ³ã‚’é³´ã‚‰ã™
 						SoundManager::GetInstance().PlaySE("trap");
 					}
 				}
@@ -186,7 +187,7 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 		m_angle = 0.0f;
 	}
 
-	//‚·‚Å‚Éİ’u‚³‚ê‚½ã©‚ÌÀ•W‚ğŒ©‚Ä
+	//ã™ã§ã«è¨­ç½®ã•ã‚ŒãŸç½ ã®åº§æ¨™ã‚’è¦‹ã¦
 	for (auto trap : m_traps)
 	{
 		trap->Update();
@@ -194,11 +195,11 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 }
 
 /// <summary>
-/// •`‰æ
+/// æç”»
 /// </summary>
 void TrapManager::Draw()
 {
-	//‚·‚Å‚Éİ’u‚³‚ê‚½ã©‚ÌÀ•W‚ğŒ©‚Ä
+	//ã™ã§ã«è¨­ç½®ã•ã‚ŒãŸç½ ã®åº§æ¨™ã‚’è¦‹ã¦
 	for (auto trap : m_traps)
 	{
 		trap->Draw();
@@ -210,14 +211,14 @@ void TrapManager::Draw()
 }
 
 /// <summary>
-/// ƒgƒ‰ƒbƒv‚Ì‚Ç‚±‚Éİ’u‚·‚é‚©Œ©‚é‚½‚ß‚Ì•`‰æ
+/// ãƒˆãƒ©ãƒƒãƒ—ã®ã©ã“ã«è¨­ç½®ã™ã‚‹ã‹è¦‹ã‚‹ãŸã‚ã®æç”»
 /// </summary>
 void TrapManager::PreviewDraw()
 {
 	switch (m_nowSlotIdx)
 	{
 	case 0:
-		//0‚Ì‚ÍƒNƒƒXƒ{ƒE‚ğ‚Á‚Ä‚¢‚é‚½‚ß‰½‚à•`‰æ‚µ‚È‚¢
+		//0ã®æ™‚ã¯ã‚¯ãƒ­ã‚¹ãƒœã‚¦ã‚’æŒã£ã¦ã„ã‚‹ãŸã‚ä½•ã‚‚æç”»ã—ãªã„
 		break;
 	case 1:
 		MV1SetPosition(m_modelHandles[modelIdx::SpikeFrame], m_previewPos.ConvertToVECTOR());
@@ -246,87 +247,87 @@ void TrapManager::PreviewDraw()
 }
 
 /// <summary>
-/// ƒgƒ‰ƒbƒv‚Ì¶¬
+/// ãƒˆãƒ©ãƒƒãƒ—ã®ç”Ÿæˆ
 /// </summary>
-/// <param name="slotNum">Œ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒXƒƒbƒg</param>
-/// <param name="physics">•¨—ƒNƒ‰ƒX</param>
-/// <param name="trapPoint">ã©ƒ|ƒCƒ“ƒg</param>
+/// <param name="slotNum">ç¾åœ¨é¸æŠã—ã¦ã„ã‚‹ã‚¹ãƒ­ãƒƒãƒˆ</param>
+/// <param name="physics">ç‰©ç†ã‚¯ãƒ©ã‚¹</param>
+/// <param name="trapPoint">ç½ ãƒã‚¤ãƒ³ãƒˆ</param>
 /// <returns></returns>
 bool TrapManager::CreateTrap(int slotNum, std::shared_ptr<MyLib::Physics> physics, int* trapPoint)
 {
 
 	if (slotNum == 1)
 	{
-		//İ’uƒRƒXƒgˆÈã‚Ìã©ƒ|ƒCƒ“ƒg‚ª‚ ‚é‚©Šm”F‚·‚é
-		//‘«‚è‚Ä‚¢‚½‚çÁ”ï‚µ‚Äã©‚ğİ’u‚·‚é
+		//è¨­ç½®ã‚³ã‚¹ãƒˆä»¥ä¸Šã®ç½ ãƒã‚¤ãƒ³ãƒˆãŒã‚ã‚‹ã‹ç¢ºèªã™ã‚‹
+		//è¶³ã‚Šã¦ã„ãŸã‚‰æ¶ˆè²»ã—ã¦ç½ ã‚’è¨­ç½®ã™ã‚‹
 		if (*trapPoint >= kSpikeCost)
 		{
 			*trapPoint -= kSpikeCost;
 
-			//ã©‚ğİ’u‚·‚é
+			//ç½ ã‚’è¨­ç½®ã™ã‚‹
 			std::shared_ptr<TrapBase> add;
 			add = std::make_shared<SpikeTrap>(physics);
 			add->SetPos(m_previewPos);
 			add->Init(MV1DuplicateModel(m_modelHandles[0]), MV1DuplicateModel(m_modelHandles[1]));
 			m_traps.emplace_back(add);
 
-			//İ’u¬Œ÷
+			//è¨­ç½®æˆåŠŸ
 			return true;
 		}
 		else
 		{
-			//ƒ|ƒCƒ“ƒg•s‘«‚Åİ’u¸”s
+			//ãƒã‚¤ãƒ³ãƒˆä¸è¶³ã§è¨­ç½®å¤±æ•—
 			return false;
 		}
 
 	}
 	else if (slotNum == 2)
 	{
-		//İ’uƒRƒXƒgˆÈã‚Ìã©ƒ|ƒCƒ“ƒg‚ª‚ ‚é‚©Šm”F‚·‚é
-		//‘«‚è‚Ä‚¢‚È‚©‚Á‚½‚çI‚í‚é
+		//è¨­ç½®ã‚³ã‚¹ãƒˆä»¥ä¸Šã®ç½ ãƒã‚¤ãƒ³ãƒˆãŒã‚ã‚‹ã‹ç¢ºèªã™ã‚‹
+		//è¶³ã‚Šã¦ã„ãªã‹ã£ãŸã‚‰çµ‚ã‚ã‚‹
 		if (*trapPoint >= kCutterCost)
 		{
-			//‘«‚è‚Ä‚¢‚½‚çÁ”ï‚·‚é
+			//è¶³ã‚Šã¦ã„ãŸã‚‰æ¶ˆè²»ã™ã‚‹
 			*trapPoint -= kCutterCost;
 
-			//ã©‚ğİ’u‚·‚é
+			//ç½ ã‚’è¨­ç½®ã™ã‚‹
 			std::shared_ptr<TrapBase> add;
 			add = std::make_shared<CutterTrap>(physics);
 			add->SetPos(m_previewPos);
 			add->Init(MV1DuplicateModel(m_modelHandles[Cutter]));
 			m_traps.emplace_back(add);
 
-			//İ’u¬Œ÷
+			//è¨­ç½®æˆåŠŸ
 			return true;
 		}
 		else
 		{
-			//ƒ|ƒCƒ“ƒg•s‘«‚Åİ’u¸”s
+			//ãƒã‚¤ãƒ³ãƒˆä¸è¶³ã§è¨­ç½®å¤±æ•—
 			return false;
 		}
 	}
 	else if (slotNum == 3)
 	{
-		////İ’uƒRƒXƒgˆÈã‚Ìã©ƒ|ƒCƒ“ƒg‚ª‚ ‚é‚©Šm”F‚·‚é
-		////‘«‚è‚Ä‚¢‚È‚©‚Á‚½‚çI‚í‚é
+		////è¨­ç½®ã‚³ã‚¹ãƒˆä»¥ä¸Šã®ç½ ãƒã‚¤ãƒ³ãƒˆãŒã‚ã‚‹ã‹ç¢ºèªã™ã‚‹
+		////è¶³ã‚Šã¦ã„ãªã‹ã£ãŸã‚‰çµ‚ã‚ã‚‹
 		//if (*trapPoint >= 200)
 		//{
-		//	//‘«‚è‚Ä‚¢‚½‚çÁ”ï‚·‚é
+		//	//è¶³ã‚Šã¦ã„ãŸã‚‰æ¶ˆè²»ã™ã‚‹
 		//	*trapPoint -= 200;
 
-		//	//ã©‚ğİ’u‚·‚é
+		//	//ç½ ã‚’è¨­ç½®ã™ã‚‹
 		//	std::shared_ptr<TrapBase> add;
 		//	add = std::make_shared<HammerTrap>(physics);
 		//	add->SetPos(m_previewPos);
 		//	add->Init(MV1DuplicateModel(m_modelHandles[Hammer]));
 		//	m_traps.emplace_back(add);
 
-		//	//İ’u¬Œ÷
+		//	//è¨­ç½®æˆåŠŸ
 		//	return true;
 		//}
 		//else
 		//{
-		//	//ƒ|ƒCƒ“ƒg•s‘«‚Åİ’u¸”s
+		//	//ãƒã‚¤ãƒ³ãƒˆä¸è¶³ã§è¨­ç½®å¤±æ•—
 		//	return false;
 		//}
 	}

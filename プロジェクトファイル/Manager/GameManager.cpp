@@ -1,4 +1,4 @@
-#include "GameManager.h"
+ï»¿#include "GameManager.h"
 #include "EnemyManager.h"
 #include "Camera.h"
 #include "Player.h"
@@ -12,17 +12,17 @@
 #include "EffectManager.h"
 #include "SoundManager.h"
 
-#include "SceneManager.h"	//scoreInfo‚ğˆµ‚¤‚½‚ß‚É•K—v
+#include "SceneManager.h"	//scoreInfoã‚’æ‰±ã†ãŸã‚ã«å¿…è¦
 
 namespace
 {
-	//ƒIƒuƒWƒFƒNƒg‚ÌÅ‘åHP
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æœ€å¤§HP
 	constexpr int kObjectHPMax = 20;
 	constexpr int kTrapNum = 2;
 
 	constexpr float kHpBarScale = 0.225f;
 
-	//ƒtƒHƒ“ƒg‚ÌƒpƒX
+	//ãƒ•ã‚©ãƒ³ãƒˆã®ãƒ‘ã‚¹
 	const char* kFontPath = "data/font/Dela-Gothic-One.ttf";
 	constexpr int kFontSize = 24;
 
@@ -31,7 +31,7 @@ namespace
 	
 	constexpr int kMaxPortionNum = 5;
 
-	//ƒ~ƒjƒ}ƒbƒvŠÖŒW
+	//ãƒŸãƒ‹ãƒãƒƒãƒ—é–¢ä¿‚
 	const char* kMiniMapFrontName = "data/img/miniMap_";
 	const char* kMiniMapBackName = ".png";
 	constexpr int kMiniMapX = 1080;
@@ -45,9 +45,9 @@ namespace
 }
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
-/// <param name="stageName">ƒXƒe[ƒW–¼</param>
+/// <param name="stageName">ã‚¹ãƒ†ãƒ¼ã‚¸å</param>
 GameManager::GameManager(std::string stageName) :
 	m_stageName(stageName),
 	m_pPlayer(nullptr),
@@ -59,8 +59,6 @@ GameManager::GameManager(std::string stageName) :
 	m_score(nullptr),
 	m_playerKillCount(nullptr),
 	m_trapKillCount(nullptr),
-	m_arrowHandle(-1),
-	m_portionHandle(-1),
 	m_uiHandle(-1),
 	m_pPhysics(nullptr),
 	m_objectHP(kObjectHPMax),
@@ -96,11 +94,8 @@ GameManager::GameManager(std::string stageName) :
 
 	m_pPhysics = std::make_shared<MyLib::Physics>(MapDataLoad::GetInstance().GetStageCollisionHandle(), MapDataLoad::GetInstance().GetStageEnemyCollisionHandle());
 
-	m_arrowHandle = MV1LoadModel("data/model/arrow.mv1");
-	m_portionHandle = MV1LoadModel("data/model/bottle_red.mv1");
-
 	m_pPlayer = std::make_shared<Player>();
-	m_pPlayer->Init(m_pPhysics, &m_arrowHandle);
+	m_pPlayer->Init(m_pPhysics);
 	m_pPlayer->SetSlotNumMax(kTrapNum);
 
 
@@ -114,12 +109,12 @@ GameManager::GameManager(std::string stageName) :
 
 	m_objectUIBgHandle = LoadGraph("data/img/ui_button.png");
 
-	//ƒAƒCƒeƒ€ƒXƒƒbƒg‚Ì‰æ‘œ‚ğƒ[ƒh
+	//ã‚¢ã‚¤ãƒ†ãƒ ã‚¹ãƒ­ãƒƒãƒˆã®ç”»åƒã‚’ãƒ­ãƒ¼ãƒ‰
 	m_slotHandle.push_back(LoadGraph("data/img/ui_slot_crossbow.png"));
 	m_slotHandle.push_back(LoadGraph("data/img/ui_slot_spikeTrap.png"));
 	m_slotHandle.push_back(LoadGraph("data/img/ui_slot_cutterTrap.png"));
 
-	//HPƒo[‚Ì‰æ‘œ‚ğƒ[ƒh
+	//HPãƒãƒ¼ã®ç”»åƒã‚’ãƒ­ãƒ¼ãƒ‰
 	m_hpBarHandle.push_back(LoadGraph("data/img/ui_hpBar_base.png"));
 	m_hpBarHandle.push_back(LoadGraph("data/img/ui_hpBar_bar.png"));
 	m_hpBarHandle.push_back(LoadGraph("data/img/ui_hpBar_bar_bg.png"));
@@ -141,7 +136,7 @@ GameManager::GameManager(std::string stageName) :
 	}
 	m_miniMapHandle = LoadGraph((kMiniMapFrontName + m_stageName + kMiniMapBackName).c_str());
 
-	//HPƒo[‚Ì‰æ‘œƒTƒCƒY‚ğæ“¾‚·‚é
+	//HPãƒãƒ¼ã®ç”»åƒã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 	GetGraphSize(m_hpBarHandle[1], &m_hpBarWidth, &m_hpBarHeight);
 
 	m_fontHandle = Font::GetInstance().GetFontHandle(kFontPath, "Dela Gothic One", kFontSize);
@@ -165,13 +160,13 @@ GameManager::GameManager(std::string stageName) :
 
 	SoundManager::GetInstance().Load("inGameBgm", "data/sound/bgm/inGame.mp3", true);
 
-	//ƒ^ƒCƒgƒ‹‚Ìbgm‚ª‚È‚Á‚Ä‚¢‚½‚ç~‚ß‚é
+	//ã‚¿ã‚¤ãƒˆãƒ«ã®bgmãŒãªã£ã¦ã„ãŸã‚‰æ­¢ã‚ã‚‹
 	SoundManager::GetInstance().StopBGM("titleBgm");
 }
 
 
 /// <summary>
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 GameManager::~GameManager()
 {
@@ -182,9 +177,6 @@ GameManager::~GameManager()
 	delete m_playerKillCount;
 	m_trapKillCount = nullptr;
 	delete m_trapKillCount;
-
-	MV1DeleteModel(m_arrowHandle);
-	MV1DeleteModel(m_portionHandle);
 
 	DeleteGraph(m_uiHandle);
 	
@@ -213,9 +205,9 @@ GameManager::~GameManager()
 }
 
 /// <summary>
-/// ‰Šú‰»
+/// åˆæœŸåŒ–
 /// </summary>
-/// <param name="pScore">ƒXƒRƒAŒvZ—p•Ï”ƒ|ƒCƒ“ƒ^</param>
+/// <param name="pScore">ã‚¹ã‚³ã‚¢è¨ˆç®—ç”¨å¤‰æ•°ãƒã‚¤ãƒ³ã‚¿</param>
 void GameManager::Init(std::shared_ptr<ScoreInfo> pScore)
 {
 	m_score = pScore;
@@ -227,9 +219,9 @@ void GameManager::Init(std::shared_ptr<ScoreInfo> pScore)
 }
 
 /// <summary>
-/// XV
+/// æ›´æ–°
 /// </summary>
-/// <param name="input">“ü—ÍƒNƒ‰ƒXƒ|ƒCƒ“ƒ^</param>
+/// <param name="input">å…¥åŠ›ã‚¯ãƒ©ã‚¹ãƒã‚¤ãƒ³ã‚¿</param>
 /// <param name="pSceneGame"></param>
 void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 {
@@ -263,8 +255,6 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 			SoundManager::GetInstance().PlaySE("clear");
 		}
 
-
-
 		pSceneGame->ToResultScene(true);
 		return;
 	}
@@ -274,7 +264,7 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 		return;
 	}
 
-	m_pEnemyManager->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->IsGetPlayerDown());
+	m_pEnemyManager->Update(m_pPhysics, this, m_pPlayer->GetPos(), m_pCamera->GetDirection(), !m_pPlayer->IsGetPlayerDown());
 
 	m_pTrapManager->Update(input, m_pPlayer->GetNowSlotNum(), m_pPlayer->GetPos(), m_pCamera->GetDirection(), m_pPlayer->IsGetPlayerDown(), &m_trapPoint, m_nowPhase, m_pPhysics);
 
@@ -288,21 +278,21 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 		}
 	}
 
-	//isExist‚ªfalse‚ÌƒIƒuƒWƒFƒNƒg‚ğíœ
+	//isExistãŒfalseã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤
 	auto it = std::remove_if(m_pPortion.begin(), m_pPortion.end(), [](auto& v)
 		{
 			return v->GetIsExist() == false;
 		});
 	m_pPortion.erase(it, m_pPortion.end());
 
-	// •¨—XV
+	// ç‰©ç†æ›´æ–°
 	m_pPhysics->Update();
 
-	//ƒvƒŒƒCƒ„[‚Ìî•ñ‚ğæ“¾
-	m_playerSlotIdx = m_pPlayer->GetNowSlotNum();	//Œ»İ‘I‘ğ‚µ‚Ä‚¢‚éƒXƒƒbƒg‚Ì”Ô†
-	m_playerHp = m_pPlayer->GetHp();				//Œ»İ‚ÌƒvƒŒƒCƒ„[‚ÌHP
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æƒ…å ±ã‚’å–å¾—
+	m_playerSlotIdx = m_pPlayer->GetNowSlotNum();	//ç¾åœ¨é¸æŠã—ã¦ã„ã‚‹ã‚¹ãƒ­ãƒƒãƒˆã®ç•ªå·
+	m_playerHp = m_pPlayer->GetHp();				//ç¾åœ¨ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®HP
 
-	//ƒvƒŒƒCƒ„[‚ÌÅ‘åHp‚Ì’l‚ğæ“¾
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æœ€å¤§Hpã®å€¤ã‚’å–å¾—
 	if (m_playerMaxHp == 0)
 	{
 		m_playerMaxHp = m_playerHp;
@@ -320,16 +310,16 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 			}
 		}
 
-		//ƒvƒŒƒCƒ„[‚ª€‚ñ‚¾‚Æ‚«
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒæ­»ã‚“ã ã¨ã
 		if (m_pPlayer->IsGetPlayerDead())
 		{
 			if (m_objectHP <= 5)
 			{
-				//•œŠˆ‚Å‚«‚È‚¢ó‹µ‚¾‚Á‚½‚çƒQ[ƒ€ƒI[ƒo[‚É
+				//å¾©æ´»ã§ããªã„çŠ¶æ³ã ã£ãŸã‚‰ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã«
 				m_nowPhase = ePhaseName::Gameover;
 			}
 
-			//ƒIƒuƒWƒFƒNƒgHP‚ª5ˆÈã‚ ‚ê‚Î5Á”ï‚µ‚ÄƒvƒŒƒCƒ„[‚ğ•œŠˆ‚³‚¹‚é
+			//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆHPãŒ5ä»¥ä¸Šã‚ã‚Œã°5æ¶ˆè²»ã—ã¦ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å¾©æ´»ã•ã›ã‚‹
 			if (m_objectHP > 5)
 			{
 				m_objectHP -= 5;
@@ -338,7 +328,7 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 				m_pPlayer = nullptr;
 
 				m_pPlayer = std::make_shared<Player>();
-				m_pPlayer->Init(m_pPhysics, &m_arrowHandle);
+				m_pPlayer->Init(m_pPhysics);
 				m_pPlayer->SetSlotNumMax(kTrapNum);
 
 				SoundManager::GetInstance().PlaySE("revival");
@@ -350,21 +340,21 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 		m_playerDownCount = 0;
 	}
 
-	//ƒIƒuƒWƒFƒNƒgHP‚ª0ˆÈ‰º‚É‚È‚Á‚½‚çƒQ[ƒ€ƒI[ƒo[‚É‚·‚é
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆHPãŒ0ä»¥ä¸‹ã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã«ã™ã‚‹
 	if (m_objectHP <= 0)
 	{
 		m_nowPhase = ePhaseName::Gameover;
 	}
 
-	//Œ»İ‚ÌƒtƒF[ƒY‚ÌƒJƒEƒ“ƒg‚ği‚ß‚é
+	//ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚ºã®ã‚«ã‚¦ãƒ³ãƒˆã‚’é€²ã‚ã‚‹
 	m_phaseFrame++;
 
-	//Å‰‚ÉOKƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚çÅ‰‚Ì€”õƒtƒF[ƒY‚ğI—¹‚·‚é
+	//æœ€åˆã«OKãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰æœ€åˆã®æº–å‚™ãƒ•ã‚§ãƒ¼ã‚ºã‚’çµ‚äº†ã™ã‚‹
 	if (input->IsTriggered("Y"))
 	{
-		//–{—ˆ‚ÍÅ‰‚ÌƒtƒF[ƒY‚Ì‚İƒvƒŒƒCƒ„[‚Ì”CˆÓ‚Ìƒ^ƒCƒ~ƒ“ƒO‚ÅŸ‚ÌƒtƒF[ƒY‚Éis‚³‚¹‚é
-		//TODO:ƒtƒF[ƒY‚²‚Æ‚É“G‚ğ¶¬‚µ‚ÄA‚»‚ÌƒtƒF[ƒY‚Ì“G‚ğ‘S•”“|‚µ‚½‚çŸ‚ÌƒtƒF[ƒY‚Éis‚·‚éˆ—‚ğì‚é
-		//		‚»‚µ‚½‚ç‚±‚Ì•”•ª‚Ìˆ—‚ğ–ß‚·
+		//æœ¬æ¥ã¯æœ€åˆã®ãƒ•ã‚§ãƒ¼ã‚ºã®ã¿ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä»»æ„ã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§æ¬¡ã®ãƒ•ã‚§ãƒ¼ã‚ºã«é€²è¡Œã•ã›ã‚‹
+		//TODO:ãƒ•ã‚§ãƒ¼ã‚ºã”ã¨ã«æ•µã‚’ç”Ÿæˆã—ã¦ã€ãã®ãƒ•ã‚§ãƒ¼ã‚ºã®æ•µã‚’å…¨éƒ¨å€’ã—ãŸã‚‰æ¬¡ã®ãƒ•ã‚§ãƒ¼ã‚ºã«é€²è¡Œã™ã‚‹å‡¦ç†ã‚’ä½œã‚‹
+		//		ãã—ãŸã‚‰ã“ã®éƒ¨åˆ†ã®å‡¦ç†ã‚’æˆ»ã™
 		//if (m_nowPhaseName != ePhaseName::SecondPrePhase && m_nowPhaseName != ePhaseName::ThirdPrePhase)
 #ifdef _DEBUG
 #else
@@ -375,7 +365,7 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 		}
 	}
 
-	//€”õƒtƒF[ƒY‚É“ü‚Á‚½‚ç10•bŒã‚Éí“¬ƒtƒF[ƒY‚É“ü‚é‚æ‚¤‚É‚·‚é
+	//æº–å‚™ãƒ•ã‚§ãƒ¼ã‚ºã«å…¥ã£ãŸã‚‰10ç§’å¾Œã«æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚ºã«å…¥ã‚‹ã‚ˆã†ã«ã™ã‚‹
 	if (m_nowPhase == ePhaseName::SecondPrePhase || m_nowPhase == ePhaseName::ThirdPrePhase)
 	{
 		if (m_phaseFrame >= 600)
@@ -401,7 +391,7 @@ void GameManager::Update(std::shared_ptr<Input>& input, SceneGame* pSceneGame)
 }
 
 /// <summary>
-/// •`‰æ
+/// æç”»
 /// </summary>
 void GameManager::Draw()
 {
@@ -422,11 +412,11 @@ void GameManager::Draw()
 
 	DrawCircle(640, 390, m_pPlayer->GetDifAngle(), 0xff0000, false);
 
-	//ƒXƒƒbƒgƒAƒCƒeƒ€‚ÌƒJ[ƒ\ƒ‹•`‰æ
+	//ã‚¹ãƒ­ãƒƒãƒˆã‚¢ã‚¤ãƒ†ãƒ ã®ã‚«ãƒ¼ã‚½ãƒ«æç”»
 	int center = 540 + m_playerSlotIdx * 100;
 	DrawBox(center + 34, 660 + 34, center - 34, 660 - 34, 0xdd0000, false);
 
-	//ƒXƒƒbƒgƒAƒCƒeƒ€‚Ì•`‰æ
+	//ã‚¹ãƒ­ãƒƒãƒˆã‚¢ã‚¤ãƒ†ãƒ ã®æç”»
 	for (int i = 0; i < m_slotHandle.size(); i++)
 	{
 		DrawRotaGraph(540 + i * 100, 660, 1.0f, 0.0f, m_slotHandle[i], true);
@@ -434,57 +424,57 @@ void GameManager::Draw()
 	DrawFormatStringToHandle(640-kFontSize-kFontSize/2, 690,0xffffff,m_fontHandle,"400");
 	DrawFormatStringToHandle(740 - kFontSize - kFontSize / 2, 690,0xffffff,m_fontHandle,"250");
 
-	//HPƒo[‚ÌŒvZ
-	//ƒvƒŒƒCƒ„[‚ÌHP€ƒvƒŒƒCƒ„[‚ÌÅ‘åHP‚ÅŒ»İ‚ÌHP‚ÌŠ„‡‚ğo‚·
+	//HPãƒãƒ¼ã®è¨ˆç®—
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®HPÃ·ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æœ€å¤§HPã§ç¾åœ¨ã®HPã®å‰²åˆã‚’å‡ºã™
 	float widthScale = static_cast<float>(m_playerHp) / static_cast<float>(m_playerMaxHp);
-	//HP‚ÌŠ„‡•ª‚Ì‰æ‘œ‚ÌX•‚ğo‚·
+	//HPã®å‰²åˆåˆ†ã®ç”»åƒã®Xå¹…ã‚’å‡ºã™
 	int width = static_cast<int>(m_hpBarWidth * widthScale);
-	//‰½‚à‚µ‚È‚¢‚Æ‰æ‘œ‚ª’†S‚É‚æ‚Á‚Ä‚¢‚­‚½‚ß‰æ‘œ‚Ì’†SÀ•W‚ğHP‚É‰‚¶‚Ä‚¸‚ç‚·
+	//ä½•ã‚‚ã—ãªã„ã¨ç”»åƒãŒä¸­å¿ƒã«ã‚ˆã£ã¦ã„ããŸã‚ç”»åƒã®ä¸­å¿ƒåº§æ¨™ã‚’HPã«å¿œã˜ã¦ãšã‚‰ã™
 	int posX = 240 - static_cast<int>((m_hpBarWidth - width) * kHpBarScale / 2);
 
-	//Hpƒo[‚Ì•`‰æ
+	//Hpãƒãƒ¼ã®æç”»
 	DrawRotaGraph(220, 30, kHpBarScale, 0.0f, m_hpBarHandle[0], true);
 	DrawRotaGraph(236, 30, kHpBarScale, 0.0f, m_hpBarHandle[2], true);
 	DrawRectRotaGraph(posX, 30, 0, 0, width, m_hpBarHeight, kHpBarScale, 0.0f, m_hpBarHandle[1], true);
 	DrawRotaGraph(236, 25, kHpBarScale, 0.0f, m_hpBarHandle[3], true);
 
-	//ƒvƒŒƒCƒ„[‚Ì³–Ê‚É‚¢‚é“G‚ÌHPƒo[‚Ì•`‰æ
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ­£é¢ã«ã„ã‚‹æ•µã®HPãƒãƒ¼ã®æç”»
 	if (m_pEnemyManager->GetFrontEnemyHp() != 0)
 	{
-		//HPƒo[‚ÌŒvZ
-		//ƒvƒŒƒCƒ„[‚ÌHP€ƒvƒŒƒCƒ„[‚ÌÅ‘åHP‚ÅŒ»İ‚ÌHP‚ÌŠ„‡‚ğo‚·
+		//HPãƒãƒ¼ã®è¨ˆç®—
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®HPÃ·ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æœ€å¤§HPã§ç¾åœ¨ã®HPã®å‰²åˆã‚’å‡ºã™
 		float widthScale = static_cast<float>(m_pEnemyManager->GetFrontEnemyHp()) / static_cast<float>(m_pEnemyManager->GetFrontEnemyMaxHp());
-		//HP‚ÌŠ„‡•ª‚Ì‰æ‘œ‚ÌX•‚ğo‚·
+		//HPã®å‰²åˆåˆ†ã®ç”»åƒã®Xå¹…ã‚’å‡ºã™
 		int width = static_cast<int>(m_hpBarWidth * widthScale);
-		//‰½‚à‚µ‚È‚¢‚Æ‰æ‘œ‚ª’†S‚É‚æ‚Á‚Ä‚¢‚­‚½‚ß‰æ‘œ‚Ì’†SÀ•W‚ğHP‚É‰‚¶‚Ä‚¸‚ç‚·
+		//ä½•ã‚‚ã—ãªã„ã¨ç”»åƒãŒä¸­å¿ƒã«ã‚ˆã£ã¦ã„ããŸã‚ç”»åƒã®ä¸­å¿ƒåº§æ¨™ã‚’HPã«å¿œã˜ã¦ãšã‚‰ã™
 		int posX = 620 - static_cast<int>((m_hpBarWidth - width) * kHpBarScale/ 1.4 / 2);
 
-		//Hpƒo[‚Ì•`‰æ
+		//Hpãƒãƒ¼ã®æç”»
 		DrawRotaGraph(600, 30, kHpBarScale / 1.4, 0.0f, m_hpBarHandle[0], true);
 		DrawRotaGraph(616, 30, kHpBarScale / 1.4, 0.0f, m_hpBarHandle[2], true);
 		DrawRectRotaGraph(posX, 30, 0, 0, width, m_hpBarHeight, kHpBarScale/ 1.4, 0.0f, m_hpBarHandle[1], true);
 		DrawRotaGraph(616, 27, kHpBarScale / 1.4, 0.0f, m_hpBarHandle[3], true);
 	}
 
-	//ã©ƒ|ƒCƒ“ƒg‚Ì•`‰æ
+	//ç½ ãƒã‚¤ãƒ³ãƒˆã®æç”»
 	DrawRotaGraph(102, 720 - 28, 0.8f, 0.0f, m_uiHandle, true);
 	DrawFormatStringToHandle(40, 670, 0xffffff, m_trapPointHandle, "%d", m_trapPoint);
 
-	//Å‰‚Ì€”õƒtƒF[ƒY‚È‚çƒ`ƒ…[ƒgƒŠƒAƒ‹ƒeƒLƒXƒg‚ğ•\¦‚·‚é
+	//æœ€åˆã®æº–å‚™ãƒ•ã‚§ãƒ¼ã‚ºãªã‚‰ãƒãƒ¥ãƒ¼ãƒˆãƒªã‚¢ãƒ«ãƒ†ã‚­ã‚¹ãƒˆã‚’è¡¨ç¤ºã™ã‚‹
 	if (m_nowPhase == 0)
 	{
-		DrawStringToHandle(640 - 36 *3-12, 16, "€”õ‚ª‚Å‚«‚½‚ç", 0xffffff, m_trapPointHandle);
-		DrawStringToHandle(640 - 36 *4, 48, "Yƒ{ƒ^ƒ“", 0xffff00, m_trapPointHandle);
-		DrawStringToHandle(640, 48, "‚ğ‰Ÿ‚»‚¤!", 0xffffff, m_trapPointHandle);
+		DrawStringToHandle(640 - 36 *3-12, 16, "æº–å‚™ãŒã§ããŸã‚‰", 0xffffff, m_trapPointHandle);
+		DrawStringToHandle(640 - 36 *4, 48, "Yãƒœã‚¿ãƒ³", 0xffff00, m_trapPointHandle);
+		DrawStringToHandle(640, 48, "ã‚’æŠ¼ãã†!", 0xffffff, m_trapPointHandle);
 
 	}
 
 	if (m_nowPhase == ePhaseName::SecondPrePhase || m_nowPhase == ePhaseName::ThirdPrePhase)
 	{
-		DrawFormatStringToHandle(640 - kFontSize *5, 48, 0xffffff, m_fontHandle, "Ÿ‚ÌƒEƒF[ƒu‚Ü‚Å%d", (600 - m_phaseFrame)/60);
+		DrawFormatStringToHandle(640 - kFontSize *5, 48, 0xffffff, m_fontHandle, "æ¬¡ã®ã‚¦ã‚§ãƒ¼ãƒ–ã¾ã§%d", (600 - m_phaseFrame)/60);
 	}
 
-	//ƒEƒF[ƒu”‚Ì•\¦
+	//ã‚¦ã‚§ãƒ¼ãƒ–æ•°ã®è¡¨ç¤º
 	int waveNum = static_cast<int>(1 + m_nowPhase / 2);
 	if (waveNum > 3)
 	{
@@ -492,7 +482,7 @@ void GameManager::Draw()
 	}
 	
 
-	//ƒ~ƒjƒ}ƒbƒv‚Ì•`‰æ
+	//ãƒŸãƒ‹ãƒãƒƒãƒ—ã®æç”»
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
 	DrawBox(kMiniMapX, kMiniMapY, kMiniMapX + kMiniMapWidth, kMiniMapY + kMiniMapHeight, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
@@ -520,9 +510,9 @@ void GameManager::Draw()
 	DrawCircle(static_cast<int>(m_miniMapPlayerPos.x), static_cast<int>(m_miniMapPlayerPos.y), 2, 0x00ff00, true);
 
 
-	//ƒIƒuƒWƒFƒNƒg‚Ìc‚èHP‚Ì•`‰æ
+	//ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ®‹ã‚ŠHPã®æç”»
 	DrawRotaGraph(kCrystalHpGraph, 40, 0.3f, 0.0f, m_objectUIBgHandle, true);
-	//•¶š—ñ‚ÌŒ…”‚ª•Ï‚í‚é‚Æ’†S‚ª‚¸‚ê‚é‚½‚ß•â³
+	//æ–‡å­—åˆ—ã®æ¡æ•°ãŒå¤‰ã‚ã‚‹ã¨ä¸­å¿ƒãŒãšã‚Œã‚‹ãŸã‚è£œæ­£
 	int offset = - 2;
 	if (m_objectHP < 20)
 	{
@@ -534,13 +524,13 @@ void GameManager::Draw()
 #ifdef _DEBUG
 	DebugDraw();
 
-	//À•W‚ğŠj‚É‚·‚é‚½‚ß‚¾‚¯
+	//åº§æ¨™ã‚’æ ¸ã«ã™ã‚‹ãŸã‚ã ã‘
 	m_pCamera->DebugDraw();
-	DrawFormatString(1000, 0, 0xff0000, "ƒIƒuƒWƒFƒNƒgHP:%d", m_objectHP);
-	DrawFormatString(1000, 16, 0xff0000, "ã©ƒ|ƒCƒ“ƒg:%d", m_trapPoint);
-	//DrawFormatString(1000, 16, 0xff0000, "ƒvƒŒƒCƒ„[ƒ_ƒEƒ“ƒJƒEƒ“ƒg:%d", m_playerDownCount);
+	DrawFormatString(1000, 0, 0xff0000, "ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆHP:%d", m_objectHP);
+	DrawFormatString(1000, 16, 0xff0000, "ç½ ãƒã‚¤ãƒ³ãƒˆ:%d", m_trapPoint);
+	//DrawFormatString(1000, 16, 0xff0000, "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãƒ€ã‚¦ãƒ³ã‚«ã‚¦ãƒ³ãƒˆ:%d", m_playerDownCount);
 
-	//ƒ~ƒjƒ}ƒbƒv‚ğì¬‚·‚é—p
+	//ãƒŸãƒ‹ãƒãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹ç”¨
 	for (auto& pos : m_drawPos)
 	{
 		DrawBox(static_cast<int>(pos.x) - 2, static_cast<int>(pos.y) - 2, static_cast<int>(pos.x) + 2, static_cast<int>(pos.y) + 2, 0x0000ff, true);
@@ -550,50 +540,50 @@ void GameManager::Draw()
 }
 
 /// <summary>
-/// ƒfƒoƒbƒO•`‰æ
+/// ãƒ‡ãƒãƒƒã‚°æç”»
 /// </summary>
 void GameManager::DebugDraw()
 {
 	if (m_nowPhase == ePhaseName::FirstPrePhase)
 	{
-		DrawFormatString(560, 10, 0xff0000, "‘æ1€”õƒtƒF[ƒY");
+		DrawFormatString(560, 10, 0xff0000, "ç¬¬1æº–å‚™ãƒ•ã‚§ãƒ¼ã‚º");
 	}
 	else if (m_nowPhase == ePhaseName::FirstBattlePhase)
 	{
-		DrawFormatString(560, 10, 0xff0000, "‘æ1í“¬ƒtƒF[ƒY");
+		DrawFormatString(560, 10, 0xff0000, "ç¬¬1æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚º");
 	}
 	else if (m_nowPhase == ePhaseName::SecondPrePhase)
 	{
-		DrawFormatString(560, 10, 0xff0000, "‘æ2€”õƒtƒF[ƒY");
+		DrawFormatString(560, 10, 0xff0000, "ç¬¬2æº–å‚™ãƒ•ã‚§ãƒ¼ã‚º");
 	}
 	else if (m_nowPhase == ePhaseName::SecondBattlePhase)
 	{
-		DrawFormatString(560, 10, 0xff0000, "‘æ2í“¬ƒtƒF[ƒY");
+		DrawFormatString(560, 10, 0xff0000, "ç¬¬2æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚º");
 	}
 	else if (m_nowPhase == ePhaseName::ThirdPrePhase)
 	{
-		DrawFormatString(560, 10, 0xff0000, "‘æ3€”õƒtƒF[ƒY");
+		DrawFormatString(560, 10, 0xff0000, "ç¬¬3æº–å‚™ãƒ•ã‚§ãƒ¼ã‚º");
 	}
 	else if (m_nowPhase == ePhaseName::ThirdBattlePhase)
 	{
-		DrawFormatString(560, 10, 0xff0000, "‘æ3í“¬ƒtƒF[ƒY");
+		DrawFormatString(560, 10, 0xff0000, "ç¬¬3æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚º");
 	}
 	else if (m_nowPhase == ePhaseName::GameClear)
 	{
-		DrawFormatString(560, 10, 0xff0000, "ƒQ[ƒ€ƒNƒŠƒA");
+		DrawFormatString(560, 10, 0xff0000, "ã‚²ãƒ¼ãƒ ã‚¯ãƒªã‚¢");
 	}
 	else if (m_nowPhase == ePhaseName::Gameover)
 	{
-		DrawFormatString(560, 10, 0xff0000, "ƒQ[ƒ€ƒI[ƒo[");
+		DrawFormatString(560, 10, 0xff0000, "ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼");
 	}
 
-	DrawFormatString(560, 30, 0xff0000, "Œ»İ‚ÌƒtƒF[ƒY‚Ìƒ^ƒCƒ€ : %d", m_phaseFrame);
-	DrawFormatString(560, 50, 0xff0000, "ŠJn‚©‚ç‚Ìƒ^ƒCƒ€ : %d", m_allFrame);
+	DrawFormatString(560, 30, 0xff0000, "ç¾åœ¨ã®ãƒ•ã‚§ãƒ¼ã‚ºã®ã‚¿ã‚¤ãƒ  : %d", m_phaseFrame);
+	DrawFormatString(560, 50, 0xff0000, "é–‹å§‹ã‹ã‚‰ã®ã‚¿ã‚¤ãƒ  : %d", m_allFrame);
 
 }
 
 /// <summary>
-/// ƒtƒF[ƒY‚ği‚ß‚é
+/// ãƒ•ã‚§ãƒ¼ã‚ºã‚’é€²ã‚ã‚‹
 /// </summary>
 void GameManager::ChangeNextPhase()
 {
@@ -605,7 +595,7 @@ void GameManager::ChangeNextPhase()
 }
 
 /// <summary>
-/// ƒNƒŠƒXƒ^ƒ‹HP‚ğŒ¸‚ç‚·
+/// ã‚¯ãƒªã‚¹ã‚¿ãƒ«HPã‚’æ¸›ã‚‰ã™
 /// </summary>
 /// <returns></returns>
 const void GameManager::SubCrystalHP()
@@ -616,7 +606,7 @@ const void GameManager::SubCrystalHP()
 }
 
 /// <summary>
-/// ƒvƒŒƒCƒ„[À•W‚ğæ“¾
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™ã‚’å–å¾—
 /// </summary>
 /// <returns></returns>
 const MyLib::Vec3 GameManager::GetPlayerPos()const
@@ -625,7 +615,7 @@ const MyLib::Vec3 GameManager::GetPlayerPos()const
 }
 
 /// <summary>
-/// “G‚ğƒLƒ‹‚µ‚½‚Æ‚«‚Éã©ƒ|ƒCƒ“ƒg‚ğæ“¾
+/// æ•µã‚’ã‚­ãƒ«ã—ãŸã¨ãã«ç½ ãƒã‚¤ãƒ³ãƒˆã‚’å–å¾—
 /// </summary>
 /// <param name="point"></param>
 void GameManager::AddTrapPoint(int point)
@@ -634,7 +624,7 @@ void GameManager::AddTrapPoint(int point)
 }
 
 /// <summary>
-/// ‰ñ•œƒ|[ƒVƒ‡ƒ“‚ğ¶¬
+/// å›å¾©ãƒãƒ¼ã‚·ãƒ§ãƒ³ã‚’ç”Ÿæˆ
 /// </summary>
 /// <param name="pos"></param>
 void GameManager::CreatePortion(MyLib::Vec3 pos)
@@ -645,7 +635,7 @@ void GameManager::CreatePortion(MyLib::Vec3 pos)
 	}
 
 	std::shared_ptr<HealPortion> add = std::make_shared<HealPortion>();
-	add->Init(m_pPhysics, MV1DuplicateModel(m_portionHandle));
+	add->Init(m_pPhysics);
 	add->SetPosition(pos);
 	m_pPortion.emplace_back(add);
 

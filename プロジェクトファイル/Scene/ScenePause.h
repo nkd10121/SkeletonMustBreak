@@ -1,40 +1,44 @@
-#pragma once
+﻿#pragma once
 #include "SceneBase.h"
+
+class UICursor;
+
+/// <summary>
+/// ポーズシーン
+/// </summary>
 class ScenePause : public SceneBase
 {
 public:
+	//コンストラクタ
 	ScenePause(SceneManager& mgr);
+	//デストラクタ
 	virtual ~ScenePause();
 
-	/// <summary>
-	/// �X�V����
-	/// </summary>
-	/// <param name="input"></param>
+	//更新
 	void Update(std::shared_ptr<Input>& input);
-
-	/// <summary>
-	/// �`�揈��
-	/// </summary>
+	//描画
 	void Draw();
 
 private:
-	//�J�ڐ�
-	enum class e_Destination : int
+	//遷移先
+	enum class eDestination : int
 	{
 		InGame,
 		Option,
 		Title,
 	};
 
-	e_Destination m_destinationScene;
+	//カーソルクラスのポインタ
+	std::shared_ptr<UICursor> m_pCursor;
 
-	std::vector<int> m_handles;
-	std::vector<std::pair<int, int>> m_uiPos;
+	//遷移先
+	eDestination m_destinationScene;
 
+	//UIフレームのハンドル
+	int m_uiFrame;
+
+	//フォントハンドル(必要ないかも)
 	int m_textHandle;
 	int m_fontHandle;
-
-	float m_angle;
-	int m_cursorOffsetX;
 };
 

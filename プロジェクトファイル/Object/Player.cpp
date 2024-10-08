@@ -1,4 +1,4 @@
-#include "Player.h"
+ï»¿#include "Player.h"
 #include "Input.h"
 #include "Shot.h"
 #include "WeaponBase.h"
@@ -9,6 +9,7 @@
 #include "EffekseerForDXLib.h"
 
 #include "SoundManager.h"
+#include "ModelManager.h"
 
 #ifdef _DEBUG
 #define IsDebugDrawNowAnimName true
@@ -17,26 +18,26 @@
 #endif
 namespace
 {
-	//ƒ‚ƒfƒ‹ƒTƒCƒY
-	constexpr float kModelSize = 4.0f;
-	//ƒ‚ƒfƒ‹‚Ì’†S‚Æ“–‚½‚è”»’è‚Ì’†S‚É·‚ª‚ ‚Á‚½‚½‚ßA‚»‚Ì‹——£‚ğ‚à‚Á‚Ä‚«‚½(ModelViewer‚©‚ç)
+	//ãƒ¢ãƒ‡ãƒ«ã‚µã‚¤ã‚º
+	constexpr float kModelSizeScale = 4.0f;
+	//ãƒ¢ãƒ‡ãƒ«ã®ä¸­å¿ƒã¨å½“ãŸã‚Šåˆ¤å®šã®ä¸­å¿ƒã«å·®ãŒã‚ã£ãŸãŸã‚ã€ãã®è·é›¢ã‚’ã‚‚ã£ã¦ããŸ(ModelViewerã‹ã‚‰)
 	constexpr float kModelOffsetY = 1.0f;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦‚É‚©‚©‚éƒtƒŒ[ƒ€”
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆã«ã‹ã‹ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	constexpr float kAnimChangeFrame = 10.0f;
 	constexpr float kAnimChangeRateSpeed = 1.0f / kAnimChangeFrame;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“ƒuƒŒƒ“ƒh—¦‚ÌÅ‘å
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡ã®æœ€å¤§
 	constexpr float kAnimBlendRateMax = 1.0f;
 
-	//‘_‚¤ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌŠJnƒtƒŒ[ƒ€”
+	//ç‹™ã†ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®é–‹å§‹ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	constexpr float kAimAnimStartFrame = 9.0f;
 
-	/*ƒAƒiƒƒOƒXƒeƒBƒbƒN‚É‚æ‚éˆÚ“®ŠÖ˜A*/
-	constexpr float kMaxSpeed = 0.2f;			//ƒvƒŒƒCƒ„[‚ÌÅ‘å‘¬“x
-	constexpr float kAnalogRangeMin = 0.1f;		//ƒAƒiƒƒOƒXƒeƒBƒbƒN‚Ì“ü—Í”»’è”ÍˆÍ
+	/*ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã«ã‚ˆã‚‹ç§»å‹•é–¢é€£*/
+	constexpr float kMaxSpeed = 0.2f;			//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æœ€å¤§é€Ÿåº¦
+	constexpr float kAnalogRangeMin = 0.1f;		//ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›åˆ¤å®šç¯„å›²
 	constexpr float kAnalogRangeMax = 0.8f;
-	constexpr float kAnalogInputMax = 1000.0f;	//ƒAƒiƒƒOƒXƒeƒBƒbƒN‚©‚ç“ü—Í‚³‚ê‚éƒxƒNƒgƒ‹‚ÌÅ‘å
+	constexpr float kAnalogInputMax = 1000.0f;	//ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã‹ã‚‰å…¥åŠ›ã•ã‚Œã‚‹ãƒ™ã‚¯ãƒˆãƒ«ã®æœ€å¤§
 
 	constexpr float kRunVecSize = 0.12f;
 	constexpr int kShotIntervalFrame = 20;
@@ -47,18 +48,12 @@ namespace
 
 Player::Player() :
 	CharacterBase(Collidable::Priority::Low, GameObjectTag::Player),
-	m_nowAnimIdx(eAnimIdx::Idle),
+	//temp_nowAnimIdx(),
 	m_moveCount(0),
 	m_weponHandle(-1),
 	m_angle(0.0f),
 	m_isMove(true),
 	m_isClear(false),
-	m_equipAnimNo(-1),
-	m_currentAnimNo(-1),
-	m_prevAnimNo(-1),
-	m_animBlendRate(1.0f),
-	m_animSpeed(0.5f),
-	m_isAnimationFinish(false),
 	m_cameraDirection(),
 	m_cameraAngle(0.0f),
 	m_updateFunc(nullptr),
@@ -76,30 +71,30 @@ Player::Player() :
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
 	sphereCol->m_radius = 3.4f;
 
-	//ƒ‚ƒfƒ‹“Ç‚İ‚İ
-	m_modelHandle = MV1LoadModel("data/model/player.mv1");
-	m_weponHandle = MV1LoadModel("data/model/crossbow.mv1");
-	//ƒ‚ƒfƒ‹‚ÌƒTƒCƒYİ’è
-	MV1SetScale(m_modelHandle, VGet(kModelSize, kModelSize, kModelSize));
+	//ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
+	m_modelHandle = ModelManager::GetInstance().GetModelHandle("data/model/player.mv1");
+	m_weponHandle = ModelManager::GetInstance().GetModelHandle("data/model/crossbow.mv1");
+	//ãƒ¢ãƒ‡ãƒ«ã®ã‚µã‚¤ã‚ºè¨­å®š
+	MV1SetScale(m_modelHandle, VGet(kModelSizeScale, kModelSizeScale, kModelSizeScale));
 
 	EffectManager::GetInstance().Load("PlayerHit","data/effect/player_hit.efk",120);
 	EffectManager::GetInstance().Load("Heal","data/effect/heal.efk",120);
+
+	CsvLoad::GetInstance().AnimDataLoad("Player", m_animIdx);
 }
 
 Player::~Player()
 {
-	//ƒƒ‚ƒŠ‚Ì‰ğ•ú
+	//ãƒ¡ãƒ¢ãƒªã®è§£æ”¾
 	MV1DeleteModel(m_modelHandle);
 	MV1DeleteModel(m_weponHandle);
 
 	m_pShots.clear();
 }
 
-void Player::Init(std::shared_ptr<MyLib::Physics> physics, int* arrow)
+void Player::Init(std::shared_ptr<MyLib::Physics> physics)
 {
 	m_pPhysics = physics;
-
-	m_arrowHandle = *arrow;
 
 	Collidable::Init(m_pPhysics);
 
@@ -107,24 +102,25 @@ void Player::Init(std::shared_ptr<MyLib::Physics> physics, int* arrow)
 	m_hpMax = m_status.hp;
 
 
-	//ƒvƒŒƒCƒ„[‚Ì‰ŠúˆÊ’uİ’è
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®åˆæœŸä½ç½®è¨­å®š
 	rigidbody.Init(true);
-	rigidbody.SetPos(MyLib::Vec3(0.0f, 1.0f+kModelOffsetY * kModelSize, 0.0f));
+	rigidbody.SetPos(MyLib::Vec3(0.0f, 1.0f+kModelOffsetY * kModelSizeScale, 0.0f));
 	rigidbody.SetNextPos(rigidbody.GetPos());
 	m_collisionPos = rigidbody.GetPos();
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
 	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, 0.0f, 0.0f));
 
-	//‘_‚¤ƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
-	m_equipAnimNo = MV1AttachAnim(m_modelHandle, eAnimIdx::Aim);
-	//‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
-	m_currentAnimNo = MV1AttachAnim(m_modelHandle, eAnimIdx::Idle);
+	//ç‹™ã†ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¨­å®š
+	m_equipAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Aim"]);
+	//å¾…æ©Ÿã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¨­å®š
+	m_currentAnimNo = MV1AttachAnim(m_modelHandle, m_animIdx["Idle"]);
+	m_nowAnimIdx = m_animIdx["Idle"];
 
-	//’Êíó‘Ô‚Éİ’è‚µ‚Ä‚¨‚­
+	//é€šå¸¸çŠ¶æ…‹ã«è¨­å®šã—ã¦ãŠã
 	m_updateFunc = &Player::NeutralUpdate;
 
-	// •¨—‹““®‚Ì‰Šú‰»
+	// ç‰©ç†æŒ™å‹•ã®åˆæœŸåŒ–
 	//rigidbody.Init(true);
 	//rigidbody.SetPos(MyLib::Vec3());
 }
@@ -136,7 +132,7 @@ void Player::Finalize()
 
 void Player::Update(std::shared_ptr<Input>& input)
 {
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXV
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æ›´æ–°
 	if (!m_isDead)
 	{
 		UpdateAnim(m_equipAnimNo, kAimAnimStartFrame);
@@ -144,36 +140,26 @@ void Player::Update(std::shared_ptr<Input>& input)
 	}
 	m_isAnimationFinish = UpdateAnim(m_currentAnimNo);
 
-
-
-
-
-
-
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌØ‚è‘Ö‚¦
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Šæ›¿ãˆ
 	if (m_prevAnimNo != -1)
 	{
-		//ƒtƒŒ[ƒ€‚ÅƒAƒjƒ[ƒVƒ‡ƒ“‚ğØ‚è‘Ö‚¦‚é
+		//ãƒ•ãƒ¬ãƒ¼ãƒ ã§ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åˆ‡ã‚Šæ›¿ãˆã‚‹
 		m_animBlendRate += kAnimChangeRateSpeed;
 		if (m_animBlendRate >= kAnimBlendRateMax)
 		{
 			m_animBlendRate = kAnimBlendRateMax;
 		}
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌƒuƒŒƒ“ƒh—¦‚ğİ’è‚·‚é
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®ãƒ–ãƒ¬ãƒ³ãƒ‰ç‡ã‚’è¨­å®šã™ã‚‹
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, kAnimBlendRateMax - m_animBlendRate);
 		MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
 	}
 
 	if (!m_isClear)
 	{
-		//ó‘Ô‚ÌXV
+		//çŠ¶æ…‹ã®æ›´æ–°
 		(this->*m_updateFunc)(input);
 	}
-
-
-
-
 
 	if (m_status.hp <= 0)
 	{
@@ -181,7 +167,7 @@ void Player::Update(std::shared_ptr<Input>& input)
 		{
 			m_isDown = true;
 
-			m_nowAnimIdx = eAnimIdx::Death;
+			m_nowAnimIdx = m_animIdx["Death0"];
 			ChangeAnim(m_nowAnimIdx);
 
 			Finalize();
@@ -222,26 +208,26 @@ void Player::Update(std::shared_ptr<Input>& input)
 		}
 	}
 
-	//‰Á‘¬“x‚ğ0‚É‚·‚é
+	//åŠ é€Ÿåº¦ã‚’0ã«ã™ã‚‹
 	//m_moveVec = MyLib::Vec3();
 	//rigidbody.SetVelocity(MyLib::Vec3());
 
-	//À•W‚ğæ“¾‚·‚é
+	//åº§æ¨™ã‚’å–å¾—ã™ã‚‹
 	m_collisionPos = rigidbody.GetPos();
 
 	std::pair<float, float> stick;
 
 	if (!m_isDown && !m_isClear)
-	{	//ƒRƒ“ƒgƒ[ƒ‰[‚Ì¶ƒXƒeƒBƒbƒN“ü—Í‚ğó‚¯æ‚é
+	{	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯å…¥åŠ›ã‚’å—ã‘å–ã‚‹
 		stick = input->GetInputStick(false);
 	}
 
-	//ˆÚ“®•ûŒü‚ğİ’è‚·‚é
+	//ç§»å‹•æ–¹å‘ã‚’è¨­å®šã™ã‚‹
 	auto moveVec = MyLib::Vec3(stick.first, 0.0f, -stick.second);
-	//ˆÚ“®ƒxƒNƒgƒ‹‚Ì’·‚³‚ğæ“¾‚·‚é
+	//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’å–å¾—ã™ã‚‹
 	float len = moveVec.Size();
 
-	//ˆÚ“®’†‚É‘«‰¹‚ÌSE‚ğ–Â‚ç‚·
+	//ç§»å‹•ä¸­ã«è¶³éŸ³ã®SEã‚’é³´ã‚‰ã™
 	if (moveVec.Size() != 0.0f)
 	{
 		if (m_moveCount % 45 == 0)
@@ -256,45 +242,45 @@ void Player::Update(std::shared_ptr<Input>& input)
 		m_moveCount = 0;
 	}
 
-	//ƒxƒNƒgƒ‹‚Ì’·‚³‚ğ0.0`1.0‚ÌŠ„‡‚É•ÏŠ·‚·‚é
+	//ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’0.0ï½1.0ã®å‰²åˆã«å¤‰æ›ã™ã‚‹
 	float rate = len / kAnalogInputMax;
 
-	//ƒAƒiƒƒOƒXƒeƒBƒbƒN–³Œø‚È”ÍˆÍ‚ğœŠO‚·‚é(ƒfƒbƒhƒ][ƒ“)
+	//ã‚¢ãƒŠãƒ­ã‚°ã‚¹ãƒ†ã‚£ãƒƒã‚¯ç„¡åŠ¹ãªç¯„å›²ã‚’é™¤å¤–ã™ã‚‹(ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³)
 	rate = (rate - kAnalogRangeMin) / (kAnalogRangeMax - kAnalogRangeMin);
 	rate = std::min(rate, 1.0f);
 	rate = std::max(rate, 0.0f);
 
-	//‘¬“x‚ªŒˆ’è‚Å‚«‚é‚Ì‚ÅˆÚ“®ƒxƒNƒgƒ‹‚É”½‰f‚·‚é
+	//é€Ÿåº¦ãŒæ±ºå®šã§ãã‚‹ã®ã§ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã«åæ˜ ã™ã‚‹
 	moveVec = moveVec.Normalize();
 	float speed = m_status.speed * rate;
 
 	moveVec = moveVec * speed;
 
 
-	// ˆÚ“®•ûŒü =  ƒJƒƒ‰‚Ì‰E‘¤  * ‰E‚Ö‚ÌˆÚ“® +   ƒJƒƒ‰‚Ì³–Ê   * ³–Ê‚Ö‚ÌˆÚ“®
-	// @@@@ = R(0.5, 0, 0.5) *    speed   +  F(-0.5, 0, 0.5) * speed
+	// ç§»å‹•æ–¹å‘ =  ã‚«ãƒ¡ãƒ©ã®å³å´  * å³ã¸ã®ç§»å‹• +   ã‚«ãƒ¡ãƒ©ã®æ­£é¢   * æ­£é¢ã¸ã®ç§»å‹•
+	// ã€€ã€€ã€€ã€€ = R(0.5, 0, 0.5) *    speed   +  F(-0.5, 0, 0.5) * speed
 
-	//ƒvƒŒƒCƒ„[‚Ì³–Ê•ûŒü‚ğŒvZ‚µ‚Ä³–Ê•ûŒü‚ğŠî€‚ÉˆÚ“®‚·‚é
-	//ƒJƒƒ‰‚Ì³–Ê•ûŒüƒxƒNƒgƒ‹
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®æ­£é¢æ–¹å‘ã‚’è¨ˆç®—ã—ã¦æ­£é¢æ–¹å‘ã‚’åŸºæº–ã«ç§»å‹•ã™ã‚‹
+	//ã‚«ãƒ¡ãƒ©ã®æ­£é¢æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 	MyLib::Vec3 front(m_cameraDirection.x, 0.0f, m_cameraDirection.z);
-	//Œü‚«ƒxƒNƒgƒ‹*ˆÚ“®—Ê
+	//å‘ããƒ™ã‚¯ãƒˆãƒ«*ç§»å‹•é‡
 	front = front * moveVec.z;
-	//ƒJƒƒ‰‚Ì‰E•ûŒüƒxƒNƒgƒ‹
+	//ã‚«ãƒ¡ãƒ©ã®å³æ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«
 	MyLib::Vec3 right(-m_cameraDirection.z, 0.0f, m_cameraDirection.x);
-	//Œü‚«ƒxƒNƒgƒ‹*ˆÚ“®—Ê
+	//å‘ããƒ™ã‚¯ãƒˆãƒ«*ç§»å‹•é‡
 	right = right * (-moveVec.x);
 
-	//ˆÚ“®ƒxƒNƒgƒ‹‚Ì¶¬
+	//ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«ã®ç”Ÿæˆ
 	m_moveVec = front + right;
 	m_moveVec = m_moveVec.Normalize() * speed;
-	//ˆÚ“®ˆ—
+	//ç§»å‹•å‡¦ç†
 	MV1SetPosition(m_modelHandle, m_collisionPos.ConvertToVECTOR());
 
-	//ƒJƒƒ‰‚ÌÀ•W‚©‚çƒvƒŒƒCƒ„[‚ğ‰ñ“]‚³‚¹‚é•ûŒü‚ğŒvZ‚·‚é
+	//ã‚«ãƒ¡ãƒ©ã®åº§æ¨™ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å›è»¢ã•ã›ã‚‹æ–¹å‘ã‚’è¨ˆç®—ã™ã‚‹
 	m_angle = -atan2f(m_cameraDirection.z, m_cameraDirection.x) - DX_PI_F / 2;
 	m_rot = MyLib::Vec3(0.0f, m_angle, 0.0f);
 
-	//ƒvƒŒƒCƒ„[‚ğ‰ñ“]‚³‚¹‚é
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å›è»¢ã•ã›ã‚‹
 	if (!m_isDown && !m_isClear)
 	{
 		MV1SetRotationXYZ(m_modelHandle, m_rot.ConvertToVECTOR());
@@ -306,13 +292,13 @@ void Player::Update(std::shared_ptr<Input>& input)
 	rigidbody.SetVelocity(newVelocity);
 
 
-	//‚à‚Á‚Ä‚¢‚é•Ší‚ÌˆÚ“®A‰ñ“]‚ğXV‚·‚é
-	//TODO:Œ»óŒã‚ë‚©‚ç‚¾‚Æ‚æ‚­Œ©‚¦‚È‚¢‚½‚ßˆá˜aŠ´‚È‚¢‚ªA•Ší‚Ì‰ñ“]‚ª‚¨‚©‚µ‚¢
+	//ã‚‚ã£ã¦ã„ã‚‹æ­¦å™¨ã®ç§»å‹•ã€å›è»¢ã‚’æ›´æ–°ã™ã‚‹
+	//TODO:ç¾çŠ¶å¾Œã‚ã‹ã‚‰ã ã¨ã‚ˆãè¦‹ãˆãªã„ãŸã‚é•å’Œæ„Ÿãªã„ãŒã€æ­¦å™¨ã®å›è»¢ãŒãŠã‹ã—ã„
 	m_weponAttachFrameNum = MV1SearchFrame(m_modelHandle, "handslot.r");
 	//auto moveMat = MGetTranslate(VGet(0.0f,-m_pos.y,0.0f));
 	m_weponFrameMat = MV1GetFrameLocalWorldMatrix(m_modelHandle, m_weponAttachFrameNum);
 
-	auto offsetMat = MGetTranslate(VGet(0.0f, -kModelOffsetY * kModelSize, 0.0f));
+	auto offsetMat = MGetTranslate(VGet(0.0f, -kModelOffsetY * kModelSizeScale, 0.0f));
 
 	m_weponFrameMat = MAdd(m_weponFrameMat, offsetMat);
 	MATRIX temp = MMult(MGetRotY(-DX_PI_F / 2), m_weponFrameMat);
@@ -325,8 +311,8 @@ void Player::Update(std::shared_ptr<Input>& input)
 			SoundManager::GetInstance().PlaySE("shot");
 
 			auto add = std::make_shared<Shot>();
-			add->Init(m_pPhysics, MV1DuplicateModel(m_arrowHandle));
-			MyLib::Vec3 offset = MyLib::Vec3(0.0f, kModelOffsetY * kModelSize / 2, 0.0f);
+			add->Init(m_pPhysics);
+			MyLib::Vec3 offset = MyLib::Vec3(0.0f, kModelOffsetY * kModelSizeScale / 2, 0.0f);
 
 			auto shotVec = m_cameraDirection;
 			int offsetX = GetRand(100) - 50;
@@ -364,14 +350,14 @@ void Player::Update(std::shared_ptr<Input>& input)
 		shot->Update();
 		if (!shot->GetIsExist())
 		{
-			//ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚é
+			//ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹
 			shot->Finalize(m_pPhysics);
 			shot.reset();
 			shot = nullptr;
 		}
 	}
 
-	//•s—v‚É‚È‚Á‚½“G‚ğ‚±‚±‚Åíœˆ—‚·‚é
+	//ä¸è¦ã«ãªã£ãŸæ•µã‚’ã“ã“ã§å‰Šé™¤å‡¦ç†ã™ã‚‹
 	auto lIt = remove_if(m_pShots.begin(), m_pShots.end(), [](auto& v) {
 		return v == nullptr;
 		});
@@ -380,12 +366,12 @@ void Player::Update(std::shared_ptr<Input>& input)
 
 void Player::Draw()
 {
-	//FIX:Draw‚Ì‚È‚©‚ÅÀ•W‚ğ•ÏX‚µ‚Ä‚¢‚é‚Ì‚Í‚Ç‚¤‚È‚ÌH
+	//FIX:Drawã®ãªã‹ã§åº§æ¨™ã‚’å¤‰æ›´ã—ã¦ã„ã‚‹ã®ã¯ã©ã†ãªã®ï¼Ÿ
 	rigidbody.SetPos(rigidbody.GetNextPos());
 	m_collisionPos = rigidbody.GetPos();
 	SetModelPos();
 	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
-	//ƒ‚ƒfƒ‹‚Ì•`‰æ
+	//ãƒ¢ãƒ‡ãƒ«ã®æç”»
 
 	MV1DrawModel(m_modelHandle);
 	MV1DrawModel(m_weponHandle);
@@ -405,33 +391,33 @@ void Player::Draw()
 	auto pos = rigidbody.GetPos();
 	auto vel = rigidbody.GetVelocity();
 	DrawFormatString(420, 112, 0xffffff, "%f", m_shotOffsetPower);
-	DrawFormatString(0, 144, 0xffffff, "ƒvƒŒƒCƒ„[À•W:%f,%f,%f", pos.x, pos.y, pos.z);
-	DrawFormatString(0, 128, 0xffffff, "ˆÚ“®ƒxƒNƒgƒ‹:%f,%f,%f", vel.x, vel.y, vel.z);
-	DrawFormatString(0, 160, 0xffffff, "ƒvƒŒƒCƒ„[ƒXƒe[ƒ^ƒX:%d,%d,%d", m_status.hp, m_status.atk, m_status.def);
+	DrawFormatString(0, 144, 0xffffff, "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼åº§æ¨™:%f,%f,%f", pos.x, pos.y, pos.z);
+	DrawFormatString(0, 128, 0xffffff, "ç§»å‹•ãƒ™ã‚¯ãƒˆãƒ«:%f,%f,%f", vel.x, vel.y, vel.z);
+	DrawFormatString(0, 160, 0xffffff, "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹:%d,%d,%d", m_status.hp, m_status.atk, m_status.def);
 #endif
 }
 
 void Player::OnCollideEnter(const std::shared_ptr<Collidable>& colider)
 {
 #ifdef _DEBUG
-	std::string message = "ƒvƒŒƒCƒ„[‚ª";
+	std::string message = "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒ";
 #endif
 	auto tag = colider->GetTag();
 	switch (tag)
 	{
 	case GameObjectTag::Enemy:
 #ifdef _DEBUG
-		message += "“G";
+		message += "æ•µ";
 #endif
 		break;
 	case GameObjectTag::Shot:
 #ifdef _DEBUG
-		message += "’e";
+		message += "å¼¾";
 #endif
 		break;
 	}
 #ifdef _DEBUG
-	message += "‚Æ“–‚½‚Á‚½I\n";
+	message += "ã¨å½“ãŸã£ãŸï¼\n";
 	printfDx(message.c_str());
 #endif
 }
@@ -439,28 +425,28 @@ void Player::OnCollideEnter(const std::shared_ptr<Collidable>& colider)
 void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 {
 #ifdef _DEBUG
-	std::string message = "ƒvƒŒƒCƒ„[‚ª";
+	std::string message = "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒ";
 #endif
 	auto tag = colider->GetTag();
 	switch (tag)
 	{
 	case GameObjectTag::Enemy:
 #ifdef _DEBUG
-		message += "“G";
+		message += "æ•µ";
 #endif
 		break;
 	case GameObjectTag::Shot:
 #ifdef _DEBUG
-		message += "’e";
+		message += "å¼¾";
 #endif
 		break;
 	case GameObjectTag::Sword:
-	{//‚È‚ñ‚©{}‚ª‚È‚¢‚ÆƒGƒ‰[“f‚­
-		//Œ•‚É‚ ‚½‚Á‚½HP‚ğŒ¸‚ç‚·
+	{//ãªã‚“ã‹{}ãŒãªã„ã¨ã‚¨ãƒ©ãƒ¼åã
+		//å‰£ã«ã‚ãŸã£ãŸæ™‚HPã‚’æ¸›ã‚‰ã™
 		WeaponBase* col = dynamic_cast<WeaponBase*>(colider.get());
 		m_status.hp -= col->GetAtk() - m_status.def;
 
-		//”íƒ_ƒ[ƒWƒGƒtƒFƒNƒg‚ğo‚·
+		//è¢«ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’å‡ºã™
 		auto pos = rigidbody.GetPos();
 		//m_hitEffect->effects.push_back(CreateEffect(m_hitEffect->emitterHandle));
 		MyLib::Vec3 offset = MyLib::Vec3(static_cast<float>(GetRand(4) - 2), static_cast<float>(GetRand(4) - 2), static_cast<float>(GetRand(4) - 2));
@@ -491,34 +477,9 @@ void Player::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 
 	}
 #ifdef _DEBUG
-	message += "‚Æ“–‚½‚Á‚½I\n";
+	message += "ã¨å½“ãŸã£ãŸï¼\n";
 	printfDx(message.c_str());
 #endif
-}
-
-/// <summary>
-/// ƒvƒŒƒCƒ„[‚ğ•œŠˆ‚³‚¹‚é
-/// </summary>
-void Player::PlayerRevival()
-{
-	CsvLoad::GetInstance().StatusLoad(m_status, "Player");
-
-	//ƒvƒŒƒCƒ„[‚Ì‰ŠúˆÊ’uİ’è
-	rigidbody.Init(true);
-	rigidbody.SetPos(MyLib::Vec3(0.0f, kModelOffsetY * kModelSize, 0.0f));
-	rigidbody.SetNextPos(rigidbody.GetPos());
-	m_collisionPos = rigidbody.GetPos();
-	SetModelPos();
-	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
-	MV1SetRotationXYZ(m_modelHandle, VGet(0.0f, 0.0f, 0.0f));
-
-	//‘_‚¤ƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
-	m_equipAnimNo = MV1AttachAnim(m_modelHandle, eAnimIdx::Aim);
-	//‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“‚ğİ’è
-	m_currentAnimNo = MV1AttachAnim(m_modelHandle, eAnimIdx::Idle);
-
-	//’Êíó‘Ô‚Éİ’è‚µ‚Ä‚¨‚­
-	m_updateFunc = &Player::NeutralUpdate;
 }
 
 void Player::SetGameClear()
@@ -526,7 +487,7 @@ void Player::SetGameClear()
 	if (!m_isClear)
 	{
 		m_isClear = true;
-		m_nowAnimIdx = eAnimIdx::Cheer;
+		m_nowAnimIdx = m_animIdx["Win"];
 		ChangeAnim(m_nowAnimIdx);
 	}
 
@@ -535,64 +496,13 @@ void Player::SetGameClear()
 void Player::SetModelPos()
 {
 	m_modelPos = m_collisionPos;
-	m_modelPos.y -= kModelOffsetY * kModelSize*0.8f;
+	m_modelPos.y -= kModelOffsetY * kModelSizeScale*0.8f;
 }
 
-bool Player::UpdateAnim(int attachNo, float startTime)
-{
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç‘ŠúƒŠƒ^[ƒ“
-	if (attachNo == -1)	return false;
 
-	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ğis‚³‚¹‚é
-	float nowFrame = MV1GetAttachAnimTime(m_modelHandle, attachNo);	//Œ»İ‚ÌÄ¶ƒJƒEƒ“ƒg‚ğæ“¾
-	nowFrame += m_animSpeed;
-
-	//Œ»İÄ¶’†‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‘ƒJƒEƒ“ƒg‚ğæ“¾‚·‚é
-	float totalAnimframe = MV1GetAttachAnimTotalTime(m_modelHandle, attachNo);
-	bool isLoop = false;
-
-	//NOTE:‚à‚µ‚©‚µ‚½‚ç‘ƒtƒŒ[ƒ€•ªˆø‚¢‚Ä‚à‘ƒtƒŒ[ƒ€‚æ‚è‘å‚«‚¢‚©‚à‚µ‚ê‚È‚¢‚©‚çwhile‚Å‘å‚«‚¢ŠÔˆø‚«‘±‚¯‚é
-	while (totalAnimframe <= nowFrame)
-	{
-		//NOTE:nowFrame‚ğ0‚ÉƒŠƒZƒbƒg‚·‚é‚ÆƒAƒjƒ[ƒVƒ‡ƒ“ƒtƒŒ[ƒ€‚Ì”ò‚Ñ‚ª‚Å‚é‚©‚ç‘ƒtƒŒ[ƒ€•ªˆø‚­
-		nowFrame -= totalAnimframe;
-		nowFrame += startTime;
-		isLoop = true;
-	}
-
-	//i‚ß‚½ŠÔ‚Éİ’è
-	MV1SetAttachAnimTime(m_modelHandle, attachNo, nowFrame);
-
-	return isLoop;
-}
-
-void Player::ChangeAnim(int animIndex, float animSpeed)
-{
-	//‚³‚ç‚ÉŒÃ‚¢ƒAƒjƒ[ƒVƒ‡ƒ“‚ªƒAƒ^ƒbƒ`‚³‚ê‚Ä‚¢‚éê‡‚Í‚±‚Ì“_‚ÅÁ‚µ‚Ä‚¨‚­
-	if (m_prevAnimNo != -1)
-	{
-		MV1DetachAnim(m_modelHandle, m_prevAnimNo);
-	}
-
-	//Œ»İÄ¶’†‚Ì‘Ò‹@ƒAƒjƒ[ƒVƒ‡ƒ“‚Í•ÏX–Ú‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìˆµ‚¢‚É‚·‚é
-	m_prevAnimNo = m_currentAnimNo;
-
-	//•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Æ‚µ‚ÄUŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‰ü‚ß‚Äİ’è‚·‚é
-	m_currentAnimNo = MV1AttachAnim(m_modelHandle, animIndex);
-
-	//Ø‚è‘Ö‚¦‚ÌuŠÔ‚Í•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ªÄ¶‚³‚ê‚éó‘Ô‚É‚·‚é
-	m_animBlendRate = 0.0f;
-
-	m_animSpeed = animSpeed;
-
-	//•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“100%
-	MV1SetAttachAnimBlendRate(m_modelHandle, m_prevAnimNo, 1.0f - m_animBlendRate);
-	//•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“0%
-	MV1SetAttachAnimBlendRate(m_modelHandle, m_currentAnimNo, m_animBlendRate);
-}
 
 /// <summary>
-/// ’Êí(“ü—Í‚È‚µ)ó‘Ô
+/// é€šå¸¸(å…¥åŠ›ãªã—)çŠ¶æ…‹
 /// </summary>
 void Player::NeutralUpdate(std::shared_ptr<Input> input)
 {
@@ -601,34 +511,24 @@ void Player::NeutralUpdate(std::shared_ptr<Input> input)
 #endif
 	m_isMove = true;
 
-	//ƒXƒeƒBƒbƒN“ü—Í‚ª‚ ‚Á‚½‚ç•à‚«ó‘Ô‚É‘JˆÚ‚·‚é
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯å…¥åŠ›ãŒã‚ã£ãŸã‚‰æ­©ãçŠ¶æ…‹ã«é·ç§»ã™ã‚‹
 	if (m_moveVec.Size() != 0.0f)
 	{
 		m_updateFunc = &Player::WalkUpdate;
-		m_nowAnimIdx = eAnimIdx::Walk;
+		m_nowAnimIdx = m_animIdx["Move"];
 		ChangeAnim(m_nowAnimIdx);
 
 		return;
 	}
 
-	////UŒ‚ƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚çUŒ‚ó‘Ô‚É‘JˆÚ‚·‚é
-	//if (input->IsTriggered("ATTACK"))
-	//{
-	//	m_updateFunc = &Player::AttackUpdate;
-	//	m_nowAnimIdx = eAnimIdx::shoot;
-	//	ChangeAnim(m_nowAnimIdx);
-
-	//	return;
-	//}
-
-	//ƒWƒƒƒ“ƒvƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚ç’ÊíƒWƒƒƒ“ƒvó‘Ô‚É‘JˆÚ‚·‚é
+	//ã‚¸ãƒ£ãƒ³ãƒ—ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰é€šå¸¸ã‚¸ãƒ£ãƒ³ãƒ—çŠ¶æ…‹ã«é·ç§»ã™ã‚‹
 	if (input->IsTriggered("A"))
 	{
 		//auto vel = rigidbody.GetVelocity();
 		//vel.y += kJumpPower;
 		//rigidbody.SetVelocity(vel);
 		m_updateFunc = &Player::NormalJumpUpdate;
-		m_nowAnimIdx = eAnimIdx::Jump;
+		m_nowAnimIdx = m_animIdx["Jump"];
 		ChangeAnim(m_nowAnimIdx,0.7f);
 
 		return;
@@ -636,7 +536,7 @@ void Player::NeutralUpdate(std::shared_ptr<Input> input)
 }
 
 /// <summary>
-/// ’ÊíƒWƒƒƒ“ƒvó‘Ô
+/// é€šå¸¸ã‚¸ãƒ£ãƒ³ãƒ—çŠ¶æ…‹
 /// </summary>
 void Player::NormalJumpUpdate(std::shared_ptr<Input> input)
 {
@@ -658,21 +558,21 @@ void Player::NormalJumpUpdate(std::shared_ptr<Input> input)
 	{
 		m_jumpCount = 0;
 
-		//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª‚È‚©‚Á‚½‚ç’Êíó‘Ô‚É‘JˆÚ‚·‚é
+		//ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ãŒãªã‹ã£ãŸã‚‰é€šå¸¸çŠ¶æ…‹ã«é·ç§»ã™ã‚‹
 		if (m_moveVec.Size() == 0.0f)
 		{
 			m_updateFunc = &Player::NeutralUpdate;
-			m_nowAnimIdx = eAnimIdx::Idle;
+			m_nowAnimIdx = m_animIdx["Idle"];
 			ChangeAnim(m_nowAnimIdx);
 
 			return;
 		}
 
-		//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª¬‚³‚©‚Á‚½‚ç•à‚«ó‘Ô‚É‘JˆÚ‚·‚é
+		//ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ãŒå°ã•ã‹ã£ãŸã‚‰æ­©ãçŠ¶æ…‹ã«é·ç§»ã™ã‚‹
 		//if (m_moveVec.Size() < kRunVecSize)
 		{
 			m_updateFunc = &Player::WalkUpdate;
-			m_nowAnimIdx = eAnimIdx::Walk;
+			m_nowAnimIdx = m_animIdx["Move"];
 			ChangeAnim(m_nowAnimIdx);
 
 			return;
@@ -681,86 +581,7 @@ void Player::NormalJumpUpdate(std::shared_ptr<Input> input)
 }
 
 /// <summary>
-/// ˆÚ“®’†ƒWƒƒƒ“ƒvó‘Ô
-/// </summary>
-void Player::MovingJumpUpdate(std::shared_ptr<Input> input)
-{
-#if IsDebugDrawNowAnimName
-	DrawFormatString(0, 32, 0xffffff, "MovingJump");
-#endif
-	m_isMove = true;
-
-	if (m_isAnimationFinish)
-	{
-		//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª‚È‚©‚Á‚½‚ç’Êíó‘Ô‚É‘JˆÚ‚·‚é
-		if (m_moveVec.Size() == 0.0f)
-		{
-			m_updateFunc = &Player::NeutralUpdate;
-			m_nowAnimIdx = eAnimIdx::Idle;
-			ChangeAnim(m_nowAnimIdx);
-
-			return;
-		}
-
-		//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª¬‚³‚©‚Á‚½‚ç•à‚«ó‘Ô‚É‘JˆÚ‚·‚é
-		//if (m_moveVec.Size() < kRunVecSize)
-		{
-			m_updateFunc = &Player::WalkUpdate;
-			m_nowAnimIdx = eAnimIdx::Walk;
-			ChangeAnim(m_nowAnimIdx);
-
-			return;
-		}
-	}
-}
-
-/// <summary>
-/// UŒ‚ó‘Ô
-/// </summary>
-void Player::AttackUpdate(std::shared_ptr<Input> input)
-{
-#if IsDebugDrawNowAnimName
-	DrawFormatString(0, 32, 0xffffff, "Attack");
-#endif
-	m_isMove = false;
-
-	//UŒ‚ƒAƒjƒ[ƒVƒ‡ƒ“‚ªI‚í‚Á‚½
-	if (m_isAnimationFinish)
-	{
-		//UŒ‚ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‘±‚¯‚Ä‚¢‚½‚ç‚à‚¤ˆê“xUŒ‚ó‘Ô‚É‘JˆÚ‚·‚é
-		if (input->IsPushed("ATTACK"))
-		{
-			m_updateFunc = &Player::AttackUpdate;
-			m_nowAnimIdx = eAnimIdx::Shoot;
-			ChangeAnim(m_nowAnimIdx);
-
-			return;
-		}
-
-		//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª‚È‚©‚Á‚½‚ç’Êíó‘Ô‚É‘JˆÚ‚·‚é
-		if (m_moveVec.Size() == 0.0f)
-		{
-			m_updateFunc = &Player::NeutralUpdate;
-			m_nowAnimIdx = eAnimIdx::Idle;
-			ChangeAnim(m_nowAnimIdx);
-
-			return;
-		}
-
-		//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª¬‚³‚©‚Á‚½‚ç•à‚«ó‘Ô‚É‘JˆÚ‚·‚é
-		if (m_moveVec.Size() < kRunVecSize)
-		{
-			m_updateFunc = &Player::WalkUpdate;
-			m_nowAnimIdx = eAnimIdx::Walk;
-			ChangeAnim(m_nowAnimIdx);
-
-			return;
-		}
-	}
-}
-
-/// <summary>
-/// •à‚«ó‘Ô
+/// æ­©ãçŠ¶æ…‹
 /// </summary>
 void Player::WalkUpdate(std::shared_ptr<Input> input)
 {
@@ -769,22 +590,22 @@ void Player::WalkUpdate(std::shared_ptr<Input> input)
 #endif
 	m_isMove = true;
 
-	//ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ª‚È‚©‚Á‚½‚ç’Êíó‘Ô‚É‘JˆÚ‚·‚é
+	//ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ãŒãªã‹ã£ãŸã‚‰é€šå¸¸çŠ¶æ…‹ã«é·ç§»ã™ã‚‹
 	if (m_moveVec.Size() == 0.0f)
 	{
 		m_updateFunc = &Player::NeutralUpdate;
-		m_nowAnimIdx = eAnimIdx::Idle;
+		m_nowAnimIdx = m_animIdx["Idle"];
 		ChangeAnim(m_nowAnimIdx);
 
 		return;
 	}
 
-	//ƒWƒƒƒ“ƒvƒ{ƒ^ƒ“‚ğ‰Ÿ‚µ‚½‚çˆÚ“®’†ƒWƒƒƒ“ƒvó‘Ô‚É‘JˆÚ‚·‚é
+	//ã‚¸ãƒ£ãƒ³ãƒ—ãƒœã‚¿ãƒ³ã‚’æŠ¼ã—ãŸã‚‰ç§»å‹•ä¸­ã‚¸ãƒ£ãƒ³ãƒ—çŠ¶æ…‹ã«é·ç§»ã™ã‚‹
 	if (input->IsTriggered("A"))
 	{
 
 		m_updateFunc = &Player::NormalJumpUpdate;
-		m_nowAnimIdx = eAnimIdx::Jump;
+		m_nowAnimIdx = m_animIdx["Jump"];
 		ChangeAnim(m_nowAnimIdx, 0.7f);
 
 		SoundManager::GetInstance().PlaySE("jump");
@@ -801,14 +622,9 @@ void Player::DeathUpdate(std::shared_ptr<Input> input)
 		if (!m_isDead)
 		{
 			m_isDead = true;
-			m_nowAnimIdx = eAnimIdx::DeathPose;
+			m_nowAnimIdx = m_animIdx["DeathPose"];
 			ChangeAnim(m_nowAnimIdx, 1.0f);
 			return;
 		}
-
 	}
-}
-
-void Player::ClearUpdate(std::shared_ptr<Input> input)
-{
 }

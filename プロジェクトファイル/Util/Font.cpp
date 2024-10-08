@@ -1,4 +1,4 @@
-#include "Font.h"
+ï»¿#include "Font.h"
 #include "DxLib.h"
 
 Font* Font::m_instance = nullptr;
@@ -8,46 +8,49 @@ namespace
 	const std::string kPathFront = "data/font/";
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 Font::~Font()
 {
 	for (auto path : m_paths)
 	{
-		// ********** ƒtƒHƒ“ƒg‚ÌƒAƒ“ƒ[ƒh **********
+		// ********** ãƒ•ã‚©ãƒ³ãƒˆã®ã‚¢ãƒ³ãƒ­ãƒ¼ãƒ‰ **********
 		if (RemoveFontResourceEx(path.c_str(), FR_PRIVATE, NULL))
 		{
 		}
 	}
 
-	for (auto handle : m_handles)
+	for (auto handle : m_handle)
 	{
 		DeleteFontToHandle(handle.second);
 	}
 
-	m_handles.clear();
+	m_handle.clear();
 	m_paths.clear();
 }
 
 /// <summary>
-/// ƒtƒHƒ“ƒg‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾‚·‚é
+/// ãƒ•ã‚©ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã™ã‚‹
 /// </summary>
-/// <param name="path">ƒpƒX</param>
-/// <param name="name">–¼‘O</param>
-/// <param name="fontSize">ƒtƒHƒ“ƒgƒTƒCƒY</param>
+/// <param name="path">ãƒ‘ã‚¹</param>
+/// <param name="name">åå‰</param>
+/// <param name="fontSize">ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º</param>
 /// <returns></returns>
 int Font::GetFontHandle(std::string path, std::string name, int fontSize)
 {
-	for (const auto& handle : m_handles)
+	for (const auto& handle : m_handle)
 	{
 		auto& data = handle.first;
 
-		//Šù‚É“¯‚¶ğŒ‚Ìƒnƒ“ƒhƒ‹‚ª‘¶İ‚µ‚Ä‚¢‚½‚ç‚»‚Ìƒnƒ“ƒhƒ‹‚ğ•Ô‚·
+		//æ—¢ã«åŒã˜æ¡ä»¶ã®ãƒãƒ³ãƒ‰ãƒ«ãŒå­˜åœ¨ã—ã¦ã„ãŸã‚‰ãã®ãƒãƒ³ãƒ‰ãƒ«ã‚’è¿”ã™
 		if (data.first == name && data.second == fontSize)
 		{
 			return handle.second;
 		}
 	}
 
-	//€”õ‚ğƒXƒLƒbƒv‚·‚é‚©‚Ç‚¤‚©
+	//æº–å‚™ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã‹ã©ã†ã‹
 	bool isPreSkip = false;
 
 	for (auto path : m_paths)
@@ -60,19 +63,19 @@ int Font::GetFontHandle(std::string path, std::string name, int fontSize)
 
 	if (!isPreSkip)
 	{
-		//g—p‚·‚éƒtƒHƒ“ƒg‚ğ€”õ‚·‚é
+		//ä½¿ç”¨ã™ã‚‹ãƒ•ã‚©ãƒ³ãƒˆã‚’æº–å‚™ã™ã‚‹
 		if (AddFontResourceEx(path.c_str(), FR_PRIVATE, NULL) > 0) {
 		}
 		else {
-			// ƒtƒHƒ“ƒg“ÇƒGƒ‰[ˆ—
-			MessageBox(NULL, "ƒtƒHƒ“ƒg“Ç¸”s", "", MB_OK);
+			// ãƒ•ã‚©ãƒ³ãƒˆèª­è¾¼ã‚¨ãƒ©ãƒ¼å‡¦ç†
+			MessageBox(NULL, "ãƒ•ã‚©ãƒ³ãƒˆèª­è¾¼å¤±æ•—", "", MB_OK);
 		}
 
 		m_paths.push_back(path);
 	}
 	
 
-	//‚±‚±‚ğ’Ê‚é‚Æ‚«‚Í“¯‚¶ğŒ‚Ìƒnƒ“ƒhƒ‹‚ª‘¶İ‚µ‚È‚©‚Á‚½‚Æ‚«
+	//ã“ã“ã‚’é€šã‚‹ã¨ãã¯åŒã˜æ¡ä»¶ã®ãƒãƒ³ãƒ‰ãƒ«ãŒå­˜åœ¨ã—ãªã‹ã£ãŸã¨ã
 	int ret = -1;
 	ret = CreateFontToHandle(name.c_str(), fontSize, -1);
 
@@ -80,7 +83,7 @@ int Font::GetFontHandle(std::string path, std::string name, int fontSize)
 	add.first = name;
 	add.second = fontSize;
 
-	m_handles[add] = ret;
+	m_handle[add] = ret;
 
 	return ret;
 }

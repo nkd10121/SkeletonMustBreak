@@ -1,4 +1,4 @@
-#include "EnemyManager.h"
+ï»¿#include "EnemyManager.h"
 #include "GameManager.h"
 #include "DxLib.h"
 #include "EnemyBase.h"
@@ -15,37 +15,36 @@
 
 namespace
 {
-	//ƒRƒ“ƒ{Œp‘±‚Ì‚½‚ß‚Ìƒ^ƒCƒ€ƒŠƒ~ƒbƒg
+	//ã‚³ãƒ³ãƒœç¶™ç¶šã®ãŸã‚ã®ã‚¿ã‚¤ãƒ ãƒªãƒŸãƒƒãƒˆ
 	constexpr int kComboTimeLimitMax = 6 * 60;
-	//ƒRƒ“ƒ{‚ÌŠÔ§ŒÀ‚ÌŒ¸­—Ê
+	//ã‚³ãƒ³ãƒœã®æ™‚é–“åˆ¶é™ã®æ¸›å°‘é‡
 	constexpr int kDelTimeLimit = 10;
 
-	/*ƒRƒ“ƒ{ƒo[‚Ì•`‰æÀ•W*/
-	constexpr int kComboBarStartX = 160;	//¶’[
-	constexpr int kComboBarEndX = 320;		//‰E’[
-	constexpr int kComboBarStartY = 400;	//ã
-	constexpr int kComboBarEndY = 420;		//‰º
+	/*ã‚³ãƒ³ãƒœãƒãƒ¼ã®æç”»åº§æ¨™*/
+	constexpr int kComboBarStartX = 160;	//å·¦ç«¯
+	constexpr int kComboBarEndX = 320;		//å³ç«¯
+	constexpr int kComboBarStartY = 400;	//ä¸Š
+	constexpr int kComboBarEndY = 420;		//ä¸‹
 
-	//ƒeƒLƒXƒgƒTƒCƒY
+	//ãƒ†ã‚­ã‚¹ãƒˆã‚µã‚¤ã‚º
 	constexpr int kTextSize = 40;
 
-	//“G‚ÌˆÚ“®ƒ‹[ƒg‚Ì·•ª‚ÌÅ‘å
+	//æ•µã®ç§»å‹•ãƒ«ãƒ¼ãƒˆã®å·®åˆ†ã®æœ€å¤§
 	constexpr int kRandMax = 8;
 
-	//ƒGƒtƒFƒNƒg‚ÌƒtƒŒ[ƒ€”
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	constexpr int kEffectFrame = 120;
-	//ƒqƒbƒgƒGƒtƒFƒNƒg‚ÌƒIƒtƒZƒbƒg
+	//ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
 	constexpr int kEffectOffsetRand = 6;
 
 	constexpr float kComboTextSize = 0.05f;
 }
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 EnemyManager::EnemyManager() :
 	m_stageName(""),
-	m_swordHandle(-1),
 	m_deletedEnemyNum(0),
 	m_playerKillCount(nullptr),
 	m_trapKillCount(nullptr),
@@ -56,47 +55,34 @@ EnemyManager::EnemyManager() :
 	m_frontEnemyHp(0),
 	m_frontEnemyMaxHp(0)
 {
-	//ƒGƒlƒ~[‚Ìƒ‚ƒfƒ‹‚ğ‚ ‚ç‚©‚¶‚ß¶¬‚µ‚Ä‚¨‚­
-	//TODO:ƒXƒe[ƒW‚Ì¶¬î•ñ‚©‚çA¶¬—\’è‚Ì‚ ‚éƒ‚ƒfƒ‹‚Ì‚İ‚ğƒ[ƒh‚·‚éŒ`‚É‚µ‚½‚¢
-	m_enemyHandle["Skeleton_Minion"] = MV1LoadModel("data/model/Skeleton_Minion.mv1");
-	m_enemyHandle["SkeletonWarrior"] = MV1LoadModel("data/model/SkeletonWarrior.mv1");
-	m_swordHandle = MV1LoadModel("data/model/SkeletonBlade.mv1");
-
-	//ƒTƒEƒ“ƒh‚Ìƒ[ƒh
+	//ã‚µã‚¦ãƒ³ãƒ‰ã®ãƒ­ãƒ¼ãƒ‰
 	SoundManager::GetInstance().Load("EnemyHit", "data/sound/se/enemyHit.mp3", false);
 	SoundManager::GetInstance().Load("EnemyCriticalHit", "data/sound/se/enemyHit2.mp3", false);
 
-	//ƒGƒtƒFƒNƒg‚Ìƒ[ƒh
+	//ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã®ãƒ­ãƒ¼ãƒ‰
 	EffectManager::GetInstance().Load("EnemyHit", "data/effect/enemy_hit.efk", kEffectFrame);
 	EffectManager::GetInstance().Load("EnemyDisappear", "data/effect/enemy_disappear.efk", kEffectFrame);
 }
 
 /// <summary>
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 EnemyManager::~EnemyManager()
 {
-	for (auto& handle : m_enemyHandle)
-	{
-		MV1DeleteModel(handle.second);
-	}
-	m_enemyHandle.clear();
-
-	MV1DeleteModel(m_swordHandle);
-
+	//ãƒ¡ãƒ¢ãƒªé–‹æ”¾
 	m_playerKillCount = nullptr;
 	delete m_playerKillCount;
 	m_trapKillCount = nullptr;
 	delete m_trapKillCount;
 
+	//é…åˆ—ã®å…¨è¦ç´ å‰Šé™¤
 	m_pEnemys.clear();
 	m_pGenerateInfo.clear();
 	m_enemyPos.clear();
-
 }
 
 /// <summary>
-/// ‰Šú‰»
+/// åˆæœŸåŒ–
 /// </summary>
 /// <param name="playerKillCount"></param>
 /// <param name="trapKillCount"></param>
@@ -104,44 +90,45 @@ EnemyManager::~EnemyManager()
 /// <param name="stageName"></param>
 void EnemyManager::Init(int* playerKillCount, int* trapKillCount, int* comboMax, const char* stageName)
 {
-	//ƒXƒRƒAŒvZ‚É•K—v‚Èî•ñ‚ÌƒAƒhƒŒƒX‚ğŠi”[‚·‚é
+	//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æ ¼ç´ã™ã‚‹
 	m_stageName = stageName;
 	m_playerKillCount = playerKillCount;
 	m_trapKillCount = trapKillCount;
 	m_comboMax = comboMax;
 
-	//“G¶¬î•ñ‚ğæ“¾‚·‚é
+	//æ•µç”Ÿæˆæƒ…å ±ã‚’å–å¾—ã™ã‚‹
 	CsvLoad::GetInstance().StageEnenyDataLoad(m_stageName, m_pGenerateInfo);
 
-	//csv‘¤‚Å1,2,3ƒEƒF[ƒu‚ÆoŒ»ƒEƒF[ƒu‚ğw’è‚µ‚Ä‚¢‚é‚½‚ßAƒEƒF[ƒu”‚Ì•â³‚ğ‚·‚é
+	//csvå´ã§1,2,3ã‚¦ã‚§ãƒ¼ãƒ–ã¨å‡ºç¾ã‚¦ã‚§ãƒ¼ãƒ–ã‚’æŒ‡å®šã—ã¦ã„ã‚‹ãŸã‚ã€ã‚¦ã‚§ãƒ¼ãƒ–æ•°ã®è£œæ­£ã‚’ã™ã‚‹
+	//ã¤ã„ã§ã«å„ã‚¦ã‚§ãƒ¼ãƒ–ã®æ•µã®ç”Ÿæˆæ•°ã‚‚ã‚«ã‚¦ãƒ³ãƒˆã—ã¦ãŠã
 	for (auto& generate : m_pGenerateInfo)
 	{
-		//oŒ»ƒEƒF[ƒu‚ª1‚È‚ç
+		//å‡ºç¾ã‚¦ã‚§ãƒ¼ãƒ–ãŒ1ãªã‚‰
 		if (generate->appearPhase == 1)
 		{
-			//•â³‚Í‚µ‚È‚­‚Ä‚¢‚¢
+			//è£œæ­£ã¯ã—ãªãã¦ã„ã„
 
-			//‚»‚ÌƒEƒF[ƒu‚ÌoŒ»‚·‚é“G‚Ì”‚ğXV‚·‚é
+			//ãã®ã‚¦ã‚§ãƒ¼ãƒ–ã®å‡ºç¾ã™ã‚‹æ•µã®æ•°ã‚’æ›´æ–°ã™ã‚‹
 			int num = m_enemyGenerationCountPerOnePhase[generate->appearPhase];
 			num++;
 			m_enemyGenerationCountPerOnePhase[generate->appearPhase] = num;
 		}
 		else if (generate->appearPhase == 2)
 		{
-			//•â³‚·‚é
+			//è£œæ­£ã™ã‚‹
 			generate->appearPhase = 3;
 
-			//‚»‚ÌƒEƒF[ƒu‚ÌoŒ»‚·‚é“G‚Ì”‚ğXV‚·‚é
+			//ãã®ã‚¦ã‚§ãƒ¼ãƒ–ã®å‡ºç¾ã™ã‚‹æ•µã®æ•°ã‚’æ›´æ–°ã™ã‚‹
 			int num = m_enemyGenerationCountPerOnePhase[generate->appearPhase];
 			num++;
 			m_enemyGenerationCountPerOnePhase[generate->appearPhase] = num;
 		}
 		else if (generate->appearPhase == 3)
 		{
-			//•â³‚·‚é
+			//è£œæ­£ã™ã‚‹
 			generate->appearPhase = 5;
 
-			//‚»‚ÌƒEƒF[ƒu‚ÌoŒ»‚·‚é“G‚Ì”‚ğXV‚·‚é
+			//ãã®ã‚¦ã‚§ãƒ¼ãƒ–ã®å‡ºç¾ã™ã‚‹æ•µã®æ•°ã‚’æ›´æ–°ã™ã‚‹
 			int num = m_enemyGenerationCountPerOnePhase[generate->appearPhase];
 			num++;
 			m_enemyGenerationCountPerOnePhase[generate->appearPhase] = num;
@@ -151,7 +138,7 @@ void EnemyManager::Init(int* playerKillCount, int* trapKillCount, int* comboMax,
 }
 
 /// <summary>
-/// XV
+/// æ›´æ–°
 /// </summary>
 /// <param name="input"></param>
 /// <param name="physics"></param>
@@ -161,24 +148,24 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 {
 	m_enemyPos.clear();
 
-	//¡‚ÌƒtƒF[ƒY‚ª‚Ç‚ÌƒtƒF[ƒY‚©æ“¾‚·‚é
+	//ä»Šã®ãƒ•ã‚§ãƒ¼ã‚ºãŒã©ã®ãƒ•ã‚§ãƒ¼ã‚ºã‹å–å¾—ã™ã‚‹
 	auto thisPhaseName = gameManager->GetThisPhaseName();
-	//¡‚ÌƒtƒF[ƒY‚ÌƒJƒEƒ“ƒg‚ğæ“¾‚·‚é
+	//ä»Šã®ãƒ•ã‚§ãƒ¼ã‚ºã®ã‚«ã‚¦ãƒ³ãƒˆã‚’å–å¾—ã™ã‚‹
 	auto thisPhaseCount = gameManager->GetThisPhaseCount() / Game::kFps;
 
-	//‚à‚µ¡‚ÌƒtƒF[ƒY‚ªí“¬ƒtƒF[ƒY‚È‚ç
+	//ã‚‚ã—ä»Šã®ãƒ•ã‚§ãƒ¼ã‚ºãŒæˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚ºãªã‚‰
 	if (thisPhaseName == 1 || thisPhaseName == 3 || thisPhaseName == 5)
 	{
-		//“G¶¬î•ñ‚ğ‚Ü‚í‚µ‚Ä
+		//æ•µç”Ÿæˆæƒ…å ±ã‚’ã¾ã‚ã—ã¦
 		for (auto& generate : m_pGenerateInfo)
 		{
-			//¡‚ÌƒtƒF[ƒY‚ÆƒtƒF[ƒYƒJƒEƒ“ƒg‚ªˆê’v‚µ‚Ä‚¢‚é‚Æ‚«
+			//ä»Šã®ãƒ•ã‚§ãƒ¼ã‚ºã¨ãƒ•ã‚§ãƒ¼ã‚ºã‚«ã‚¦ãƒ³ãƒˆãŒä¸€è‡´ã—ã¦ã„ã‚‹ã¨ã
 			if (generate->appearPhase == thisPhaseName && generate->appearFrame == thisPhaseCount)
 			{
-				//¶¬Ï‚İ‚Å‚È‚¯‚ê‚Î
+				//ç”Ÿæˆæ¸ˆã¿ã§ãªã‘ã‚Œã°
 				if (!generate->isCreated)
 				{
-					//¶¬Ï‚İ‚É‚µ‚Ä“G‚ğ¶¬‚·‚é
+					//ç”Ÿæˆæ¸ˆã¿ã«ã—ã¦æ•µã‚’ç”Ÿæˆã™ã‚‹
 					generate->isCreated = true;
 					CreateEnemy(generate->enemyName, physics);
 				}
@@ -187,10 +174,10 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 		}
 	}
 
-	//ƒŒƒC‚É“–‚½‚Á‚½“G‚ğ“ü‚ê‚é”z—ñ
+	//ãƒ¬ã‚¤ã«å½“ãŸã£ãŸæ•µã‚’å…¥ã‚Œã‚‹é…åˆ—
 	std::list<std::shared_ptr<EnemyBase>> rayHitEnemys;
 
-	//ƒŒƒCƒLƒƒƒXƒg‚ÌƒŒƒC‚Ìü•ª‚ğŒvZ‚·‚é
+	//ãƒ¬ã‚¤ã‚­ãƒ£ã‚¹ãƒˆã®ãƒ¬ã‚¤ã®ç·šåˆ†ã‚’è¨ˆç®—ã™ã‚‹
 	VECTOR start = playerPos.ConvertToVECTOR();
 	VECTOR end = VAdd(start,VScale(playerDir.ConvertToVECTOR(),100.0f));
 
@@ -198,31 +185,31 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 	DrawLine3D(start, end, 0x00ffff);
 #endif
 
-	//“G‚ÌXV‚ğ‚·‚é
+	//æ•µã®æ›´æ–°ã‚’ã™ã‚‹
 	for (auto& e : m_pEnemys)
 	{
-		//XV
+		//æ›´æ–°
 		e->Update(gameManager->GetPlayerPos(), isPlayerChase);
 
 		m_enemyPos.emplace_back(e->GetCenterPos());
 
-		//ƒRƒŠƒWƒ‡ƒ“î•ñ‚ğXV‚·‚é
+		//ã‚³ãƒªã‚¸ãƒ§ãƒ³æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 		MV1RefreshCollInfo(e->GetModelHandle());
 
-		//ƒvƒŒƒCƒ„[‚©‚çƒvƒŒƒCƒ„[‚ÌŒü‚¢‚Ä‚¢‚é•ûŒü‚ÉƒŒƒC‚ğ”ò‚Î‚µ‚Ä“G‚ª‚»‚ÌƒŒƒC‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©‚ğæ“¾‚·‚é
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘ã„ã¦ã„ã‚‹æ–¹å‘ã«ãƒ¬ã‚¤ã‚’é£›ã°ã—ã¦æ•µãŒãã®ãƒ¬ã‚¤ã«å½“ãŸã£ãŸã‹ã©ã†ã‹ã‚’å–å¾—ã™ã‚‹
 		auto colData = MV1CollCheck_Line(e->GetModelHandle(), -1, start, end);
-		//“–‚½‚Á‚Ä‚¢‚½‚ç
+		//å½“ãŸã£ã¦ã„ãŸã‚‰
 		if (colData.HitFlag)
 		{
-			//‚»‚Ì“G‚ğˆê’URayHitEnemy“I‚È”z—ñ‚É‚Â‚Á‚±‚ñ‚Å•Û—¯‚µ‚Ä‚¨‚­
-			//ˆê’Ê‚è‚Ì“G‚ÌXV‚ªI‚í‚Á‚½‚ç‚»‚ÌRayHitEnemy‚Ì’†‚ÅÅ‚àƒvƒŒƒCƒ„[‚Æ‹ß‚¢“G‚ÌHP‚ğ‰æ–Êã•”‚É•\¦‚·‚é
+			//ãã®æ•µã‚’ä¸€æ—¦RayHitEnemyçš„ãªé…åˆ—ã«ã¤ã£ã“ã‚“ã§ä¿ç•™ã—ã¦ãŠã
+			//ä¸€é€šã‚Šã®æ•µã®æ›´æ–°ãŒçµ‚ã‚ã£ãŸã‚‰ãã®RayHitEnemyã®ä¸­ã§æœ€ã‚‚ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã¨è¿‘ã„æ•µã®HPã‚’ç”»é¢ä¸Šéƒ¨ã«è¡¨ç¤ºã™ã‚‹
 			rayHitEnemys.emplace_back(e);
 		}
 
-		//“G‚ªUŒ‚‚É“–‚½‚Á‚½
+		//æ•µãŒæ”»æ’ƒã«å½“ãŸã£ãŸæ™‚
 		if (e->GetIsHit())
 		{
-			//“G‚Ì‹ß‚­‚ÉƒqƒbƒgƒGƒtƒFƒNƒg‚ğ•\¦
+			//æ•µã®è¿‘ãã«ãƒ’ãƒƒãƒˆã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’è¡¨ç¤º
 			auto pos = e->GetCenterPos();
 			MyLib::Vec3 offset = MyLib::Vec3(static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand/2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand/2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand/2));
 			pos += offset;
@@ -230,22 +217,22 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 			EffectManager::GetInstance().CreateEffect("EnemyHit", pos,pos);
 		}
 
-		//€‚ñ‚Å‚¢‚é(ƒ_ƒEƒ“ƒAƒjƒ[ƒVƒ‡ƒ“‚ªn‚Ü‚Á‚Ä‚¢‚é)“G‚Ì”»’è‚ğ‚·‚é
+		//æ­»ã‚“ã§ã„ã‚‹(ãƒ€ã‚¦ãƒ³ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒå§‹ã¾ã£ã¦ã„ã‚‹)æ•µã®åˆ¤å®šã‚’ã™ã‚‹
 		if (e->GetIsDead())
 		{
-			//ƒ|ƒCƒ“ƒg‚ğ‚Ü‚¾ƒhƒƒbƒv‚µ‚Ä‚¢‚È‚©‚Á‚½‚ç
+			//ãƒã‚¤ãƒ³ãƒˆã‚’ã¾ã ãƒ‰ãƒ­ãƒƒãƒ—ã—ã¦ã„ãªã‹ã£ãŸã‚‰
 			if (!e->GetIsDropedPoint())
 			{
-				//ƒRƒ“ƒ{”‚ğXV‚µ‚Ä
+				//ã‚³ãƒ³ãƒœæ•°ã‚’æ›´æ–°ã—ã¦
 				m_comboCount++;
-				//ƒRƒ“ƒ{‚ÌŠÔ§ŒÀ‚ğƒŠƒZƒbƒg‚·‚é
+				//ã‚³ãƒ³ãƒœã®æ™‚é–“åˆ¶é™ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 				m_combTimeLimit = kComboTimeLimitMax - kDelTimeLimit * m_comboCount;
 
 				int point = e->GetDropPoint();
 				gameManager->AddTrapPoint(static_cast<int>(point * (1.0f + static_cast<float>(m_comboCount) / 20)));
 
 
-				//ƒRƒ“ƒ{”‚ÌƒtƒHƒ“ƒg‚Ì‘å‚«‚³‚ğ•Ï‚¦‚é
+				//ã‚³ãƒ³ãƒœæ•°ã®ãƒ•ã‚©ãƒ³ãƒˆã®å¤§ãã•ã‚’å¤‰ãˆã‚‹
 				if (m_comboCount >= 1)
 				{
 					m_fontMag = 1.0f + (m_comboCount - 1) * kComboTextSize;
@@ -253,29 +240,29 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 			}
 		}
 
-		//g—pÏ‚İ‚Ì“GƒLƒƒƒ‰ƒNƒ^‚ğíœ‚·‚é•K—v‚ª‚ ‚é
+		//ä½¿ç”¨æ¸ˆã¿ã®æ•µã‚­ãƒ£ãƒ©ã‚¯ã‚¿ã‚’å‰Šé™¤ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
 		if (!e->GetIsExist())
 		{
-			//“G‚ªÁ‚¦‚éƒGƒtƒFƒNƒg‚ğ•\¦‚·‚é
+			//æ•µãŒæ¶ˆãˆã‚‹ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚’è¡¨ç¤ºã™ã‚‹
 			auto pos = e->GetCenterPos();
 			EffectManager::GetInstance().CreateEffect("EnemyDisappear",pos);
 
-			//€‚ñ‚Å‚¢‚é=‰½Ò‚©‚É‚æ‚Á‚Äƒ_ƒ[ƒW‚ğ—^‚¦‚ç‚ê‚Ä‚¢‚é
+			//æ­»ã‚“ã§ã„ã‚‹=ä½•è€…ã‹ã«ã‚ˆã£ã¦ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‰ã‚Œã¦ã„ã‚‹
 			if (e->GetIsDead())
 			{
-				//ƒ‰ƒXƒgƒAƒ^ƒbƒN‚ğ‚Æ‚Á‚½‚Ì‚ªƒvƒŒƒCƒ„[‚©‚Ç‚¤‚©
+				//ãƒ©ã‚¹ãƒˆã‚¢ã‚¿ãƒƒã‚¯ã‚’ã¨ã£ãŸã®ãŒãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‹ã©ã†ã‹
 				if (e->GetLastHitObjectTag() == GameObjectTag::Shot)
 				{
-					//ƒ‰ƒXƒgƒAƒ^ƒbƒNè’i‚ªShot‚È‚çƒvƒŒƒCƒ„[‚ªƒLƒ‹‚µ‚½”‚ğ‘‚â‚·
+					//ãƒ©ã‚¹ãƒˆã‚¢ã‚¿ãƒƒã‚¯æ‰‹æ®µãŒShotãªã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒã‚­ãƒ«ã—ãŸæ•°ã‚’å¢—ã‚„ã™
 					*m_playerKillCount += 1;
 				}
-				else	//ƒvƒŒƒCƒ„[ˆÈŠO‚ÌŒ´ˆö‚È‚çƒgƒ‰ƒbƒv‚Å€–S‚µ‚½‚Æ‚İ‚È‚·
+				else	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ä»¥å¤–ã®åŸå› ãªã‚‰ãƒˆãƒ©ãƒƒãƒ—ã§æ­»äº¡ã—ãŸã¨ã¿ãªã™
 				{
-					//ƒ‰ƒXƒgƒAƒ^ƒbƒNè’i‚ªShotˆÈŠO‚È‚çƒgƒ‰ƒbƒv‚ªƒLƒ‹‚µ‚½”‚ğ‘‚â‚·
+					//ãƒ©ã‚¹ãƒˆã‚¢ã‚¿ãƒƒã‚¯æ‰‹æ®µãŒShotä»¥å¤–ãªã‚‰ãƒˆãƒ©ãƒƒãƒ—ãŒã‚­ãƒ«ã—ãŸæ•°ã‚’å¢—ã‚„ã™
 					*m_trapKillCount += 1;
 				}
 
-				//Šm—¦‚Åƒ|[ƒVƒ‡ƒ“‚ªƒhƒƒbƒv‚·‚é‚æ‚¤‚É
+				//ç¢ºç‡ã§ãƒãƒ¼ã‚·ãƒ§ãƒ³ãŒãƒ‰ãƒ­ãƒƒãƒ—ã™ã‚‹ã‚ˆã†ã«
 				int rand = GetRand(10);
 				if (rand == 0)
 				{
@@ -283,24 +270,24 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 				}
 			}
 
-			//“G‚ª–Ú“I’n‚É“’B‚µ‚Ä‚¢‚é‚©
+			//æ•µãŒç›®çš„åœ°ã«åˆ°é”ã—ã¦ã„ã‚‹ã‹
 			if (e->GetIsReach())
 			{
-				//“’B‚µ‚Ä‚¢‚½‚çƒIƒuƒWƒFƒNƒg‚ÌHP‚ğŒ¸‚ç‚·
+				//åˆ°é”ã—ã¦ã„ãŸã‚‰ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®HPã‚’æ¸›ã‚‰ã™
 				gameManager->SubCrystalHP();
 			}
 
-			//íœÏ‚İ‚Ì“G‚Ì”‚ğXV‚·‚é
+			//å‰Šé™¤æ¸ˆã¿ã®æ•µã®æ•°ã‚’æ›´æ–°ã™ã‚‹
 			m_deletedEnemyNum++;
 
-			//ƒƒ‚ƒŠ‚ğ‰ğ•ú‚·‚é
+			//ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹
 			//e->Finalize(physics);
 			e.reset();
 			e = nullptr;
 		}
 	}
 
-	//•s—v‚É‚È‚Á‚½“G‚ğ‚±‚±‚Åíœˆ—‚·‚é
+	//ä¸è¦ã«ãªã£ãŸæ•µã‚’ã“ã“ã§å‰Šé™¤å‡¦ç†ã™ã‚‹
 	auto lIt = remove_if(m_pEnemys.begin(), m_pEnemys.end(), [](auto& v) {
 		return v == nullptr;
 		});
@@ -310,7 +297,7 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 	float length = 300.0f;
 	m_frontEnemyHp = 0;
 	m_frontEnemyMaxHp = 0;
-	//ƒŒƒC‚É“–‚½‚Á‚½“G‚Ì’†‚©‚çƒvƒŒƒCƒ„[‚ÉÅ‚à‹ß‚¢“G‚ğŒvZ‚·‚é
+	//ãƒ¬ã‚¤ã«å½“ãŸã£ãŸæ•µã®ä¸­ã‹ã‚‰ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«æœ€ã‚‚è¿‘ã„æ•µã‚’è¨ˆç®—ã™ã‚‹
 	for (auto& rayHitEnemy : rayHitEnemys)
 	{
 		auto distance = (rayHitEnemy->GetCenterPos() - playerPos).Size();
@@ -323,24 +310,24 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 	}
 
 
-	//í“¬ƒtƒF[ƒY‚Ì
+	//æˆ¦é—˜ãƒ•ã‚§ãƒ¼ã‚ºã®æ™‚
 	if (thisPhaseName < 6 && thisPhaseName % 2 != 0)
 	{
-		//‚ ‚ç‚©‚¶‚ßİ’è‚³‚ê‚Ä‚¢‚½“G‚Ì¶¬”‚Æíœ”‚ª“¯‚¶‚È‚ç
+		//ã‚ã‚‰ã‹ã˜ã‚è¨­å®šã•ã‚Œã¦ã„ãŸæ•µã®ç”Ÿæˆæ•°ã¨å‰Šé™¤æ•°ãŒåŒã˜ãªã‚‰
 		if (m_enemyGenerationCountPerOnePhase[thisPhaseName] == m_deletedEnemyNum)
 		{
-			//ƒtƒF[ƒY‚ğŸ‚ÌƒtƒF[ƒY‚É‚·‚é
+			//ãƒ•ã‚§ãƒ¼ã‚ºã‚’æ¬¡ã®ãƒ•ã‚§ãƒ¼ã‚ºã«ã™ã‚‹
 			gameManager->ChangeNextPhase();
 			m_deletedEnemyNum = 0;
 		}
 	}
 
-	//ƒRƒ“ƒ{ƒJƒEƒ“ƒg‚ª1ˆÈã‚ÌAƒ^ƒCƒ€ƒŠƒ~ƒbƒg‚ğŒ¸‚ç‚·
+	//ã‚³ãƒ³ãƒœã‚«ã‚¦ãƒ³ãƒˆãŒ1ä»¥ä¸Šã®æ™‚ã€ã‚¿ã‚¤ãƒ ãƒªãƒŸãƒƒãƒˆã‚’æ¸›ã‚‰ã™
 	if (m_comboCount >= 1)
 	{
 		m_combTimeLimit--;
 
-		//ƒ^ƒCƒ€ƒŠƒ~ƒbƒg‚ª0‚É‚È‚Á‚½‚Æ‚«ƒRƒ“ƒ{‚ğƒŠƒZƒbƒg‚·‚é
+		//ã‚¿ã‚¤ãƒ ãƒªãƒŸãƒƒãƒˆãŒ0ã«ãªã£ãŸã¨ãã‚³ãƒ³ãƒœã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 		if (m_combTimeLimit <= 0)
 		{
 			if (*m_comboMax < m_comboCount)
@@ -353,17 +340,17 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 }
 
 /// <summary>
-/// •`‰æ
+/// æç”»
 /// </summary>
 void EnemyManager::Draw()
 {
-	//“G‚ğ•`‰æ‚·‚é
+	//æ•µã‚’æç”»ã™ã‚‹
 	for (auto& e : m_pEnemys)
 	{
 		e->Draw();
 	}
 
-	//ƒRƒ“ƒ{‚ª‘±‚¢‚Ä‚¢‚½‚çƒRƒ“ƒ{ŠÖŒW‚ğ•`‰æ‚·‚é
+	//ã‚³ãƒ³ãƒœãŒç¶šã„ã¦ã„ãŸã‚‰ã‚³ãƒ³ãƒœé–¢ä¿‚ã‚’æç”»ã™ã‚‹
 	if (m_comboCount >= 1)
 	{
 		float per = static_cast<float>(m_combTimeLimit) / static_cast<float>(kComboTimeLimitMax - kDelTimeLimit * m_comboCount);
@@ -379,7 +366,7 @@ void EnemyManager::Draw()
 			offset = kTextSize;
 		}
 		DrawExtendFormatStringToHandle(kComboBarStartX + (kComboBarEndX - kComboBarStartX) / 2 - kTextSize - offset, 340, m_fontMag, m_fontMag, 0xffffff, Font::GetInstance().GetFontHandle("data/font/Dela-Gothic-One.ttf", "Dela Gothic One", kTextSize), "%d", m_comboCount);
-		DrawStringToHandle(kComboBarStartX + (kComboBarEndX - kComboBarStartX) / 2 + 20, 370, "ƒRƒ“ƒ{", 0xffffff, Font::GetInstance().GetFontHandle("data/font/Dela-Gothic-One.ttf", "Dela Gothic One", kTextSize / 2), 0xff0000);
+		DrawStringToHandle(kComboBarStartX + (kComboBarEndX - kComboBarStartX) / 2 + 20, 370, "ã‚³ãƒ³ãƒœ", 0xffffff, Font::GetInstance().GetFontHandle("data/font/Dela-Gothic-One.ttf", "Dela Gothic One", kTextSize / 2), 0xff0000);
 	}
 #ifdef _DEBUG
 	//DrawFormatString(1100, 400, 0xff0000, "%d", m_frontEnemyHp);
@@ -387,34 +374,34 @@ void EnemyManager::Draw()
 }
 
 /// <summary>
-/// “G‚ÌˆÚ“®ƒ‹[ƒg‚Ìì¬
+/// æ•µã®ç§»å‹•ãƒ«ãƒ¼ãƒˆã®ä½œæˆ
 /// </summary>
-/// <returns>ˆÚ“®ƒ‹[ƒg</returns>
+/// <returns>ç§»å‹•ãƒ«ãƒ¼ãƒˆ</returns>
 std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 {
-	//ÅI“I‚É•Ô‚·’l
+	//æœ€çµ‚çš„ã«è¿”ã™å€¤
 	std::vector<MyLib::Vec3> ret;
 
-	//‚·‚×‚Ä‚ÌˆÚ“®ƒ‹[ƒg‚ÌŒó•âÀ•W‚ğæ“¾‚·‚é
+	//ã™ã¹ã¦ã®ç§»å‹•ãƒ«ãƒ¼ãƒˆã®å€™è£œåº§æ¨™ã‚’å–å¾—ã™ã‚‹
 	auto info = MapDataLoad::GetInstance().GetEnemyRoute();
 
-	//¶¬ˆÊ’u‚ğİ’è‚·‚é
-	//TODO:•¡”‚Ì¶¬ˆÊ’u‚É‘Î‰‚Å‚«‚é‚æ‚¤‚É‚·‚é
+	//ç”Ÿæˆä½ç½®ã‚’è¨­å®šã™ã‚‹
+	//TODO:è¤‡æ•°ã®ç”Ÿæˆä½ç½®ã«å¯¾å¿œã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹
 	auto startPos = info.pos[0];
 	startPos[0].x += GetRand(kRandMax) - kRandMax/2;
 	startPos[0].z += GetRand(kRandMax) - kRandMax / 2;
 	ret.push_back(startPos[0]);
 
-	//ƒXƒe[ƒW–¼‚ğstringŒ^‚Åæ“¾‚·‚é
+	//ã‚¹ãƒ†ãƒ¼ã‚¸åã‚’stringå‹ã§å–å¾—ã™ã‚‹
 	std::string name = m_stageName;
 
-	/*ƒXƒe[ƒW‚²‚Æ‚Éƒ‹[ƒg‚ª•ªŠò‚·‚é‚½‚ß‚»‚ê‚¼‚ê‚Ìƒ‹[ƒg‚ğ¶¬‚·‚é*/
+	/*ã‚¹ãƒ†ãƒ¼ã‚¸ã”ã¨ã«ãƒ«ãƒ¼ãƒˆãŒåˆ†å²ã™ã‚‹ãŸã‚ãã‚Œãã‚Œã®ãƒ«ãƒ¼ãƒˆã‚’ç”Ÿæˆã™ã‚‹*/
 
 	if (name == "stage1")
 	{
 		int add = 0;
 		auto pos = info.pos;
-		//À•W‚ÌŒó•â‚Ì‚Ç‚ê‚É‚·‚é‚©‚ğ—”‚ÅŒˆ’è
+		//åº§æ¨™ã®å€™è£œã®ã©ã‚Œã«ã™ã‚‹ã‹ã‚’ä¹±æ•°ã§æ±ºå®š
 		int rand = GetRand(static_cast<int>(pos[1].size()) - 1);
 		add = rand;
 
@@ -422,7 +409,7 @@ std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 		ret.push_back(addPos);
 
 
-		//ƒ‹[ƒg‚ğŒˆ’è‚·‚é
+		//ãƒ«ãƒ¼ãƒˆã‚’æ±ºå®šã™ã‚‹
 		for (int i = 2; i < pos.size(); i++)
 		{
 			if (static_cast<int>(pos[i].size()) == 0)
@@ -450,7 +437,7 @@ std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 	{
 		int add = 0;
 		auto pos = info.pos;
-		//À•W‚ÌŒó•â‚Ì‚Ç‚ê‚É‚·‚é‚©‚ğ—”‚ÅŒˆ’è
+		//åº§æ¨™ã®å€™è£œã®ã©ã‚Œã«ã™ã‚‹ã‹ã‚’ä¹±æ•°ã§æ±ºå®š
 		int rand = GetRand(static_cast<int>(pos[1].size()) - 1);
 		add = rand;
 
@@ -459,11 +446,11 @@ std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 		addPos = pos[2][add] + MyLib::Vec3(static_cast<float>(GetRand(kRandMax) - kRandMax / 2), 0.0f, static_cast<float>(GetRand(kRandMax) - kRandMax / 2));
 		ret.push_back(addPos);
 
-		//Å‰‚Ì¶‰E‚ğ‚Ç‚Á‚¿‚És‚Á‚½‚©‚Åƒ‹[ƒg‚ª•ªŠò‚·‚é
+		//æœ€åˆã®å·¦å³ã‚’ã©ã£ã¡ã«è¡Œã£ãŸã‹ã§ãƒ«ãƒ¼ãƒˆãŒåˆ†å²ã™ã‚‹
 		if (add == 0)
 		{
-			//‚±‚ê‚©‚ç‚Ìƒ‹[ƒg‚Í0‚©1
-			//ƒ‹[ƒg‚ğŒˆ’è‚·‚é
+			//ã“ã‚Œã‹ã‚‰ã®ãƒ«ãƒ¼ãƒˆã¯0ã‹1
+			//ãƒ«ãƒ¼ãƒˆã‚’æ±ºå®šã™ã‚‹
 			for (int i = 3; i < pos.size(); i++)
 			{
 				if (static_cast<int>(pos[i].size()) == 0)
@@ -479,8 +466,8 @@ std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 		}
 		else if (add == 1)
 		{
-			//‚±‚ê‚©‚ç‚Ìƒ‹[ƒg‚Í2‚©3
-			//ƒ‹[ƒg‚ğŒˆ’è‚·‚é
+			//ã“ã‚Œã‹ã‚‰ã®ãƒ«ãƒ¼ãƒˆã¯2ã‹3
+			//ãƒ«ãƒ¼ãƒˆã‚’æ±ºå®šã™ã‚‹
 			for (int i = 3; i < pos.size(); i++)
 			{
 				if (static_cast<int>(pos[i].size()) == 0)
@@ -514,7 +501,7 @@ std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 			}
 		}
 
-		//“¹‚ªL‚¢‘¤
+		//é“ãŒåºƒã„å´
 		if (sep == 0)
 		{
 			int rand = GetRand(1);
@@ -533,14 +520,14 @@ std::vector<MyLib::Vec3> EnemyManager::CreateEnemyRoute()
 	}
 
 
-	//I“_À•W‚ğ“ü‚ê‚é
+	//çµ‚ç‚¹åº§æ¨™ã‚’å…¥ã‚Œã‚‹
 	ret.push_back(info.end);
 
 	return ret;
 }
 
 /// <summary>
-/// “G‚Ì¶¬
+/// æ•µã®ç”Ÿæˆ
 /// </summary>
 /// <param name="name"></param>
 /// <param name="physics"></param>
@@ -548,25 +535,19 @@ void EnemyManager::CreateEnemy(std::string name, std::shared_ptr<MyLib::Physics>
 {
 	if (name == "NormalSkelton")
 	{
-		int handle = MV1DuplicateModel(m_enemyHandle["Skeleton_Minion"]);
-		MV1SetupCollInfo(handle);
-		std::shared_ptr<Enemy>add = std::make_shared<Enemy>(handle, MV1DuplicateModel(m_swordHandle));
+		std::shared_ptr<Enemy>add = std::make_shared<Enemy>();
 		add->Init(physics, CreateEnemyRoute());
 		m_pEnemys.emplace_back(add);
 	}
 	else if (name == "BigSkelton")
 	{
-		int handle = MV1DuplicateModel(m_enemyHandle["SkeletonWarrior"]);
-		MV1SetupCollInfo(handle);
-		std::shared_ptr<EnemyBig>add = std::make_shared<EnemyBig>(handle, MV1DuplicateModel(m_swordHandle));
+		std::shared_ptr<EnemyBig>add = std::make_shared<EnemyBig>();
 		add->Init(physics, CreateEnemyRoute());
 		m_pEnemys.emplace_back(add);
 	}
 	else if (name == "FastSkelton")
 	{
-		int handle = MV1DuplicateModel(m_enemyHandle["Skeleton_Minion"]);
-		MV1SetupCollInfo(handle);
-		std::shared_ptr<EnemyFast>add = std::make_shared<EnemyFast>(handle);
+		std::shared_ptr<EnemyFast>add = std::make_shared<EnemyFast>();
 		add->Init(physics, CreateEnemyRoute());
 		m_pEnemys.emplace_back(add);
 	}

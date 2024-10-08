@@ -1,13 +1,13 @@
-#include "MyLib.h"
+ï»¿#include "MyLib.h"
 #include <cassert> 
 #include "DxLib.h"
 #include "MyLib.h"
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
-/// <param name="priority">—Dæ“x</param>
-/// <param name="tag">ƒ^ƒO</param>
+/// <param name="priority">å„ªå…ˆåº¦</param>
+/// <param name="tag">ã‚¿ã‚°</param>
 MyLib::Collidable::Collidable(Priority priority, GameObjectTag tag):
 	priority(priority),
 	tag(tag)
@@ -15,91 +15,91 @@ MyLib::Collidable::Collidable(Priority priority, GameObjectTag tag):
 }
 
 /// <summary>
-/// ƒfƒXƒgƒ‰ƒNƒ^
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 MyLib::Collidable::~Collidable()
 {
 }
 
 /// <summary>
-/// ‰Šú‰»(©g‚É“–‚½‚è”»’è‚ğ’Ç‰Á)
+/// åˆæœŸåŒ–(è‡ªèº«ã«å½“ãŸã‚Šåˆ¤å®šã‚’è¿½åŠ )
 /// </summary>
-/// <param name="physics">•¨—ƒNƒ‰ƒX</param>
+/// <param name="physics">ç‰©ç†ã‚¯ãƒ©ã‚¹</param>
 void MyLib::Collidable::Init(std::shared_ptr<MyLib::Physics> physics)
 {
-	physics->Entry(shared_from_this());	// •¨—î•ñ‚É©g‚ğ“o˜^
+	physics->Entry(shared_from_this());	// ç‰©ç†æƒ…å ±ã«è‡ªèº«ã‚’ç™»éŒ²
 }
 
 /// <summary>
-/// I—¹(©g‚Ì“–‚½‚è”»’è‚ğíœ)
+/// çµ‚äº†(è‡ªèº«ã®å½“ãŸã‚Šåˆ¤å®šã‚’å‰Šé™¤)
 /// </summary>
 /// <param name="physics"></param>
 void MyLib::Collidable::Finalize(std::shared_ptr<MyLib::Physics> physics)
 {
-	physics->Exit(shared_from_this());	// •¨—î•ñ“o˜^‰ğœ
+	physics->Exit(shared_from_this());	// ç‰©ç†æƒ…å ±ç™»éŒ²è§£é™¤
 }
 
 /// <summary>
-/// “–‚½‚è”»’è‚ğ–³‹iƒXƒ‹[j‚·‚éƒ^ƒO‚Ì’Ç‰Á
+/// å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ï¼ˆã‚¹ãƒ«ãƒ¼ï¼‰ã™ã‚‹ã‚¿ã‚°ã®è¿½åŠ 
 /// </summary>
-/// <param name="tag">’Ç‰Á‚·‚éƒ^ƒO</param>
+/// <param name="tag">è¿½åŠ ã™ã‚‹ã‚¿ã‚°</param>
 void MyLib::Collidable::AddThroughTag(GameObjectTag tag)
 {
-	//“–‚½‚è”»’è‚ğ–³‹‚·‚éƒ^ƒO‚ÌƒŠƒXƒg‚É’Ç‰Á—\’è‚Ìƒ^ƒO‚ª‘¶İ‚·‚é‚©‚ğŠm”F
+	//å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ã™ã‚‹ã‚¿ã‚°ã®ãƒªã‚¹ãƒˆã«è¿½åŠ äºˆå®šã®ã‚¿ã‚°ãŒå­˜åœ¨ã™ã‚‹ã‹ã‚’ç¢ºèª
 	bool found = (std::find(throughTags.begin(), throughTags.end(), tag) != throughTags.end());
-	//ƒŠƒXƒg‚Ì’†‚ÉŠù‚É‘¶İ‚µ‚Ä‚¢‚½‚çŒx‚ğo‚·
+	//ãƒªã‚¹ãƒˆã®ä¸­ã«æ—¢ã«å­˜åœ¨ã—ã¦ã„ãŸã‚‰è­¦å‘Šã‚’å‡ºã™
 	if (found)
 	{
-		assert(0 && "w’èƒ^ƒO‚ÍŠù‚É’Ç‰Á‚³‚ê‚Ä‚¢‚Ü‚·");
+		assert(0 && "æŒ‡å®šã‚¿ã‚°ã¯æ—¢ã«è¿½åŠ ã•ã‚Œã¦ã„ã¾ã™");
 	}
-	else //‘¶İ‚µ‚Ä‚¢‚È‚©‚Á‚½‚ç’Ç‰Á‚·‚é
+	else //å­˜åœ¨ã—ã¦ã„ãªã‹ã£ãŸã‚‰è¿½åŠ ã™ã‚‹
 	{
 		throughTags.emplace_back(tag);
 	}
 }
 
 /// <summary>
-/// “–‚½‚è”»’è‚ğ–³‹iƒXƒ‹[j‚·‚éƒ^ƒO‚Ìíœ
+/// å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ï¼ˆã‚¹ãƒ«ãƒ¼ï¼‰ã™ã‚‹ã‚¿ã‚°ã®å‰Šé™¤
 /// </summary>
-/// <param name="tag">íœ‚·‚éƒ^ƒO</param>
+/// <param name="tag">å‰Šé™¤ã™ã‚‹ã‚¿ã‚°</param>
 void MyLib::Collidable::RemoveThroughTag(GameObjectTag tag)
 {
-	//“–‚½‚è”»’è‚ğ–³‹‚·‚éƒ^ƒO‚ÌƒŠƒXƒg‚É’Ç‰Á—\’è‚Ìƒ^ƒO‚ª‘¶İ‚·‚é‚©‚ğŠm”F
+	//å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ã™ã‚‹ã‚¿ã‚°ã®ãƒªã‚¹ãƒˆã«è¿½åŠ äºˆå®šã®ã‚¿ã‚°ãŒå­˜åœ¨ã™ã‚‹ã‹ã‚’ç¢ºèª
 	bool found = (std::find(throughTags.begin(), throughTags.end(), tag) != throughTags.end());
-	//‘¶İ‚µ‚Ä‚¢‚È‚©‚Á‚½‚çŒx‚ğo‚·
+	//å­˜åœ¨ã—ã¦ã„ãªã‹ã£ãŸã‚‰è­¦å‘Šã‚’å‡ºã™
 	if (!found)
 	{
-		assert(0 && "w’èƒ^ƒO‚Í‘¶İ‚µ‚Ü‚¹‚ñ");
+		assert(0 && "æŒ‡å®šã‚¿ã‚°ã¯å­˜åœ¨ã—ã¾ã›ã‚“");
 	}
-	else //‘¶İ‚µ‚Ä‚¢‚½‚çíœ‚·‚é
+	else //å­˜åœ¨ã—ã¦ã„ãŸã‚‰å‰Šé™¤ã™ã‚‹
 	{
 		throughTags.remove(tag);
 	}
 }
 
 /// <summary>
-/// “–‚½‚è”»’è‚ğ–³‹iƒXƒ‹[j‚·‚é‘ÎÛ‚©‚Ç‚¤‚©
+/// å½“ãŸã‚Šåˆ¤å®šã‚’ç„¡è¦–ï¼ˆã‚¹ãƒ«ãƒ¼ï¼‰ã™ã‚‹å¯¾è±¡ã‹ã©ã†ã‹
 /// </summary>
-/// <param name="target">–³‹‚·‚é‘ÎÛ‚©Šm”F‚µ‚½‚¢“–‚½‚è”»’è</param>
+/// <param name="target">ç„¡è¦–ã™ã‚‹å¯¾è±¡ã‹ç¢ºèªã—ãŸã„å½“ãŸã‚Šåˆ¤å®š</param>
 /// <returns></returns>
 bool MyLib::Collidable::IsThroughTarget(const std::shared_ptr<Collidable> target) const
 {
-	//Šm”F‚µ‚½‚¢“–‚½‚è”»’è‚Ìƒ^ƒO‚ª–³‹‚·‚éƒ^ƒO‚ÌƒŠƒXƒg‚ÉŠÜ‚Ü‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©’²‚×‚é
+	//ç¢ºèªã—ãŸã„å½“ãŸã‚Šåˆ¤å®šã®ã‚¿ã‚°ãŒç„¡è¦–ã™ã‚‹ã‚¿ã‚°ã®ãƒªã‚¹ãƒˆã«å«ã¾ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹èª¿ã¹ã‚‹
 	bool found = (std::find(throughTags.begin(), throughTags.end(), target->GetTag()) != throughTags.end());
 	return found;
 }
 
 /// <summary>
-/// “–‚½‚è”»’è‚ğ’Ç‰Á
+/// å½“ãŸã‚Šåˆ¤å®šã‚’è¿½åŠ 
 /// </summary>
-/// <param name="kind">“–‚½‚è”»’è‚Ìí—Ş</param>
-/// <param name="isTrigger">‰Ÿ‚µo‚µ”»’è‚ğ‚·‚é‚©‚Ç‚¤‚©</param>
+/// <param name="kind">å½“ãŸã‚Šåˆ¤å®šã®ç¨®é¡</param>
+/// <param name="isTrigger">æŠ¼ã—å‡ºã—åˆ¤å®šã‚’ã™ã‚‹ã‹ã©ã†ã‹</param>
 /// <returns></returns>
 std::shared_ptr<MyLib::ColliderData> MyLib::Collidable::AddCollider(const ColliderData::Kind& kind,bool isTrigger)
 {
 	std::shared_ptr<ColliderData> add;
 
-	//í—Ş‚É‚æ‚Á‚Ä’Ç‰Á‚·‚é“–‚½‚è”»’è‚Ì”h¶æ‚ğ•ÏX‚·‚é
+	//ç¨®é¡ã«ã‚ˆã£ã¦è¿½åŠ ã™ã‚‹å½“ãŸã‚Šåˆ¤å®šã®æ´¾ç”Ÿå…ˆã‚’å¤‰æ›´ã™ã‚‹
 	if (kind == ColliderData::Kind::Sphere)
 	{
 		add = std::make_shared<ColliderDataSphere>(isTrigger);
@@ -110,10 +110,10 @@ std::shared_ptr<MyLib::ColliderData> MyLib::Collidable::AddCollider(const Collid
 	}
 	else
 	{
-		assert(0 && "w’è‚³‚ê‚½í—Ş‚Ì“–‚½‚è”»’è‚ğ’Ç‰Á‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½");
+		assert(0 && "æŒ‡å®šã•ã‚ŒãŸç¨®é¡ã®å½“ãŸã‚Šåˆ¤å®šã‚’è¿½åŠ ã§ãã¾ã›ã‚“ã§ã—ãŸ");
 	}
 
-	//“–‚½‚è”»’è‚ğ’Ç‰Á‚·‚é
+	//å½“ãŸã‚Šåˆ¤å®šã‚’è¿½åŠ ã™ã‚‹
 	m_colliders.emplace_back(add);
 
 	return add;

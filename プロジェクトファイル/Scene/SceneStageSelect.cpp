@@ -1,12 +1,14 @@
-#include "SceneStageSelect.h"
+Ôªø#include "SceneStageSelect.h"
 #include "SceneTitle.h"
 #include "SceneUpgrade.h"
 #include "SceneGame.h"
 #include "SceneManager.h"
 #include "ScoreManager.h"
 #include "SoundManager.h"
+#include "ModelManager.h"
 
 #include "TitlePlayer.h"
+#include "UICursor.h"
 #include "Font.h"
 
 
@@ -16,61 +18,61 @@ namespace
 	{
 		BGmodel = 0,
 		uiFrame,
-		rightArrow,
-		leftArrow,
 		scoreBg,
 		stage1MiniMap,
 		stage2MiniMap,
 		stage3MiniMap,
 	};
 
-	//ÉtÉHÉìÉgÇÃÉpÉX
+	//„Éï„Ç©„É≥„Éà„ÅÆ„Éë„Çπ
 	const char* kFontPath = "data/font/Dela-Gothic-One.ttf";
 	const char* kFontName = "Dela Gothic One";
 
 	constexpr float kCameraNear = 10.5f;
 	constexpr float kCameraFar = 1000.0f;
 
-	//É~ÉjÉ}ÉbÉvÇÃÉpÉX
+	//„Éü„Éã„Éû„ÉÉ„Éó„ÅÆ„Éë„Çπ
 	const std::string kMiniMapFrontName = "data/img/miniMap_stage";
 	const std::string kMiniMapBackName = ".png";
 }
 
-
-SceneStageSelect::SceneStageSelect(SceneManager& mgr):
+/// <summary>
+/// „Ç≥„É≥„Çπ„Éà„É©„ÇØ„Çø
+/// </summary>
+/// <param name="mgr">„Ç∑„Éº„É≥ÁÆ°ÁêÜ„ÇØ„É©„Çπ„ÅÆÂèÇÁÖß</param>
+SceneStageSelect::SceneStageSelect(SceneManager& mgr) :
 	SceneBase(mgr),
-	m_angle(0),
-	m_cursorOffsetX(0)
+	m_pCursor(),
+	m_destinationScene(eDestination::stage1),
+	m_UIHandles(),
+	m_lightHandle(-1),
+	m_pPlayer()
 {
-	m_destinationScene = e_Destination::stage1;
+	//„Ç´„Éº„ÇΩ„É´„ÅÆÁîüÊàê
+	m_pCursor = std::make_shared<UICursor>();
+	m_pCursor->Init();
 
-	m_textHandle = Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30);
-	m_fontHandle = Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50);
-
-	m_handles.push_back(MV1LoadModel("data/model/title.mv1"));
-	m_handles.push_back(LoadGraph("data/img/ui_frame.png"));
-	m_handles.push_back(LoadGraph("data/img/ArrowRight.png"));
-	m_handles.push_back(LoadGraph("data/img/ArrowLeft.png"));
-	m_handles.push_back(LoadGraph("data/img/ui_big.png"));
+	m_UIHandles.push_back(ModelManager::GetInstance().GetModelHandle("data/model/title.mv1"));
+	m_UIHandles.push_back(LoadGraph("data/img/ui_frame.png"));
+	m_UIHandles.push_back(LoadGraph("data/img/ui_big.png"));
 
 	for (int i = 1; i <= 3; i++)
 	{
 		auto num = std::to_string(i);
 		auto path = (kMiniMapFrontName + num + kMiniMapBackName);
-		m_handles.push_back(LoadGraph(path.c_str()));
+		m_UIHandles.push_back(LoadGraph(path.c_str()));
 	}
-
 
 	m_uiPos.push_back(std::pair<int, int>(140, 680));
 	m_uiPos.push_back(std::pair<int, int>(440, 240));
 	m_uiPos.push_back(std::pair<int, int>(440, 360));
 	m_uiPos.push_back(std::pair<int, int>(440, 480));
 
-	MV1SetScale(m_handles[BGmodel], VECTOR(0.1f, 0.1f, 0.1f));
-	MV1SetPosition(m_handles[BGmodel], VECTOR(0.0f, 0.0f, 0.0f));
+	MV1SetScale(m_UIHandles[BGmodel], VECTOR(0.1f, 0.1f, 0.1f));
+	MV1SetPosition(m_UIHandles[BGmodel], VECTOR(0.0f, 0.0f, 0.0f));
 
-	m_player = std::make_shared<TitlePlayer>();
-	m_player->Init(MyLib::Vec3(-260.0f, 30.0f, 20.0f));
+	m_pPlayer = std::make_shared<TitlePlayer>();
+	m_pPlayer->Init(MyLib::Vec3(-260.0f, 30.0f, 20.0f));
 
 	SetCameraNearFar(kCameraNear, kCameraFar);
 	SetCameraPositionAndTarget_UpVecY(VECTOR(0.0f, 180.0f, 400.0f), VECTOR(0.0f, 160.0f, 0.0f));
@@ -78,153 +80,141 @@ SceneStageSelect::SceneStageSelect(SceneManager& mgr):
 	m_lightHandle = CreatePointLightHandle(VGet(0.0f, 0.0f, 400.0), 1000.0f, 0.08f, 0.003f, 0.0f);
 	SetLightEnable(FALSE);
 
-	//îOÇÃÇΩÇﬂÉçÅ[Éh
+	//Âøµ„ÅÆ„Åü„ÇÅ„É≠„Éº„Éâ
 	ScoreManager::GetInstance().Load();
-	m_stage1Score = ScoreManager::GetInstance().GetStage1Score();
-	m_stage2Score = ScoreManager::GetInstance().GetStage2Score();
-	m_stage3Score = ScoreManager::GetInstance().GetStage3Score();
 }
 
+/// <summary>
+/// „Éá„Çπ„Éà„É©„ÇØ„Çø
+/// </summary>
 SceneStageSelect::~SceneStageSelect()
 {
 
-	for (int i = 0; i < m_handles.size(); i++)
+	for (int i = 0; i < m_UIHandles.size(); i++)
 	{
 		if (i != BGmodel)
 		{
-			DeleteGraph(m_handles[i]);
+			DeleteGraph(m_UIHandles[i]);
 		}
 		else
 		{
-			MV1DeleteModel(m_handles[i]);
+			MV1DeleteModel(m_UIHandles[i]);
 		}
 	}
 
-	m_handles.clear();
+	m_UIHandles.clear();
 
 	DeleteLightHandle(m_lightHandle);
 }
 
+/// <summary>
+/// Êõ¥Êñ∞
+/// </summary>
+/// <param name="input">ÂÖ•ÂäõÁÆ°ÁêÜ„ÇØ„É©„Çπ„ÅÆÂèÇÁÖß</param>
 void SceneStageSelect::Update(std::shared_ptr<Input>& input)
 {
 	UpdateFade();
 
 	SoundManager::GetInstance().PlayBGM("titleBgm", true);
 
-	m_player->Update();
+	m_pPlayer->Update();
+	
+	int offset = 220;
+	if (m_destinationScene == eDestination::Title)
+	{
+		offset -= 100;
+	}
 
-	m_angle += 0.14f;
-	m_cursorOffsetX = static_cast<int>(sinf(m_angle) * 8);
+	m_pCursor->Update(offset, m_uiPos[static_cast<int>(m_destinationScene)].second, m_uiPos[static_cast<int>(m_destinationScene)].first);
 
-	if (!m_isToNextScene)
+	if (!m_isChangeNextScene)
 	{
 		if (input->IsTriggered("RIGHT"))
 		{
-
-			if (m_destinationScene == e_Destination::Title)
+			if (m_destinationScene == eDestination::Title)
 			{
 				SoundManager::GetInstance().PlaySE("select");
-				m_destinationScene = e_Destination::stage1;
+				m_destinationScene = eDestination::stage1;
 			}
-			//else
-			//{
-			//	m_destinationScene = e_Destination::Upgrade;
-			//}
-
 		}
 
 		if (input->IsTriggered("DOWN"))
 		{
-			if (m_destinationScene != e_Destination::Title && m_destinationScene != e_Destination::Upgrade && m_destinationScene != e_Destination::stage3)
+			if (m_destinationScene != eDestination::Title && m_destinationScene != eDestination::Upgrade && m_destinationScene != eDestination::stage3)
 			{
 				SoundManager::GetInstance().PlaySE("select");
-				m_destinationScene = static_cast<e_Destination>(static_cast<int>(m_destinationScene) + 1);
+				m_destinationScene = static_cast<eDestination>(static_cast<int>(m_destinationScene) + 1);
 			}
 		}
 
 		if (input->IsTriggered("UP"))
 		{
-			if (m_destinationScene != e_Destination::Title && m_destinationScene != e_Destination::Upgrade && m_destinationScene != e_Destination::stage1)
+			if (m_destinationScene != eDestination::Title && m_destinationScene != eDestination::Upgrade && m_destinationScene != eDestination::stage1)
 			{
 				SoundManager::GetInstance().PlaySE("select");
-				m_destinationScene = static_cast<e_Destination>(static_cast<int>(m_destinationScene) - 1);
+				m_destinationScene = static_cast<eDestination>(static_cast<int>(m_destinationScene) - 1);
 			}
 		}
 
 		if (input->IsTriggered("LEFT"))
 		{
-
-			//if (m_destinationScene == e_Destination::Upgrade)
-			//{
-			//	m_destinationScene = e_Destination::stage1;
-			//}
-			//else
-			{
-				SoundManager::GetInstance().PlaySE("select");
-				m_destinationScene = e_Destination::Title;
-
-			}
+			SoundManager::GetInstance().PlaySE("select");
+			m_destinationScene = eDestination::Title;
 		}
 
 		if (input->IsTriggered("A"))
 		{
 			SoundManager::GetInstance().PlaySE("enter");
 
-			if (m_destinationScene == e_Destination::Title)
+			if (m_destinationScene == eDestination::Title)
 			{
-				m_isToNextScene = true;
-				StartFadeOut();	// ÉtÉFÅ[ÉhÉAÉEÉgäJén
+				m_isChangeNextScene = true;
+				StartFadeOut();	// „Éï„Çß„Éº„Éâ„Ç¢„Ç¶„ÉàÈñãÂßã
 			}
 
-			//if (m_destinationScene == e_Destination::Upgrade)
-			//{
-			//	m_manager.PushScene(std::make_shared<SceneUpgrade>(m_manager));
-			//	return;
-			//}
-
-			if (m_destinationScene == e_Destination::stage1)
+			if (m_destinationScene == eDestination::stage1)
 			{
-				m_isToNextScene = true;
-				StartFadeOut();	// ÉtÉFÅ[ÉhÉAÉEÉgäJén
+				m_isChangeNextScene = true;
+				StartFadeOut();	// „Éï„Çß„Éº„Éâ„Ç¢„Ç¶„ÉàÈñãÂßã
 			}
 
-			if (m_destinationScene == e_Destination::stage2)
+			if (m_destinationScene == eDestination::stage2)
 			{
-				m_isToNextScene = true;
-				StartFadeOut();	// ÉtÉFÅ[ÉhÉAÉEÉgäJén
+				m_isChangeNextScene = true;
+				StartFadeOut();	// „Éï„Çß„Éº„Éâ„Ç¢„Ç¶„ÉàÈñãÂßã
 			}
 
-			if (m_destinationScene == e_Destination::stage3)
+			if (m_destinationScene == eDestination::stage3)
 			{
-				m_isToNextScene = true;
-				StartFadeOut();	// ÉtÉFÅ[ÉhÉAÉEÉgäJén
+				m_isChangeNextScene = true;
+				StartFadeOut();	// „Éï„Çß„Éº„Éâ„Ç¢„Ç¶„ÉàÈñãÂßã
 			}
 		}
 	}
 
-	if (m_isToNextScene)
+	if (m_isChangeNextScene)
 	{
 		if (!IsFadingOut())
 		{
-			if (m_destinationScene == e_Destination::Title)
+			if (m_destinationScene == eDestination::Title)
 			{
 				m_manager.ChangeScene(std::make_shared<SceneTitle>(m_manager));
 				return;
 			}
 
-			if (m_destinationScene == e_Destination::stage1)
+			if (m_destinationScene == eDestination::stage1)
 			{
 				m_manager.SetStageName("stage1");
 				m_manager.ChangeScene(std::make_shared<SceneGame>(m_manager));
 				return;
 			}
-			if (m_destinationScene == e_Destination::stage2)
+			if (m_destinationScene == eDestination::stage2)
 			{
 				m_manager.SetStageName("stage2");
 				m_manager.ChangeScene(std::make_shared<SceneGame>(m_manager));
 				return;
 			}
-			if (m_destinationScene == e_Destination::stage3)
+			if (m_destinationScene == eDestination::stage3)
 			{
 				m_manager.SetStageName("stage3");
 				m_manager.ChangeScene(std::make_shared<SceneGame>(m_manager));
@@ -235,72 +225,63 @@ void SceneStageSelect::Update(std::shared_ptr<Input>& input)
 
 }
 
+/// <summary>
+/// ÊèèÁîª
+/// </summary>
 void SceneStageSelect::Draw()
 {
-	m_player->Draw();
-	MV1DrawModel(m_handles[BGmodel]);
+	m_pPlayer->Draw();
+	MV1DrawModel(m_UIHandles[BGmodel]);
 
-	int rightCursolX = m_uiPos[static_cast<int>(m_destinationScene)].first +120;
-	int leftCursolX = m_uiPos[static_cast<int>(m_destinationScene)].first - 120;
-	int cursorPosY = m_uiPos[static_cast<int>(m_destinationScene)].second;
-	if (m_destinationScene != e_Destination::Title)
+	if (m_destinationScene == eDestination::stage1)
 	{
-		rightCursolX += 100;
-		leftCursolX -= 100;
+		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
+
+		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_UIHandles[stage1MiniMap], true);
+
+		DrawStringToHandle(775, 465, "„Éè„Ç§„Çπ„Ç≥„Ç¢", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
+		DrawFormatStringToHandle(765, 500, 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50), "%d", ScoreManager::GetInstance().GetStage1Score());
+	}
+	else if (m_destinationScene == eDestination::stage2)
+	{
+		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
+		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_UIHandles[stage2MiniMap], true);
+
+		DrawStringToHandle(775, 465, "„Éè„Ç§„Çπ„Ç≥„Ç¢", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
+		DrawFormatStringToHandle(765, 500, 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50), "%d", ScoreManager::GetInstance().GetStage2Score());
+	}
+	else if (m_destinationScene == eDestination::stage3)
+	{
+		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
+		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_UIHandles[stage3MiniMap], true);
+
+		DrawStringToHandle(775, 465, "„Éè„Ç§„Çπ„Ç≥„Ç¢", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
+		DrawFormatStringToHandle(765, 500, 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50), "%d", ScoreManager::GetInstance().GetStage3Score());
 	}
 
-	if (m_destinationScene == e_Destination::stage1)
-	{
-		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_handles[scoreBg], true);
+	m_pCursor->Draw();
 
-		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_handles[stage1MiniMap], true);
+	DrawRotaGraph(m_uiPos[static_cast<int>(eDestination::Title)].first, m_uiPos[static_cast<int>(eDestination::Title)].second, 0.6f, 0.0f, m_UIHandles[uiFrame], true);
+	DrawRotaGraph(m_uiPos[static_cast<int>(eDestination::stage1)].first, m_uiPos[static_cast<int>(eDestination::stage1)].second, 1.2f, 0.0f, m_UIHandles[uiFrame], true);
+	DrawRotaGraph(m_uiPos[static_cast<int>(eDestination::stage2)].first, m_uiPos[static_cast<int>(eDestination::stage2)].second, 1.2f, 0.0f, m_UIHandles[uiFrame], true);
+	DrawRotaGraph(m_uiPos[static_cast<int>(eDestination::stage3)].first, m_uiPos[static_cast<int>(eDestination::stage3)].second, 1.2f, 0.0f, m_UIHandles[uiFrame], true);
 
-		DrawStringToHandle(775, 465, "ÉnÉCÉXÉRÉA",0xffffff, m_textHandle);
-		DrawFormatStringToHandle(765, 500, 0xffffff, m_fontHandle, "%d", m_stage1Score);
-	}
-	else if (m_destinationScene == e_Destination::stage2)
-	{
-		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_handles[scoreBg], true);
-		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_handles[stage2MiniMap], true);
-
-		DrawStringToHandle(775, 465, "ÉnÉCÉXÉRÉA", 0xffffff, m_textHandle);
-		DrawFormatStringToHandle(765, 500, 0xffffff, m_fontHandle, "%d", m_stage2Score);
-	}
-	else if (m_destinationScene == e_Destination::stage3)
-	{
-		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_handles[scoreBg], true);
-		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_handles[stage3MiniMap], true);
-
-		DrawStringToHandle(775, 465, "ÉnÉCÉXÉRÉA", 0xffffff, m_textHandle);
-		DrawFormatStringToHandle(765, 500, 0xffffff, m_fontHandle, "%d", m_stage3Score);
-	}
-
-
-
-	DrawRotaGraph(rightCursolX + m_cursorOffsetX, cursorPosY, 1.0f, 0.0f, m_handles[leftArrow], true);
-	DrawRotaGraph(leftCursolX - m_cursorOffsetX, cursorPosY, 1.0f, 0.0f, m_handles[rightArrow], true);
-
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::Title)].first, m_uiPos[static_cast<int>(e_Destination::Title)].second, 0.6f, 0.0f, m_handles[uiFrame], true);
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::stage1)].first, m_uiPos[static_cast<int>(e_Destination::stage1)].second, 1.2f, 0.0f, m_handles[uiFrame], true);
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::stage2)].first, m_uiPos[static_cast<int>(e_Destination::stage2)].second, 1.2f, 0.0f, m_handles[uiFrame], true);
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::stage3)].first, m_uiPos[static_cast<int>(e_Destination::stage3)].second, 1.2f, 0.0f, m_handles[uiFrame], true);
-
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::Title)].first-45, m_uiPos[static_cast<int>(e_Destination::Title)].second-15 , "Ç‡Ç«ÇÈ", 0xffffff, m_textHandle);
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::stage1)].first-110, m_uiPos[static_cast<int>(e_Destination::stage1)].second-25 , "ÉXÉeÅ[ÉW1", 0xffffff, m_fontHandle);
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::stage2)].first-120, m_uiPos[static_cast<int>(e_Destination::stage2)].second-25 , "ÉXÉeÅ[ÉW2", 0xffffff, m_fontHandle);
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::stage3)].first-120, m_uiPos[static_cast<int>(e_Destination::stage3)].second-25 , "ÉXÉeÅ[ÉW3", 0xffffff, m_fontHandle);
+	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::Title)].first - 45, m_uiPos[static_cast<int>(eDestination::Title)].second - 15, "„ÇÇ„Å©„Çã", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
+	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::stage1)].first - 110, m_uiPos[static_cast<int>(eDestination::stage1)].second - 25, "„Çπ„ÉÜ„Éº„Ç∏1", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50));
+	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::stage2)].first - 120, m_uiPos[static_cast<int>(eDestination::stage2)].second - 25, "„Çπ„ÉÜ„Éº„Ç∏2", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50));
+	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::stage3)].first - 120, m_uiPos[static_cast<int>(eDestination::stage3)].second - 25, "„Çπ„ÉÜ„Éº„Ç∏3", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50));
 
 
 #ifdef _DEBUG
 	DrawFormatString(0, 0, 0xffffff, "SceneStageSelect");
 
-	DrawFormatString(64 / 2, 32 + static_cast<int>(m_destinationScene) * 16, 0xff0000, "Å®");
+	DrawFormatString(64 / 2, 32 + static_cast<int>(m_destinationScene) * 16, 0xff0000, "‚Üí");
 
-	DrawFormatString(64, 32 + static_cast<int>(e_Destination::Title) * 16, 0xffffff, "SceneTitle");
-	DrawFormatString(64, 32 + static_cast<int>(e_Destination::stage1) * 16, 0xffffff, "Stage1");
-	DrawFormatString(64, 32 + static_cast<int>(e_Destination::stage2) * 16, 0xffffff, "Stage2");
-	DrawFormatString(64, 32 + static_cast<int>(e_Destination::stage3) * 16, 0xffffff, "Stage3");
-	DrawFormatString(64, 32 + static_cast<int>(e_Destination::Upgrade) * 16, 0xffffff, "SceneUpgrade");
+	DrawFormatString(64, 32 + static_cast<int>(eDestination::Title) * 16, 0xffffff, "SceneTitle");
+	DrawFormatString(64, 32 + static_cast<int>(eDestination::stage1) * 16, 0xffffff, "Stage1");
+	DrawFormatString(64, 32 + static_cast<int>(eDestination::stage2) * 16, 0xffffff, "Stage2");
+	DrawFormatString(64, 32 + static_cast<int>(eDestination::stage3) * 16, 0xffffff, "Stage3");
+	DrawFormatString(64, 32 + static_cast<int>(eDestination::Upgrade) * 16, 0xffffff, "SceneUpgrade");
 #endif
 	DrawFade();
 }

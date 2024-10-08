@@ -1,4 +1,4 @@
-#include "SceneResult.h"
+ï»¿#include "SceneResult.h"
 #include "SceneTitle.h"
 #include "SceneGame.h"
 #include "SceneUpgrade.h"
@@ -6,86 +6,86 @@
 #include "SceneManager.h"
 #include "ScoreManager.h"
 #include "SoundManager.h"
+#include "ModelManager.h"
 
+#include "UICursor.h"
 #include "Font.h"
 #include "Game.h"
 
 namespace
 {
-	//ƒtƒHƒ“ƒg‚ÌƒpƒX
+	//ãƒ•ã‚©ãƒ³ãƒˆã®ãƒ‘ã‚¹
 	const char* kFontPath = "data/font/Dela-Gothic-One.ttf";
 	const char* kFontName = "Dela Gothic One";
-	//ƒtƒHƒ“ƒgƒTƒCƒY
+	//ãƒ•ã‚©ãƒ³ãƒˆã‚µã‚¤ã‚º
 	constexpr int kFontSize = 64;
 	constexpr int kTextSize = 42;
 	constexpr int kDetailSize = 28;
 
 
-	//ƒAƒ‹ƒtƒ@’l‚ÌÅ‘å
+	//ã‚¢ãƒ«ãƒ•ã‚¡å€¤ã®æœ€å¤§
 	constexpr int kAlphaMax = 220;
-	//ƒtƒF[ƒhƒAƒEƒg‚É‚©‚©‚éƒtƒŒ[ƒ€”
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆã«ã‹ã‹ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ æ•°
 	constexpr int kFadeFrame = 40;
-
 
 	enum ui
 	{
 		uiFrame,
-		rightArrow,
-		leftArrow,
 		uiBg
 	};
+
+	//UIã®ä¸­å¿ƒXåº§æ¨™
+	int kUIPosX = 640;
+	//UIã®Yåº§æ¨™
+	int kUIPosY[3] = {420,520,620};
 }
 
+/// <summary>
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
+/// <param name="mgr">ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
 SceneResult::SceneResult(SceneManager& mgr) :
 	SceneBase(mgr),
-	m_frame(0),
-	m_hp(0),
-	m_playerKillCount(0),
-	m_trapKillCount(0),
-	m_combo(0),
+	m_destinationScene(eDestination::InGame),
+	m_scoreInfo(),
 	m_min(0),
 	m_sec1(),
 	m_sec2(),
 	m_score(0),
 	m_isClear(false),
-	m_angle(0),
-	m_cursorOffsetX(0),
+	m_UIHandles(),
+	m_pCursor(),
+	m_fontHandle(-1),
+	m_textHandle(-1),
+	m_detailHandle(-1),
 	m_alpha(0)
 {
-	m_destinationScene = e_Destination::InGame;
+	ModelManager::GetInstance().Clear();
+
+	//ã‚«ãƒ¼ã‚½ãƒ«ã®ç”Ÿæˆ
+	m_pCursor = std::make_shared<UICursor>();
+	m_pCursor->Init();
 
 	m_isClear = mgr.GetIsClear();
-
-
 
 	m_fontHandle = Font::GetInstance().GetFontHandle(kFontPath, kFontName, kFontSize);
 	m_textHandle = Font::GetInstance().GetFontHandle(kFontPath, kFontName, kTextSize);
 	m_detailHandle = Font::GetInstance().GetFontHandle(kFontPath, kFontName, kDetailSize);
 
-	m_handles.push_back(LoadGraph("data/img/ui_frame.png"));
-
-	m_handles.push_back(LoadGraph("data/img/ArrowRight.png"));
-	m_handles.push_back(LoadGraph("data/img/ArrowLeft.png"));
-	m_handles.push_back(LoadGraph("data/img/ui_big.png"));
-
-
-	m_uiPos.push_back(std::pair<int, int>(640, 420));
-	m_uiPos.push_back(std::pair<int, int>(640, 500));
-	m_uiPos.push_back(std::pair<int, int>(640, 580));
-	m_uiPos.push_back(std::pair<int, int>(640, 660));
+	m_UIHandles.push_back(LoadGraph("data/img/ui_frame.png"));
+	m_UIHandles.push_back(LoadGraph("data/img/ui_big.png"));
 
 	m_updateFunc = &SceneResult::FadeOutUpdate;
 	m_drawFunc = &SceneResult::FadeOutDraw;
 
-	//ƒXƒRƒAŒvZ‚É•K—v‚Èî•ñ‚ğæ“¾
+	//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±ã‚’å–å¾—
 	m_scoreInfo = mgr.GetScoreInfoPtr();
-	GetScore();
 	mgr.ResetScoreInfo();
 
 	FrameToTime();
 	CalculationScore();
 
-	//ƒV[ƒ“‘JˆÚ‚ÌƒtƒF[ƒhƒCƒ“‚ğ”ò‚Î‚·
+	//ã‚·ãƒ¼ãƒ³é·ç§»ã®ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚’é£›ã°ã™
 	FadeInSkip();
 
 
@@ -121,34 +121,41 @@ SceneResult::SceneResult(SceneManager& mgr) :
 	}
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 SceneResult::~SceneResult()
 {
-	for (auto& handle : m_handles)
+	for (auto& handle : m_UIHandles)
 	{
 		DeleteGraph(handle);
 	}
 }
 
+/// <summary>
+/// æ›´æ–°
+/// </summary>
+/// <param name="input">å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
 void SceneResult::Update(std::shared_ptr<Input>& input)
 {
 	UpdateFade();
 
-	//ó‘Ô‚ÌXV
+	m_pCursor->Update(220, kUIPosY[static_cast<int>(m_destinationScene)]);
+
+	//çŠ¶æ…‹ã®æ›´æ–°
 	(this->*m_updateFunc)(input);
-
-	m_angle += 0.14f;
-	m_cursorOffsetX = static_cast<int>(sinf(m_angle) * 8);
-
-
 }
 
+/// <summary>
+/// æç”»
+/// </summary>
 void SceneResult::Draw()
 {
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, m_alpha);
 	DrawBox(0, 0, Game::kWindowWidth, Game::kWindowHeight, 0x000000, true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 
-	//ó‘Ô‚ÌXV
+	//çŠ¶æ…‹ã®æ›´æ–°
 	(this->*m_drawFunc)();
 
 #ifdef _DEBUG
@@ -157,20 +164,21 @@ void SceneResult::Draw()
 	DrawFade();
 }
 
+/// <summary>
+/// ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±ã‚’å–å¾—
+/// </summary>
 void SceneResult::GetScore()
 {
-	m_frame = m_scoreInfo->frame;
-	m_hp = m_scoreInfo->crystalHp;
-	m_playerKillCount = m_scoreInfo->KilledcounterByPlayer;
-	m_trapKillCount = m_scoreInfo->KilledcounterByTrap;
-	m_combo = m_scoreInfo->MaxCombo;
 }
 
+/// <summary>
+/// ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‚’ç§’æ•°ã«å¤‰æ›
+/// </summary>
 void SceneResult::FrameToTime()
 {
-	m_min = m_frame / 3600;
+	m_min = m_scoreInfo->frame / 3600;
 
-	int s = (m_frame % 3600) / 60;
+	int s = (m_scoreInfo->frame % 3600) / 60;
 	std::string sec = std::to_string(s);
 	if (sec.size() == 1)
 	{
@@ -181,27 +189,34 @@ void SceneResult::FrameToTime()
 	m_sec2 = sec.at(1);
 }
 
+/// <summary>
+/// ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹
+/// </summary>
 void SceneResult::CalculationScore()
 {
-	//•b”‚ğo‚·
-	int s = (m_frame % 3600) / 60;
+	//ç§’æ•°ã‚’å‡ºã™
+	int s = (m_scoreInfo->frame % 3600) / 60;
 	int allSec = m_min * 60 + s;
 
-	//ˆê‰4•ª‚ğ–Ú•Wƒ^ƒCƒ€‚Æ‚·‚é
+	//ä¸€å¿œ4åˆ†ã‚’ç›®æ¨™ã‚¿ã‚¤ãƒ ã¨ã™ã‚‹
 	int timeScore = (4 * 60)- allSec;
 	if (timeScore < 0)
 	{
 		timeScore = 0;
 	}
 
-	//ƒXƒRƒA‚ğŒvZ‚·‚é
+	//ã‚¹ã‚³ã‚¢ã‚’è¨ˆç®—ã™ã‚‹
 	m_score += timeScore;
-	m_score += m_hp * 100;
-	m_score += m_playerKillCount * 50;
-	m_score += m_trapKillCount * 100;
-	m_score += m_combo * 100;
+	m_score += m_scoreInfo->crystalHp * 100;
+	m_score += m_scoreInfo->KilledcounterByPlayer * 50;
+	m_score += m_scoreInfo->KilledcounterByTrap * 100;
+	m_score += m_scoreInfo->MaxCombo * 100;
 }
 
+/// <summary>
+/// æ›´æ–°(ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ)
+/// </summary>
+/// <param name="input">å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
 void SceneResult::FadeOutUpdate(std::shared_ptr<Input> input)
 {
 	m_alpha += static_cast<int>(kAlphaMax / kFadeFrame);
@@ -213,25 +228,29 @@ void SceneResult::FadeOutUpdate(std::shared_ptr<Input> input)
 	}
 }
 
+/// <summary>
+/// æ›´æ–°(é€šå¸¸)
+/// </summary>
+/// <param name="input">å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
 void SceneResult::NormalUpdate(std::shared_ptr<Input> input)
 {
-	if (!m_isToNextScene)
+	if (!m_isChangeNextScene)
 	{
 		if (input->IsTriggered("UP"))
 		{
-			if (m_destinationScene != e_Destination::InGame)
+			if (m_destinationScene != eDestination::InGame)
 			{
 				SoundManager::GetInstance().PlaySE("select");
-				m_destinationScene = static_cast<e_Destination>(static_cast<int>(m_destinationScene) - 1);
+				m_destinationScene = static_cast<eDestination>(static_cast<int>(m_destinationScene) - 1);
 			}
 		}
 
 		if (input->IsTriggered("DOWN"))
 		{
-			if (m_destinationScene != e_Destination::StageSelect)
+			if (m_destinationScene != eDestination::StageSelect)
 			{
 				SoundManager::GetInstance().PlaySE("select");
-				m_destinationScene = static_cast<e_Destination>(static_cast<int>(m_destinationScene) + 1);
+				m_destinationScene = static_cast<eDestination>(static_cast<int>(m_destinationScene) + 1);
 			}
 		}
 
@@ -240,13 +259,13 @@ void SceneResult::NormalUpdate(std::shared_ptr<Input> input)
 			SoundManager::GetInstance().PlaySE("enter");
 
 
-			if (m_destinationScene == e_Destination::InGame)
+			if (m_destinationScene == eDestination::InGame)
 			{
-				m_isToNextScene = true;
-				StartFadeOut();	// ƒtƒF[ƒhƒAƒEƒgŠJn
+				m_isChangeNextScene = true;
+				StartFadeOut();	// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆé–‹å§‹
 			}
 
-			if (m_destinationScene == e_Destination::details)
+			if (m_destinationScene == eDestination::details)
 			{
 				m_updateFunc = &SceneResult::DetailUpdate;
 				m_drawFunc = &SceneResult::DetailDraw;
@@ -257,23 +276,23 @@ void SceneResult::NormalUpdate(std::shared_ptr<Input> input)
 			//	m_manager.PushScene(std::make_shared<SceneUpgrade>(m_manager));
 			//}
 
-			if (m_destinationScene == e_Destination::StageSelect)
+			if (m_destinationScene == eDestination::StageSelect)
 			{
-				m_isToNextScene = true;
-				StartFadeOut();	// ƒtƒF[ƒhƒAƒEƒgŠJn
+				m_isChangeNextScene = true;
+				StartFadeOut();	// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆé–‹å§‹
 			}
 		}
 	}
 
-	if (m_isToNextScene)
+	if (m_isChangeNextScene)
 	{
 		if (!IsFadingOut())
 		{
-			if (m_destinationScene == e_Destination::InGame)
+			if (m_destinationScene == eDestination::InGame)
 			{
 				m_manager.ChangeAndClearScene(std::make_shared<SceneGame>(m_manager));
 			}
-			if (m_destinationScene == e_Destination::StageSelect)
+			if (m_destinationScene == eDestination::StageSelect)
 			{
 				m_manager.ChangeAndClearScene(std::make_shared<SceneStageSelect>(m_manager));
 			}
@@ -281,6 +300,10 @@ void SceneResult::NormalUpdate(std::shared_ptr<Input> input)
 	}
 }
 
+/// <summary>
+/// æ›´æ–°(è©³ç´°ç”»é¢)
+/// </summary>
+/// <param name="input">å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
 void SceneResult::DetailUpdate(std::shared_ptr<Input> input)
 {
 	if (input->IsTriggered("A"))
@@ -290,11 +313,17 @@ void SceneResult::DetailUpdate(std::shared_ptr<Input> input)
 	}
 }
 
+/// <summary>
+/// æç”»(ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆ)
+/// </summary>
 void SceneResult::FadeOutDraw()
 {
-	//“Á‚É•`‰æ‚·‚é—\’è‚È‚µ
+	//ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¢ã‚¦ãƒˆä¸­ã¯ä½•ã‚‚æç”»ã—ãªã„ãŸã‚å‡¦ç†ãªã—
 }
 
+/// <summary>
+/// æç”»(é€šå¸¸)
+/// </summary>
 void SceneResult::NormalDraw()
 {
 	if (m_isClear)
@@ -308,42 +337,44 @@ void SceneResult::NormalDraw()
 		DrawStringToHandle(x, 200, "GAMEOVER...", 0xffffff, m_fontHandle);
 	}
 
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::InGame)].first, m_uiPos[static_cast<int>(e_Destination::InGame)].second, 1.1f, 0.0f, m_handles[uiFrame], true);
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::details)].first, m_uiPos[static_cast<int>(e_Destination::details)].second, 1.1f, 0.0f, m_handles[uiFrame], true);
+	DrawRotaGraph(kUIPosX, kUIPosY[static_cast<int>(eDestination::InGame)], 1.1f, 0.0f, m_UIHandles[uiFrame], true);
+	DrawRotaGraph(kUIPosX, kUIPosY[static_cast<int>(eDestination::details)], 1.1f, 0.0f, m_UIHandles[uiFrame], true);
 	//DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::Upgrade)].first, m_uiPos[static_cast<int>(e_Destination::Upgrade)].second, 1.1f, 0.0f, m_handles[uiFrame], true);
-	DrawRotaGraph(m_uiPos[static_cast<int>(e_Destination::StageSelect)].first, m_uiPos[static_cast<int>(e_Destination::StageSelect)].second, 1.1f, 0.0f, m_handles[uiFrame], true);
+	DrawRotaGraph(kUIPosX, kUIPosY[static_cast<int>(eDestination::StageSelect)], 1.1f, 0.0f, m_UIHandles[uiFrame], true);
 
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::InGame)].first - kTextSize*2 - kTextSize / 2, m_uiPos[static_cast<int>(e_Destination::InGame)].second - 25, "‚à‚¤‚¢‚¿‚Ç", 0xffffff, m_textHandle);
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::details)].first - kTextSize * 3, m_uiPos[static_cast<int>(e_Destination::details)].second - 25, "ƒvƒŒƒCƒf[ƒ^", 0xffffff, m_textHandle);
-	//DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::Upgrade)].first - kTextSize, m_uiPos[static_cast<int>(e_Destination::Upgrade)].second - 25, "‹­‰»", 0xffffff, m_textHandle);
-	DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::StageSelect)].first - kTextSize * 3 - kTextSize / 2, m_uiPos[static_cast<int>(e_Destination::StageSelect)].second - 25, "ƒXƒe[ƒW‘I‘ğ‚Ö", 0xffffff, m_textHandle);
+	DrawStringToHandle(kUIPosX - kTextSize*2 - kTextSize / 2, kUIPosY[static_cast<int>(eDestination::InGame)] - 25, "ã‚‚ã†ã„ã¡ã©", 0xffffff, m_textHandle);
+	DrawStringToHandle(kUIPosX - kTextSize * 3, kUIPosY[static_cast<int>(eDestination::details)] - 25, "ãƒ—ãƒ¬ã‚¤ãƒ‡ãƒ¼ã‚¿", 0xffffff, m_textHandle);
+	//DrawStringToHandle(m_uiPos[static_cast<int>(e_Destination::Upgrade)].first - kTextSize, m_uiPos[static_cast<int>(e_Destination::Upgrade)].second - 25, "å¼·åŒ–", 0xffffff, m_textHandle);
+	DrawStringToHandle(kUIPosX - kTextSize * 3 - kTextSize / 2, kUIPosY[static_cast<int>(eDestination::StageSelect)] - 25, "ã‚¹ãƒ†ãƒ¼ã‚¸é¸æŠã¸", 0xffffff, m_textHandle);
 
-	DrawRotaGraph(m_uiPos[static_cast<int>(m_destinationScene)].first + 220 + m_cursorOffsetX, m_uiPos[static_cast<int>(m_destinationScene)].second, 1.0f, 0.0f, m_handles[leftArrow], true);
-	DrawRotaGraph(m_uiPos[static_cast<int>(m_destinationScene)].first - 220 - m_cursorOffsetX, m_uiPos[static_cast<int>(m_destinationScene)].second, 1.0f, 0.0f, m_handles[rightArrow], true);
+	m_pCursor->Draw();
 
 #ifdef _DEBUG
-	DrawFormatString(200 - 16, 32 + static_cast<int>(m_destinationScene) * 16, 0xff0000, "¨");
+	DrawFormatString(200 - 16, 32 + static_cast<int>(m_destinationScene) * 16, 0xff0000, "â†’");
 
-	DrawFormatString(200, 32 + static_cast<int>(e_Destination::InGame) * 16, 0xffffff, "SceneGame");
-	DrawFormatString(200, 32 + static_cast<int>(e_Destination::details) * 16, 0xffffff, "ShowDetail");
+	DrawFormatString(200, 32 + static_cast<int>(eDestination::InGame) * 16, 0xffffff, "SceneGame");
+	DrawFormatString(200, 32 + static_cast<int>(eDestination::details) * 16, 0xffffff, "ShowDetail");
 	//DrawFormatString(200, 32 + static_cast<int>(e_Destination::Upgrade) * 16, 0xffffff, "SceneUpgrade");
-	DrawFormatString(200, 32 + static_cast<int>(e_Destination::StageSelect) * 16, 0xffffff, "SceneStageSelect");
+	DrawFormatString(200, 32 + static_cast<int>(eDestination::StageSelect) * 16, 0xffffff, "SceneStageSelect");
 #endif
 }
 
+/// <summary>
+/// æç”»(è©³ç´°ç”»é¢)
+/// </summary>
 void SceneResult::DetailDraw()
 {
 
-	DrawRotaGraph(680, 360, 1.5f, 0.0f, m_handles[uiBg], true);
-	DrawStringToHandle(580 - kFontSize - kFontSize / 2, 80, "ƒXƒRƒA:", 0xffffff, m_fontHandle);
+	DrawRotaGraph(680, 360, 1.5f, 0.0f, m_UIHandles[uiBg], true);
+	DrawStringToHandle(580 - kFontSize - kFontSize / 2, 80, "ã‚¹ã‚³ã‚¢:", 0xffffff, m_fontHandle);
 	DrawFormatStringToHandle(720, 80, 0xffffff, m_fontHandle, "%d",m_score);
 
-	DrawStringToHandle(480 - kTextSize - kTextSize/2, 200, "ƒ^ƒCƒ€                    :",0xffffff, m_textHandle);
-	DrawStringToHandle(560, 200 + kDetailSize/2, "–Ú•W4:00",0xffffff, m_detailHandle);
-	DrawStringToHandle(600 - kTextSize*3 - kTextSize/2, 300, "ƒNƒŠƒXƒ^ƒ‹HP:",0xffffff, m_textHandle);
-	DrawStringToHandle(600 - kTextSize*4/* - kFontSize/2*/, 400, "ƒvƒŒƒCƒ„[ƒLƒ‹”:",0xffffff, m_textHandle);
-	DrawStringToHandle(600 - kTextSize*3 - kTextSize/2, 500, "ƒgƒ‰ƒbƒvƒLƒ‹”:",0xffffff, m_textHandle);
-	DrawStringToHandle(600 - kTextSize*3, 600, "Å‘åƒRƒ“ƒ{”:",0xffffff, m_textHandle);
+	DrawStringToHandle(480 - kTextSize - kTextSize/2, 200, "ã‚¿ã‚¤ãƒ                     :",0xffffff, m_textHandle);
+	DrawStringToHandle(560, 200 + kDetailSize/2, "ç›®æ¨™4:00",0xffffff, m_detailHandle);
+	DrawStringToHandle(600 - kTextSize*3 - kTextSize/2, 300, "ã‚¯ãƒªã‚¹ã‚¿ãƒ«HP:",0xffffff, m_textHandle);
+	DrawStringToHandle(600 - kTextSize*4, 400, "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚­ãƒ«æ•°:",0xffffff, m_textHandle);
+	DrawStringToHandle(600 - kTextSize*3 - kTextSize/2, 500, "ãƒˆãƒ©ãƒƒãƒ—ã‚­ãƒ«æ•°:",0xffffff, m_textHandle);
+	DrawStringToHandle(600 - kTextSize*3, 600, "æœ€å¤§ã‚³ãƒ³ãƒœæ•°:",0xffffff, m_textHandle);
 
 	DrawFormatStringToHandle(800, 200, 0xffffff, m_textHandle, "%d:%c%c", m_min, m_sec1, m_sec2);
 	DrawFormatStringToHandle(860, 300, 0xffffff, m_textHandle,"%d",m_scoreInfo->crystalHp);

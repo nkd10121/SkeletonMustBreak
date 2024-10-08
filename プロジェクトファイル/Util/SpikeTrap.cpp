@@ -1,13 +1,13 @@
-#include "SpikeTrap.h"
+ï»¿#include "SpikeTrap.h"
 #include "SoundManager.h"
 
-//ŠO•”ƒtƒ@ƒCƒ‹‚Å
-//1.UŒ‚—Í
-//2.õ“G”ÍˆÍ
-//3.UŒ‚”ÍˆÍ
-//4.ƒN[ƒ‹ƒ^ƒCƒ€
-//5.İ’uƒRƒXƒg
-//		‚ğ•ÏX‚Å‚«‚é‚æ‚¤‚É‚µ‚½‚¢
+//å¤–éƒ¨ãƒ•ã‚¡ã‚¤ãƒ«ã§
+//1.æ”»æ’ƒåŠ›
+//2.ç´¢æ•µç¯„å›²
+//3.æ”»æ’ƒç¯„å›²
+//4.ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ 
+//5.è¨­ç½®ã‚³ã‚¹ãƒˆ
+//		ã‚’å¤‰æ›´ã§ãã‚‹ã‚ˆã†ã«ã—ãŸã„
 
 SpikeTrap::SpikeTrap(std::shared_ptr<MyLib::Physics> physics):
 	TrapBase(GameObjectTag::SpikeTrap),
@@ -19,14 +19,14 @@ SpikeTrap::SpikeTrap(std::shared_ptr<MyLib::Physics> physics):
 {
 	m_pPhysics = physics;
 
-	//“–‚½‚è”»’è‚Ìİ’è
+	//å½“ãŸã‚Šåˆ¤å®šã®è¨­å®š
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, true);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
 	sphereCol->m_radius = 8.0f;
 
 	m_pSearch = std::make_shared<SearchObject>(5.5f);
 
-	//UŒ‚—Í‚Ìİ’è
+	//æ”»æ’ƒåŠ›ã®è¨­å®š
 	m_attack = 30;
 }
 
@@ -112,14 +112,14 @@ void SpikeTrap::Update()
 
 		if (m_attackCount >= 7*60)
 		{
-			//‚·‚×‚Ä‚ğ‰Šú‰»‚·‚é
+			//ã™ã¹ã¦ã‚’åˆæœŸåŒ–ã™ã‚‹
 			m_spikeModelPos = m_pos;
 			m_spikeModelPos.y -= 4.5f;
 			MV1SetPosition(m_spikeModelHandle, m_spikeModelPos.ConvertToVECTOR());
 			m_isAttack = false;
 			m_isInitCollision = false;
 
-			//“–‚½‚è”»’è‚ğƒŠƒZƒbƒg
+			//å½“ãŸã‚Šåˆ¤å®šã‚’ãƒªã‚»ãƒƒãƒˆ
 			m_pSearch->IsTriggerReset();
 
 			m_attackCount = 0;

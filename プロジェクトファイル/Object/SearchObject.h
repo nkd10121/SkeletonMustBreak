@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ObjectBase.h"
 class SearchObject : public ObjectBase
 {

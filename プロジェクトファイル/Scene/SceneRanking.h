@@ -1,20 +1,20 @@
-#pragma once
+﻿#pragma once
 #include "SceneBase.h"
+
+/// <summary>
+/// ランキングシーン(未実装)
+/// </summary>
 class SceneRanking :  public SceneBase
 {
 public:
+	//コンストラクタ
 	SceneRanking(SceneManager& mgr);
+	//デストラクタ
 	virtual ~SceneRanking();
 
-	/// <summary>
-	/// �X�V����
-	/// </summary>
-	/// <param name="input"></param>
+	//更新
 	void Update(std::shared_ptr<Input>& input);
-
-	/// <summary>
-	/// �`�揈��
-	/// </summary>
+	//描画
 	void Draw();
 
 private:

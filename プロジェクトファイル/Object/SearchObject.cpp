@@ -1,9 +1,9 @@
-#include "SearchObject.h"
+ï»¿#include "SearchObject.h"
 
 SearchObject::SearchObject(float r) :
 	ObjectBase(Priority::Low,GameObjectTag::Search)
 {
-	//“–‚½‚è”»’è‚Ìİ’è
+	//å½“ãŸã‚Šåˆ¤å®šã®è¨­å®š
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, true);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
 	sphereCol->m_radius = r;
@@ -37,7 +37,7 @@ void SearchObject::Finalize(std::shared_ptr<MyLib::Physics> physics)
 
 void SearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 {
-	//ƒAƒ^ƒbƒ`‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª“G‚¶‚á‚È‚¢‚È‚ç
+	//ã‚¢ã‚¿ãƒƒãƒã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ•µã˜ã‚ƒãªã„ãªã‚‰
 	if (!m_isEnemy)
 	{
 		auto tag = colider->GetTag();
@@ -46,7 +46,7 @@ void SearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 			m_isTriggerEnter = true;
 		}
 	}
-	else	//ƒAƒ^ƒbƒ`‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª“G‚È‚ç
+	else	//ã‚¢ã‚¿ãƒƒãƒã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ•µãªã‚‰
 	{
 		auto tag = colider->GetTag();
 		if (tag == GameObjectTag::Player)
@@ -59,7 +59,7 @@ void SearchObject::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& colider)
 {
 
-	//ƒAƒ^ƒbƒ`‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª“G‚¶‚á‚È‚¢‚È‚ç
+	//ã‚¢ã‚¿ãƒƒãƒã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ•µã˜ã‚ƒãªã„ãªã‚‰
 	if (!m_isEnemy)
 	{
 		auto tag = colider->GetTag();
@@ -68,7 +68,7 @@ void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& colider)
 			m_isTriggerEnter = true;
 		}
 	}
-	else	//ƒAƒ^ƒbƒ`‚µ‚½ƒIƒuƒWƒFƒNƒg‚ª“G‚È‚ç
+	else	//ã‚¢ã‚¿ãƒƒãƒã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ•µãªã‚‰
 	{
 		auto tag = colider->GetTag();
 
@@ -81,7 +81,7 @@ void SearchObject::OnTriggerStay(const std::shared_ptr<Collidable>& colider)
 
 bool SearchObject::GetIsTrigger()
 {
-	////true‚ğ•Ô‚µ‚½‚Æ‚«‚¾‚¯false‚É‚·‚é
+	////trueã‚’è¿”ã—ãŸã¨ãã ã‘falseã«ã™ã‚‹
 	//if (m_isTriggerEnter)
 	//{
 	//	m_isTriggerEnter = false;

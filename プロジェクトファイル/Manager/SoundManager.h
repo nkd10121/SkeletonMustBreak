@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "DxLib.h"
 #include <string>
 #include <vector>
@@ -6,24 +6,27 @@
 
 struct Sound;
 
+/// <summary>
+/// ã‚µã‚¦ãƒ³ãƒ‰é–¢ä¿‚ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// </summary>
 class SoundManager
 {
 private:
-	// ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“‚È‚Ì‚ÅƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Íprivate‚É’u‚­
+	// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ãªã®ã§ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯privateã«ç½®ã
 	SoundManager() {};
 
 public:
 	virtual ~SoundManager();
 
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çÀ‘Ì‚Ì¶¬‚ª‚Å‚«‚Ä‚µ‚Ü‚¤‚½‚ß
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‹Ö~‚·‚é
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‹ã‚‰å®Ÿä½“ã®ç”ŸæˆãŒã§ãã¦ã—ã¾ã†ãŸã‚
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ç¦æ­¢ã™ã‚‹
 	SoundManager(const SoundManager&) = delete;
 	SoundManager& operator=(const SoundManager&) = delete;
 	SoundManager(SoundManager&&) = delete;
 	SoundManager& operator= (const SoundManager&&) = delete;
 
 	/// <summary>
-	/// SoundManager‚ÍGetInstance()‚ğ’Ê‚µ‚½QÆ‚©‚ç‚µ‚©—˜—p‚Å‚«‚È‚¢
+	/// SoundManagerã¯GetInstance()ã‚’é€šã—ãŸå‚ç…§ã‹ã‚‰ã—ã‹åˆ©ç”¨ã§ããªã„
 	/// </summary>
 	/// <returns></returns>
 	static SoundManager& GetInstance()
@@ -36,7 +39,7 @@ public:
 		return *m_instance;
 	}
 
-	//‚±‚ê‚ğ‚µ–Y‚ê‚é‚Æ•’Ê‚Éƒƒ‚ƒŠƒŠ[ƒN
+	//ã“ã‚Œã‚’ã—å¿˜ã‚Œã‚‹ã¨æ™®é€šã«ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯
 	static void Destroy()
 	{
 		delete m_instance;
@@ -46,18 +49,18 @@ public:
 public:
 
 	/// <summary>
-	/// ƒTƒEƒ“ƒh‚ğ“Ç‚İ‚Ş
+	/// ã‚µã‚¦ãƒ³ãƒ‰ã‚’èª­ã¿è¾¼ã‚€
 	/// </summary>
-	/// <param name="name">ƒTƒEƒ“ƒhƒl[ƒ€</param>
-	/// <param name="path">ƒTƒEƒ“ƒhƒpƒX</param>
+	/// <param name="name">ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒ¼ãƒ </param>
+	/// <param name="path">ã‚µã‚¦ãƒ³ãƒ‰ãƒ‘ã‚¹</param>
 	/// <param name="isBGM">true = BGM,false = SE</param>
 	void Load(std::string name, std::string path, bool isBGM);
 
 	/// <summary>
-	/// w’è‚µ‚½–¼‘O‚ÌƒTƒEƒ“ƒh‚ğ—¬‚·
+	/// æŒ‡å®šã—ãŸåå‰ã®ã‚µã‚¦ãƒ³ãƒ‰ã‚’æµã™
 	/// </summary>
-	/// <param name="name">—¬‚µ‚½‚¢ƒTƒEƒ“ƒhƒl[ƒ€</param>
-	/// <param name="isFromStart">true = Å‰‚©‚ç,false = “r’†‚©‚ç</param>
+	/// <param name="name">æµã—ãŸã„ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒ¼ãƒ </param>
+	/// <param name="isFromStart">true = æœ€åˆã‹ã‚‰,false = é€”ä¸­ã‹ã‚‰</param>
 	void PlayBGM(std::string name, bool isFromStart);
 
 	void PlaySE(std::string name);
@@ -65,21 +68,21 @@ public:
 	void FadeOutBGM(std::string name, int fadeFrame);
 
 	/// <summary>
-	/// w’è‚µ‚½–¼‘O‚ÌƒTƒEƒ“ƒh‚ğ~‚ß‚é
+	/// æŒ‡å®šã—ãŸåå‰ã®ã‚µã‚¦ãƒ³ãƒ‰ã‚’æ­¢ã‚ã‚‹
 	/// </summary>
-	/// <param name="name">~‚ß‚½‚¢ƒTƒEƒ“ƒhƒl[ƒ€</param>
+	/// <param name="name">æ­¢ã‚ãŸã„ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒ¼ãƒ </param>
 	void StopBGM(std::string name);
 
 	/// <summary>
-	/// eternalƒtƒ‰ƒO‚ªfalse‚ÌƒTƒEƒ“ƒh‚ğíœ‚·‚é
+	/// eternalãƒ•ãƒ©ã‚°ãŒfalseã®ã‚µã‚¦ãƒ³ãƒ‰ã‚’å‰Šé™¤ã™ã‚‹
 	/// </summary>
 	void Delete();
 
 	/// <summary>
-	/// w’è‚µ‚½ƒTƒEƒ“ƒh‚ª—¬‚ê‚Ä‚¢‚é‚Ç‚¤‚©
+	/// æŒ‡å®šã—ãŸã‚µã‚¦ãƒ³ãƒ‰ãŒæµã‚Œã¦ã„ã‚‹ã©ã†ã‹
 	/// </summary>
-	/// <param name="name">ƒTƒEƒ“ƒhƒl[ƒ€</param>
-	/// <returns>true = —¬‚ê‚Ä‚¢‚é,false = —¬‚ê‚Ä‚¢‚È‚¢</returns>
+	/// <param name="name">ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒ¼ãƒ </param>
+	/// <returns>true = æµã‚Œã¦ã„ã‚‹,false = æµã‚Œã¦ã„ãªã„</returns>
 	bool isPlayingSound(std::string name);
 
 	void ChangeBGMVolume(float volume);
@@ -88,15 +91,15 @@ public:
 
 private:
 	/// <summary>
-	/// w’è‚µ‚½ƒnƒ“ƒhƒ‹‚ÌƒTƒEƒ“ƒh‚ª—¬‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	/// æŒ‡å®šã—ãŸãƒãƒ³ãƒ‰ãƒ«ã®ã‚µã‚¦ãƒ³ãƒ‰ãŒæµã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹
 	/// </summary>
-	/// <param name="handle">ƒ`ƒFƒbƒN‚µ‚½‚¢ƒnƒ“ƒhƒ‹</param>
-	/// <returns>true = —¬‚ê‚Ä‚¢‚é,false = —¬‚ê‚Ä‚¢‚È‚¢</returns>
+	/// <param name="handle">ãƒã‚§ãƒƒã‚¯ã—ãŸã„ãƒãƒ³ãƒ‰ãƒ«</param>
+	/// <returns>true = æµã‚Œã¦ã„ã‚‹,false = æµã‚Œã¦ã„ãªã„</returns>
 	bool CheckPlaying(int handle) { return CheckSoundMem(handle); }
 
 private:
-	//static‚É‚·‚é‚±‚Æ‚Å
-	//Singleton‚Ìƒ|ƒCƒ“ƒ^‚ªƒvƒƒOƒ‰ƒ€‹N“®‚Éˆê‚Âì‚ç‚ê‚é‚æ‚¤‚É‚·‚é
+	//staticã«ã™ã‚‹ã“ã¨ã§
+	//Singletonã®ãƒã‚¤ãƒ³ã‚¿ãŒãƒ—ãƒ­ã‚°ãƒ©ãƒ èµ·å‹•æ™‚ã«ä¸€ã¤ä½œã‚‰ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹
 	static SoundManager* m_instance;
 
 private:

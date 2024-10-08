@@ -1,4 +1,4 @@
-#include "Setting.h"
+ï»¿#include "Setting.h"
 #include "DxLib.h"
 #include <cassert>
 #include <fstream>
@@ -10,32 +10,38 @@ namespace
 {
 	struct Header
 	{
-		char id[4] = "inf";		//ÅŒã‚É\n‚ª“ü‚Á‚Ä‚¢‚é‚½‚ß‚±‚ê‚Å4•¶š‚¾‚Æv‚Á‚Ä‚¢‚¢(4ƒoƒCƒg)
-		float version = 1.0f;	//4ƒoƒCƒg
-		size_t dataCount = 0;	//4ƒoƒCƒg
-		//‹ó”’‚Ì4ƒoƒCƒg‚ª“ü‚Á‚Ä‚¢‚é(ƒpƒfƒBƒ“ƒO)
+		char id[4] = "inf";		//æœ€å¾Œã«\nãŒå…¥ã£ã¦ã„ã‚‹ãŸã‚ã“ã‚Œã§4æ–‡å­—ã ã¨æ€ã£ã¦ã„ã„(4ãƒã‚¤ãƒˆ)
+		float version = 1.0f;	//4ãƒã‚¤ãƒˆ
+		size_t dataCount = 0;	//4ãƒã‚¤ãƒˆ
+		//ç©ºç™½ã®4ãƒã‚¤ãƒˆãŒå…¥ã£ã¦ã„ã‚‹(ãƒ‘ãƒ‡ã‚£ãƒ³ã‚°)
 	};
 
-	// ƒZ[ƒuƒf[ƒ^ƒtƒ@ƒCƒ‹–¼
+	// ã‚»ãƒ¼ãƒ–ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«å
 	const char* const kSaveDataFilename = "data/save/config.dat";
 
 	constexpr int kScoreNum = 3;
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 Setting::~Setting()
 {
 }
 
+/// <summary>
+/// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€
+/// </summary>
 void Setting::Load()
 {
-	// ƒf[ƒ^‚ÌƒNƒŠƒA
+	// ãƒ‡ãƒ¼ã‚¿ã®ã‚¯ãƒªã‚¢
 	ClearData();
 
 	std::ifstream ifs;
 	ifs.open(kSaveDataFilename, std::ios_base::binary);
 	if (ifs.fail())
 	{
-		// ƒtƒ@ƒCƒ‹“Ç‚İ‚İ¸”s ƒZ[ƒuƒf[ƒ^‚ğì‚é
+		// ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿å¤±æ•— ã‚»ãƒ¼ãƒ–ãƒ‡ãƒ¼ã‚¿ã‚’ä½œã‚‹
 		CreateNewData();
 		return;
 	}
@@ -46,17 +52,23 @@ void Setting::Load()
 		//	printfDx("version %d\n", data.version);
 		ifs.close();
 
-		// “Ç‚İ‚ñ‚¾ƒf[ƒ^‚ğÀÛ‚Ég—p‚·‚éƒf[ƒ^‚ÉƒRƒs[
+		// èª­ã¿è¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿ã‚’å®Ÿéš›ã«ä½¿ç”¨ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã«ã‚³ãƒ”ãƒ¼
 		m_data = data;
 	}
 }
 
+/// <summary>
+/// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ä¿å­˜ã™ã‚‹
+/// </summary>
 void Setting::Save()
 {
 	std::ofstream ofs(kSaveDataFilename, std::ios_base::binary);
 	ofs.write((char*)&m_data, sizeof(Data));
 }
 
+/// <summary>
+/// ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’å…¨æ¶ˆå»ã™ã‚‹
+/// </summary>
 void Setting::ClearData()
 {
 	m_data.bgmVolume = 0.5f;
@@ -65,6 +77,9 @@ void Setting::ClearData()
 	m_data.isFullScreen = false;
 }
 
+/// <summary>
+/// æ–°ã—ã„ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãƒ‡ãƒ¼ã‚¿ã‚’ç”Ÿæˆã™ã‚‹
+/// </summary>
 void Setting::CreateNewData()
 {
 	ClearData();

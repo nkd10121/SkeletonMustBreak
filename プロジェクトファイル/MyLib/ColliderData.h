@@ -1,22 +1,22 @@
-#pragma once
+ï»¿#pragma once
 
 namespace MyLib
 {
 
 	/// <summary>
-	/// “–‚½‚è”»’è‚Ìƒf[ƒ^Šî’ê
+	/// å½“ãŸã‚Šåˆ¤å®šã®ãƒ‡ãƒ¼ã‚¿åŸºåº•
 	/// </summary>
 	class ColliderData abstract
 	{
 	public:
-		// “–‚½‚è”»’èí•Ê
+		// å½“ãŸã‚Šåˆ¤å®šç¨®åˆ¥
 		enum class Kind
 		{
 			Sphere,
 			Line,
 		};
 
-		// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+		// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 		ColliderData(Kind kind, bool isTrigger)
 		{
 			this->kind = kind;
@@ -25,10 +25,10 @@ namespace MyLib
 
 		virtual ~ColliderData() {}
 
-		// “–‚½‚è”»’èí•Êæ“¾
+		// å½“ãŸã‚Šåˆ¤å®šç¨®åˆ¥å–å¾—
 		Kind GetKind() const { return kind; }
 
-		// ƒgƒŠƒK[‚©‚Ç‚¤‚©
+		// ãƒˆãƒªã‚¬ãƒ¼ã‹ã©ã†ã‹
 		bool IsTrigger() const { return isTrigger; }
 
 	private:

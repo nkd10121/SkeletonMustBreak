@@ -1,8 +1,8 @@
-#include "HammerTrap.h"
+ï»¿#include "HammerTrap.h"
 
 namespace
 {
-	constexpr float kModelSize = 10.0f;
+	constexpr float kModelSizeScale = 10.0f;
 }
 
 HammerTrap::HammerTrap(std::shared_ptr<MyLib::Physics> physics) :
@@ -14,14 +14,14 @@ HammerTrap::HammerTrap(std::shared_ptr<MyLib::Physics> physics) :
 {
 	m_pPhysics = physics;
 
-	//“–‚½‚è”»’è‚Ìİ’è
+	//å½“ãŸã‚Šåˆ¤å®šã®è¨­å®š
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, true);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
 	sphereCol->m_radius = 8.0f;
 
 	m_pSearch = std::make_shared<SearchObject>(5.5f);
 
-	//UŒ‚—Í‚Ìİ’è
+	//æ”»æ’ƒåŠ›ã®è¨­å®š
 	m_attack = 20;
 }
 
@@ -40,7 +40,7 @@ void HammerTrap::Init(int handle, int subHandle)
 	m_frameModelPos.y -= 0.5f;
 
 	MV1SetPosition(m_modelHandle, m_frameModelPos.ConvertToVECTOR());
-	MV1SetScale(m_modelHandle, VECTOR(kModelSize, kModelSize, kModelSize));
+	MV1SetScale(m_modelHandle, VECTOR(kModelSizeScale, kModelSizeScale, kModelSizeScale));
 
 	MyLib::Vec3 searchPos = m_pos + MyLib::Vec3(0.0f, 0.0f, -10.0f);
 
@@ -49,10 +49,10 @@ void HammerTrap::Init(int handle, int subHandle)
 
 void HammerTrap::Update()
 {
-	//õ“G“–‚½‚è”»’è‚É“G‚ª“–‚½‚Á‚½‚çUŒ‚ŠJn
-	//UŒ‚‚ÍƒAƒjƒ[ƒVƒ‡ƒ“‚Å’n–Ê‚É’…‚¢‚½‚Æ‚«‚ÉUŒ‚”»’è‚ğo‚·
+	//ç´¢æ•µå½“ãŸã‚Šåˆ¤å®šã«æ•µãŒå½“ãŸã£ãŸã‚‰æ”»æ’ƒé–‹å§‹
+	//æ”»æ’ƒã¯ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã§åœ°é¢ã«ç€ã„ãŸã¨ãã«æ”»æ’ƒåˆ¤å®šã‚’å‡ºã™
 
-	//İ’u‚·‚éÛ‚É‰ñ“]‚³‚¹‚ê‚é‚æ‚¤‚É‚µ‚ÄAUŒ‚‚ÌŒü‚«‚ğ•ÏX‚Å‚«‚é‚æ‚¤‚É‚µ‚½‚¢
+	//è¨­ç½®ã™ã‚‹éš›ã«å›è»¢ã•ã›ã‚Œã‚‹ã‚ˆã†ã«ã—ã¦ã€æ”»æ’ƒã®å‘ãã‚’å¤‰æ›´ã§ãã‚‹ã‚ˆã†ã«ã—ãŸã„
 }
 
 void HammerTrap::Draw()

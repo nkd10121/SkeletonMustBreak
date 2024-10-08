@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "MyLib.h"
 
 class Input;
@@ -9,13 +9,13 @@ public:
 	Shot();
 	virtual ~Shot();
 
-	void Init(std::shared_ptr<MyLib::Physics> physics, int model);
+	void Init(std::shared_ptr<MyLib::Physics> physics);
 	void Finalize(std::shared_ptr<MyLib::Physics> physics) override;
 	void Set(const MyLib::Vec3& pos,const MyLib::Vec3& m_dir,const int& atk);
 	void Update();
 	void Draw();
 
-	// Õ“Ë‚µ‚½‚Æ‚«
+	// è¡çªã—ãŸã¨ã
 	void OnCollideEnter(const std::shared_ptr<Collidable>& colider)override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& colider)override;
 

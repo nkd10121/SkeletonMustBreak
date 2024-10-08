@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "DxLib.h"
 #include "MyLib.h"
 #include "Vec3.h"
@@ -15,12 +15,12 @@ public:
 	Player();
 	virtual ~Player();
 
-	void Init(std::shared_ptr<MyLib::Physics> physics, int* arrow);
+	void Init(std::shared_ptr<MyLib::Physics> physics);
 	void Finalize();
 	void Update(std::shared_ptr<Input>& input);
 	void Draw();
 
-	// Õ“Ë‚µ‚½‚Æ‚«
+	// è¡çªã—ãŸã¨ã
 	void OnCollideEnter(const std::shared_ptr<Collidable>& colider)override;
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& colider)override;
 
@@ -29,12 +29,9 @@ public:
 
 	const MyLib::Vec3 GetPos()const { return rigidbody.GetPos(); }
 
-	//ƒvƒŒƒCƒ„[‚ª¶‚«‚Ä‚¢‚é‚©‚ğæ“¾
+	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒç”Ÿãã¦ã„ã‚‹ã‹ã‚’å–å¾—
 	const bool IsGetPlayerDown()const { return m_isDown; }
 	const bool IsGetPlayerDead()const { return m_isDead; }
-
-	//ƒvƒŒƒCƒ„[•œŠˆ
-	void PlayerRevival();
 
 	void SetSlotNumMax(int max) { m_slotNumMax = max; }
 
@@ -42,47 +39,12 @@ public:
 
 	const int GetDifAngle()const { return m_difAngle; }
 
-	const int GetHp()const { return m_status.hp; }
 
 	void SetGameClear();
 
 private:
-
 	void SetModelPos();
-
-	/// <summary>
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXVˆ—
-	/// </summary>
-	/// <param name="attachNo">is‚³‚¹‚½‚¢ƒAƒjƒ[ƒVƒ‡ƒ“”Ô†</param>
-	/// <returns>ƒ‹[ƒv‚µ‚½‚©‚Ç‚¤‚©</returns>
-	bool UpdateAnim(int attachNo, float startTime = 0.0f);
-
-	/// <summary>
-	///	ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì•ÏX
-	/// </summary>
-	/// <param name="animIndex">•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“”Ô†</param>
-	void ChangeAnim(int animIndex, float animSpeed = 0.5f);
-
 private:
-	std::shared_ptr<MyLib::Physics> m_pPhysics;
-
-	const enum eAnimIdx : int
-	{
-		test = 73,
-		Idle = 1,
-		Walk = 4,
-		RunRight = 8,
-		RunLeft = 9,
-		Jump = 11,
-		Cheer = 23,
-		Aim = 56,
-		Shoot = 57,
-		Shooting = 58,
-		Death = 28,
-		DeathPose = 29
-	};
-	eAnimIdx m_nowAnimIdx;
-
 	int m_hpMax;
 
 	int m_moveCount;
@@ -90,28 +52,15 @@ private:
 	int m_weponHandle;
 	float m_angle;
 
-	int m_arrowHandle;
-
 	bool m_isMove;
 
 	bool m_isClear;
 
-	/*ƒAƒjƒ[ƒVƒ‡ƒ“î•ñ*/
-	int m_equipAnimNo;
-	int m_currentAnimNo;	//Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“
-	int m_prevAnimNo;		//•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“
-	float m_animBlendRate;	//ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‡¬Š„‡
-	//0.0f:prev‚ªÄ¶
-	//1.0f:currnt‚ªÄ¶
+	/*ã‚«ãƒ¡ãƒ©æƒ…å ±*/
+	MyLib::Vec3  m_cameraDirection;	//ã‚«ãƒ¡ãƒ©ãŒå‘ã„ã¦ã„ã‚‹å‘ã
+	float  m_cameraAngle;		//ã‚«ãƒ¡ãƒ©ã®è§’åº¦
 
-	float m_animSpeed;		//ƒAƒjƒ[ƒVƒ‡ƒ“Ä¶‘¬“x
-	bool m_isAnimationFinish;	//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªI‚í‚Á‚½‚©‚Ç‚¤‚©
-
-	/*ƒJƒƒ‰î•ñ*/
-	MyLib::Vec3  m_cameraDirection;	//ƒJƒƒ‰‚ªŒü‚¢‚Ä‚¢‚éŒü‚«
-	float  m_cameraAngle;		//ƒJƒƒ‰‚ÌŠp“x
-
-	//’e”z—ñ
+	//å¼¾é…åˆ—
 	std::list<std::shared_ptr<Shot>> m_pShots;
 	int shotTime;
 	float m_shotOffsetPower;
@@ -122,7 +71,7 @@ private:
 
 	int m_jumpCount;
 
-	//•Ší‚ğƒAƒ^ƒbƒ`‚·‚éƒtƒŒ[ƒ€”Ô†
+	//æ­¦å™¨ã‚’ã‚¢ã‚¿ãƒƒãƒã™ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ ç•ªå·
 	int m_weponAttachFrameNum;
 
 	MATRIX m_weponFrameMat;
@@ -130,25 +79,17 @@ private:
 	int m_nowSlotIdx;
 	int m_slotNumMax;
 
-
-
-	//ó‘Ô‘JˆÚ‚Ì‚½‚ß‚Ìƒƒ“ƒoŠÖ”
+	//çŠ¶æ…‹é·ç§»ã®ãŸã‚ã®ãƒ¡ãƒ³ãƒé–¢æ•°
 	using UpdateFunc_t = void (Player::*)(std::shared_ptr<Input> input);
 	UpdateFunc_t m_updateFunc;
-	/*ó‘ÔŠÖ”*/
-	//ƒjƒ…[ƒgƒ‰ƒ‹(’Êí)
+	/*çŠ¶æ…‹é–¢æ•°*/
+	//ãƒ‹ãƒ¥ãƒ¼ãƒˆãƒ©ãƒ«(é€šå¸¸)
 	void NeutralUpdate(std::shared_ptr<Input> input);
-	//ƒWƒƒƒ“ƒv
+	//ã‚¸ãƒ£ãƒ³ãƒ—
 	void NormalJumpUpdate(std::shared_ptr<Input> input);
-	//ˆÚ“®’†‚ÌƒWƒƒƒ“ƒv
-	void MovingJumpUpdate(std::shared_ptr<Input> input);
-	//UŒ‚
-	void AttackUpdate(std::shared_ptr<Input> input);
-	//•à‚«
+	//æ­©ã
 	void WalkUpdate(std::shared_ptr<Input> input);
-
+	//æ­»äº¡
 	void DeathUpdate(std::shared_ptr<Input> input);
-
-	void ClearUpdate(std::shared_ptr<Input> input);
 };
 

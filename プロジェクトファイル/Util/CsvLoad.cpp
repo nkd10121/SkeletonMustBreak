@@ -1,4 +1,4 @@
-#include "CsvLoad.h"
+ï»¿#include "CsvLoad.h"
 #include <vector>
 #include <sstream>
 #include <fstream>
@@ -8,7 +8,7 @@ CsvLoad* CsvLoad::m_instance = nullptr;
 
 namespace
 {
-	// csvƒf[ƒ^‚Ì,‚Å•¶š—ñ‚ğ•ªŠ„‚·‚é
+	// csvãƒ‡ãƒ¼ã‚¿ã®,ã§æ–‡å­—åˆ—ã‚’åˆ†å‰²ã™ã‚‹
 	std::vector<std::string> Split(std::string& input, char delimiter)
 	{
 		std::istringstream stream(input);
@@ -24,14 +24,19 @@ namespace
 	const std::string kBackPathName = ".csv";
 }
 
-void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charcterName)
+/// <summary>
+/// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±ãƒ­ãƒ¼ãƒ‰
+/// </summary>
+/// <param name="Data">ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±</param>
+/// <param name="characterName">ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åå‰</param>
+void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* characterName)
 {
-	// ˆê•Û‘¶—pstring
+	// ä¸€æ™‚ä¿å­˜ç”¨string
 	std::string strBuf;
-	// ƒJƒ“ƒ}•ª‚¯ˆê•Û‘¶—pstring
+	// ã‚«ãƒ³ãƒåˆ†ã‘ä¸€æ™‚ä¿å­˜ç”¨string
 	std::vector<std::string> strConmaBuf;
 
-	// ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	// ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	std::ifstream ifs("data/csv/status.csv");
 	if (!ifs)
 	{
@@ -39,26 +44,26 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charcterName)
 		return;
 	}
 
-	//î•ñ‚ğæ“¾‚Å‚«‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
+	//æƒ…å ±ã‚’å–å¾—ã§ããŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
 	bool isGet = false;
 
-	//Å‰‚Í‘Î‰•\î•ñ‚ª“ü‚Á‚Ä‚¢‚é‚¾‚¯‚È‚Ì‚Å–³‹‚·‚é
+	//æœ€åˆã¯å¯¾å¿œè¡¨æƒ…å ±ãŒå…¥ã£ã¦ã„ã‚‹ã ã‘ãªã®ã§ç„¡è¦–ã™ã‚‹
 	std::getline(ifs, strBuf);
 
 	while (getline(ifs, strBuf))
 	{
-		//æ“¾‚µ‚½•¶š—ñ‚ğƒJƒ“ƒ}‹æØ‚è‚Ì”z—ñ(î•ñŒQ)‚É‚·‚é
+		//å–å¾—ã—ãŸæ–‡å­—åˆ—ã‚’ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã®é…åˆ—(æƒ…å ±ç¾¤)ã«ã™ã‚‹
 		strConmaBuf = Split(strBuf, ',');
 
-		//[0]:ƒLƒƒƒ‰ƒNƒ^[–¼
-		//[1]:‘Ì—Í
-		//[2]:UŒ‚—Í
-		//[3]:–hŒä—Í
-		//[4]:ˆÚ“®‘¬“x
-		//[5]:€–S‚Ìƒ|ƒCƒ“ƒg
+		//[0]:ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å
+		//[1]:ä½“åŠ›
+		//[2]:æ”»æ’ƒåŠ›
+		//[3]:é˜²å¾¡åŠ›
+		//[4]:ç§»å‹•é€Ÿåº¦
+		//[5]:æ­»äº¡æ™‚ã®ãƒã‚¤ãƒ³ãƒˆ
 
-		//w’è‚µ‚½ƒLƒƒƒ‰ƒNƒ^[–¼‚Æˆê’v‚·‚éƒf[ƒ^‚ª‚ ‚ê‚Îî•ñ‚ğæ“¾‚·‚é
-		if (strConmaBuf[LoadData::eStatusOrder::name] == charcterName)
+		//æŒ‡å®šã—ãŸã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åã¨ä¸€è‡´ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚Œã°æƒ…å ±ã‚’å–å¾—ã™ã‚‹
+		if (strConmaBuf[LoadData::eStatusOrder::name] == characterName)
 		{
 			isGet = true;
 			data.hp = std::stoi(strConmaBuf[LoadData::eStatusOrder::hp]);
@@ -69,28 +74,33 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* charcterName)
 		}
 	}
 
-	//î•ñ‚ğæ“¾‚Å‚«‚È‚©‚Á‚½AƒGƒ‰[‚ğ“f‚­‚æ‚¤‚É‚·‚é
-	//æ“¾‚Å‚«‚È‚©‚Á‚½——R‘z’è
-	//‡@ƒLƒƒƒ‰ƒNƒ^[–¼‚ªƒXƒyƒ‹ƒ~ƒX‚â‘å•¶š¬•¶š‚Ìˆá‚¢‚ÅˆÙ‚È‚é
-	//‡Acsv‚Éî•ñ‚ğ’Ç‰Á‚µ–Y‚ê‚Ä‚¢‚é
+	//æƒ…å ±ã‚’å–å¾—ã§ããªã‹ã£ãŸæ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’åãã‚ˆã†ã«ã™ã‚‹
+	//å–å¾—ã§ããªã‹ã£ãŸç†ç”±æƒ³å®š
+	//â‘ ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åãŒã‚¹ãƒšãƒ«ãƒŸã‚¹ã‚„å¤§æ–‡å­—å°æ–‡å­—ã®é•ã„ã§ç•°ãªã‚‹
+	//â‘¡csvã«æƒ…å ±ã‚’è¿½åŠ ã—å¿˜ã‚Œã¦ã„ã‚‹
 	if (!isGet)
 	{
-		assert(0 && "w’è‚µ‚½ƒLƒƒƒ‰ƒNƒ^[–¼‚Ìî•ñ‚ğæ“¾‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½");
+		assert(0 && "æŒ‡å®šã—ãŸã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åã®æƒ…å ±ã‚’å–å¾—ã§ãã¾ã›ã‚“ã§ã—ãŸ");
 	}
 
 	return;
 }
 
+/// <summary>
+/// ã‚¹ãƒ†ãƒ¼ã‚¸æƒ…å ±ãƒ­ãƒ¼ãƒ‰
+/// </summary>
+/// <param name="Data">ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹æƒ…å ±</param>
+/// <param name="characterName">ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®åå‰</param>
 void CsvLoad::StageEnenyDataLoad(const char* stageName, std::list<std::shared_ptr<EnemyManager::EnemyGenerateInfo>>& pGenerateInfo)
 {
-	// ˆê•Û‘¶—pstring
+	// ä¸€æ™‚ä¿å­˜ç”¨string
 	std::string strBuf;
-	// ƒJƒ“ƒ}•ª‚¯ˆê•Û‘¶—pstring
+	// ã‚«ãƒ³ãƒåˆ†ã‘ä¸€æ™‚ä¿å­˜ç”¨string
 	std::vector<std::string> strConmaBuf;
 
 	std::string csvName = kFrontPathName + stageName + kBackPathName;
 
-	// ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
+	// ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
 	std::ifstream ifs(csvName);
 	if (!ifs)
 	{
@@ -98,18 +108,18 @@ void CsvLoad::StageEnenyDataLoad(const char* stageName, std::list<std::shared_pt
 		return;
 	}
 
-	//Å‰‚Í‘Î‰•\î•ñ‚ª“ü‚Á‚Ä‚¢‚é‚¾‚¯‚È‚Ì‚Å–³‹‚·‚é
+	//æœ€åˆã¯å¯¾å¿œè¡¨æƒ…å ±ãŒå…¥ã£ã¦ã„ã‚‹ã ã‘ãªã®ã§ç„¡è¦–ã™ã‚‹
 	std::getline(ifs, strBuf);
 
 	while (getline(ifs, strBuf))
 	{
-		//æ“¾‚µ‚½•¶š—ñ‚ğƒJƒ“ƒ}‹æØ‚è‚Ì”z—ñ(î•ñŒQ)‚É‚·‚é
+		//å–å¾—ã—ãŸæ–‡å­—åˆ—ã‚’ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã®é…åˆ—(æƒ…å ±ç¾¤)ã«ã™ã‚‹
 		strConmaBuf = Split(strBuf, ',');
 
-		//[0]:¶¬‚·‚é“G‚ÌID(–¼‘O)
-		//[1]:¶¬ƒtƒF[ƒY
-		//[2]:¶¬ƒtƒŒ[ƒ€
-		//[3]:¶¬ˆÊ’u
+		//[0]:ç”Ÿæˆã™ã‚‹æ•µã®ID(åå‰)
+		//[1]:ç”Ÿæˆãƒ•ã‚§ãƒ¼ã‚º
+		//[2]:ç”Ÿæˆãƒ•ãƒ¬ãƒ¼ãƒ 
+		//[3]:ç”Ÿæˆä½ç½®
 
 		std::shared_ptr<EnemyManager::EnemyGenerateInfo> add = std::make_shared<EnemyManager::EnemyGenerateInfo>();
 		add->enemyName = strConmaBuf[LoadData::eStageOrder::ID];
@@ -118,6 +128,75 @@ void CsvLoad::StageEnenyDataLoad(const char* stageName, std::list<std::shared_pt
 		add->appearPos = std::stoi(strConmaBuf[LoadData::eStageOrder::AppearanceLocation]);
 
 		pGenerateInfo.emplace_back(add);
+	}
+
+	return;
+}
+
+/// <summary>
+/// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ãƒ­ãƒ¼ãƒ‰
+/// </summary>
+/// <param name="characterName">èª­ã¿è¾¼ã¿ãŸã„ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼å</param>
+/// <param name="anim">æ ¼ç´ã™ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã®å‚ç…§</param>
+void CsvLoad::AnimDataLoad(std::string characterName, std::map<std::string, int>& anim)
+{
+	// ä¸€æ™‚ä¿å­˜ç”¨string
+	std::string strBuf;
+	// ã‚«ãƒ³ãƒåˆ†ã‘ä¸€æ™‚ä¿å­˜ç”¨string
+	std::vector<std::string> strConmaBuf;
+
+	// ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿
+	std::ifstream ifs("data/csv/animIdx.csv");
+	if (!ifs)
+	{
+		assert(false);
+		return;
+	}
+
+	//æƒ…å ±ã‚’å–å¾—ã§ããŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
+	bool isGet = false;
+
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åä¿å­˜ç”¨string
+	std::vector<std::string> animNameBuf;
+
+	//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åå‰ã‚’ä¿å­˜ã™ã‚‹
+	std::getline(ifs, strBuf);
+	animNameBuf = Split(strBuf, ',');
+
+	while (std::getline(ifs, strBuf))
+	{
+		//å‰ã®ãƒ«ãƒ¼ãƒ—ã§ã™ã§ã«å–å¾—ã§ãã¦ã„ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’çµ‚ãˆã‚‹
+		if (isGet)
+		{
+			break;
+		}
+
+		//å–å¾—ã—ãŸæ–‡å­—åˆ—ã‚’ã‚«ãƒ³ãƒåŒºåˆ‡ã‚Šã®é…åˆ—(æƒ…å ±ç¾¤)ã«ã™ã‚‹
+		strConmaBuf = Split(strBuf, ',');
+
+		//èª­ã¿è¾¼ã¿ãŸã„ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åã¨èª­ã¿è¾¼ã‚“ã ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åãŒåŒã˜ãªã‚‰
+		if (strConmaBuf[0] == characterName)
+		{
+			//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’æ ¼ç´ã—ã¦ã„ã
+			isGet = true;
+			for (int i = 1; i < strConmaBuf.size(); i++)
+			{
+				//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³IdxãŒ-1ãªã‚‰å­˜åœ¨ã—ãªã„ãŸã‚è¿½åŠ ã—ãªã„
+				if (std::stoi(strConmaBuf[i]) != -1)
+				{
+					anim[animNameBuf[i]] = std::stoi(strConmaBuf[i]);
+				}
+			}
+		}
+	}
+
+	//æƒ…å ±ã‚’å–å¾—ã§ããªã‹ã£ãŸæ™‚ã€ã‚¨ãƒ©ãƒ¼ã‚’åãã‚ˆã†ã«ã™ã‚‹
+	//å–å¾—ã§ããªã‹ã£ãŸç†ç”±æƒ³å®š
+	//â‘ ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åãŒã‚¹ãƒšãƒ«ãƒŸã‚¹ã‚„å¤§æ–‡å­—å°æ–‡å­—ã®é•ã„ã§ç•°ãªã‚‹
+	//â‘¡csvã«æƒ…å ±ã‚’è¿½åŠ ã—å¿˜ã‚Œã¦ã„ã‚‹
+	if (!isGet)
+	{
+		assert(0 && "æŒ‡å®šã—ãŸã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼åã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã§ãã¾ã›ã‚“ã§ã—ãŸ");
 	}
 
 	return;

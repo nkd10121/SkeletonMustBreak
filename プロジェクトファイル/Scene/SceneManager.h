@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <list> 
 #include <memory>
 #include <windows.h>
@@ -6,79 +6,81 @@
 class Input;
 class SceneBase;
 
+//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±æ§‹é€ ä½“
 struct ScoreInfo
 {
-	int frame = 0;					//ƒNƒŠƒAƒ^ƒCƒ€(ƒtƒŒ[ƒ€”)
-	int crystalHp = 0;				//ƒNƒŠƒXƒ^ƒ‹‚ÌHP
-	int KilledcounterByPlayer = 0;	//ƒvƒŒƒCƒ„[‚É‚æ‚éƒLƒ‹‚ÌƒJƒEƒ“ƒg
-	int KilledcounterByTrap = 0;	//ã©‚É‚æ‚éƒLƒ‹‚ÌƒJƒEƒ“ƒg
-	int MaxCombo = 0;				//Å‘åƒRƒ“ƒ{”
+	int frame = 0;					//ã‚¯ãƒªã‚¢ã‚¿ã‚¤ãƒ (ãƒ•ãƒ¬ãƒ¼ãƒ æ•°)
+	int crystalHp = 0;				//ã‚¯ãƒªã‚¹ã‚¿ãƒ«ã®HP
+	int KilledcounterByPlayer = 0;	//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã«ã‚ˆã‚‹ã‚­ãƒ«ã®ã‚«ã‚¦ãƒ³ãƒˆ
+	int KilledcounterByTrap = 0;	//ç½ ã«ã‚ˆã‚‹ã‚­ãƒ«ã®ã‚«ã‚¦ãƒ³ãƒˆ
+	int MaxCombo = 0;				//æœ€å¤§ã‚³ãƒ³ãƒœæ•°
 };
 
+/// <summary>
+/// ã‚·ãƒ¼ãƒ³ç®¡ç†ã‚¯ãƒ©ã‚¹
+/// </summary>
 class SceneManager
 {
 public:
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	SceneManager();
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	virtual ~SceneManager();
 
-	/// <summary>
-	/// ‚Á‚Ä‚¢‚éƒV[ƒ“‚ÌUpdateŠÖ”‚ğŒÄ‚Ño‚·
-	/// </summary>
-	/// <param name="input">“ü—ÍƒNƒ‰ƒX</param>
+	//æŒã£ã¦ã„ã‚‹ã‚·ãƒ¼ãƒ³ã®æ›´æ–°é–¢æ•°ã‚’å‘¼ã³å‡ºã™
 	void Update(std::shared_ptr<Input>& input);
 
-	/// <summary>
-	/// ‚Á‚Ä‚¢‚éƒV[ƒ“‚ÌDrawŠÖ”‚ğŒÄ‚Ño‚·
-	/// </summary>
+	//æŒã£ã¦ã„ã‚‹ã‚·ãƒ¼ãƒ³ã®æç”»é–¢æ•°ã‚’å‘¼ã³å‡ºã™
 	void Draw();
 
-	/// <summary>
-	/// Às’†‚ÌƒV[ƒ“‚ğˆø”‚Åw’è‚µ‚½ƒV[ƒ“‚ÉØ‚è‘Ö‚¦‚é
-	/// </summary>
-	/// <param name="nextScene"></param>
+	//å®Ÿè¡Œä¸­ã®ã‚·ãƒ¼ãƒ³ã‚’å¼•æ•°ã§æŒ‡å®šã—ãŸã‚·ãƒ¼ãƒ³ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
 	void ChangeScene(std::shared_ptr<SceneBase> nextScene);
 
-	/// <summary>
-	/// Scene‚ğƒNƒŠƒA‚µ‚ÄƒV[ƒ“‚ğØ‚è‘Ö‚¦‚é
-	/// </summary>
-	/// <param name="nextScene"></param>
+	//ã‚·ãƒ¼ãƒ³ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¦åˆ‡ã‚Šæ›¿ãˆã‚‹
 	void ChangeAndClearScene(std::shared_ptr<SceneBase> nextScene);
 
-	/// <summary>
-	/// Œ»İæ“ª‚ÅÀs’†‚ÌƒV[ƒ“‚Ìã‚ÉƒV[ƒ“‚ğæ‚Á‚¯‚é
-	/// </summary>
-	/// <param name="scene"></param>
+	//ç¾åœ¨å…ˆé ­ã§å®Ÿè¡Œä¸­ã®ã‚·ãƒ¼ãƒ³ã®ä¸Šã«ã‚·ãƒ¼ãƒ³ã‚’ä¹—ã£ã‘ã‚‹
 	void PushScene(std::shared_ptr<SceneBase> scene);
 
-	/// <summary>
-	/// Œ»İ‚Ìæ“ªƒV[ƒ“‚ğíœ‚·‚é
-	/// </summary>
+	//ç¾åœ¨ã®å…ˆé ­ã‚·ãƒ¼ãƒ³ã‚’å‰Šé™¤ã™ã‚‹
 	void popScene(bool isToTitle = false);
 
-
+	//ã‚¹ãƒ†ãƒ¼ã‚¸åã‚’è¨­å®šã™ã‚‹
 	void SetStageName(std::string name) { m_stageName = name; }
+	//ã‚¹ãƒ†ãƒ¼ã‚¸åã‚’å–å¾—ã™ã‚‹
 	const std::string GetStageName()const { return m_stageName; }
 
+	//çµæœã‚’è¨­å®šã™ã‚‹
 	void SetIsClear(bool isClear) { m_isClear = isClear; }
+	//çµæœã‚’å–å¾—ã™ã‚‹
 	const bool GetIsClear()const { return m_isClear; }
 
+	//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±
 	std::shared_ptr<ScoreInfo> GetScoreInfoPtr() { return m_pScoreInfo; }
+	//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
 	void ResetScoreInfo();
 
 #ifdef _DEBUG
 private:
+	//å‡¦ç†é€Ÿåº¦ã‚’ãƒ‡ãƒãƒƒã‚°æç”»ã™ã‚‹
 	void DrawDebug();
 
 private:
+	//æ›´æ–°å‡¦ç†é€Ÿåº¦
 	float m_updateTime;
+	//æç”»å‡¦ç†é€Ÿåº¦
 	float m_drawTime;
 #endif
 private:
+	//ç¾åœ¨ã®ã‚·ãƒ¼ãƒ³
 	std::list < std::shared_ptr<SceneBase>> scenes;
 
+	//ã‚¯ãƒªã‚¢ãƒ•ãƒ©ã‚°
 	bool m_isClear;
+	//ã‚¹ãƒ†ãƒ¼ã‚¸å
 	std::string m_stageName;
 
+	//ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±ãƒã‚¤ãƒ³ã‚¿
 	std::shared_ptr<ScoreInfo> m_pScoreInfo;
 };
 

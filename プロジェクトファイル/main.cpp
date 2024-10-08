@@ -1,4 +1,4 @@
-#include "DxLib.h"
+ï»¿#include "DxLib.h"
 #include "EffekseerForDXLib.h"
 #include "SceneManager.h"
 #include "SceneBase.h"
@@ -10,7 +10,7 @@
 #include <cmath>
 #include <memory>
 
-//Debug‚Ì‚½‚ß‚Ìinclude
+//Debugã®ãŸã‚ã®include
 #include "SceneGame.h"
 
 #include "Font.h"
@@ -20,18 +20,19 @@
 #include "SoundManager.h"
 #include "ScoreManager.h"
 #include "EffectManager.h"
+#include "ModelManager.h"
 
 
 #include <filesystem>
 
-// ƒvƒƒOƒ‰ƒ€‚Í WinMain ‚©‚çn‚Ü‚è‚Ü‚·
+// ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã¯ WinMain ã‹ã‚‰å§‹ã¾ã‚Šã¾ã™
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	// windowƒ‚[ƒhİ’è
+	// windowãƒ¢ãƒ¼ãƒ‰è¨­å®š
 	ChangeWindowMode(true);
 	SetGraphMode(Game::kWindowWidth, Game::kWindowHeight, 32);
-	// ƒEƒCƒ“ƒhƒE–¼İ’è
-	SetMainWindowText(Game::kTitleText);
+	// ã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦åè¨­å®š
+	SetMainWindowText(Game::kWindowName);
 
 	SetFullSceneAntiAliasingMode(4, 4);
 
@@ -39,9 +40,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	ChangeWindowMode(Setting::GetInstance().GetIsFullScreen());
 
 
-	if (DxLib_Init() == -1)		// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠ‰Šú‰»ˆ—
+	if (DxLib_Init() == -1)		// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªåˆæœŸåŒ–å‡¦ç†
 	{
-		return -1;			// ƒGƒ‰[‚ª‹N‚«‚½‚ç’¼‚¿‚ÉI—¹
+		return -1;			// ã‚¨ãƒ©ãƒ¼ãŒèµ·ããŸã‚‰ç›´ã¡ã«çµ‚äº†
 	}
 
 	SetUseZBuffer3D(true);
@@ -53,10 +54,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetChangeScreenModeGraphicsSystemResetFlag(false);
 	Effekseer_SetGraphicsDeviceLostCallbackFunctions();
 
-	// ƒ_ƒuƒ‹ƒoƒbƒtƒ@ƒ‚[ƒh
+	// ãƒ€ãƒ–ãƒ«ãƒãƒƒãƒ•ã‚¡ãƒ¢ãƒ¼ãƒ‰
 	SetDrawScreen(DX_SCREEN_BACK);
 
-	// ƒZ[ƒuƒf[ƒ^•Û‘¶—p‚ÌƒtƒHƒ‹ƒ_‚ª‚È‚¢ê‡¶¬‚·‚é
+	// ã‚»ãƒ¼ãƒ–ãƒ‡ãƒ¼ã‚¿ä¿å­˜ç”¨ã®ãƒ•ã‚©ãƒ«ãƒ€ãŒãªã„å ´åˆç”Ÿæˆã™ã‚‹
 	if (!std::filesystem::is_directory("data/save"))
 	{
 		std::filesystem::create_directory("data/save");
@@ -82,7 +83,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	while (ProcessMessage() == 0)
 	{
 		LONGLONG  time = GetNowHiPerformanceCount();
-		// ‰æ–Ê‚ÌƒNƒŠƒA
+		// ç”»é¢ã®ã‚¯ãƒªã‚¢
 		ClearDrawScreen();
 
 		Effekseer_Sync3DSetting();
@@ -92,22 +93,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		UpdateEffekseer3D();
 		sceneManager.Draw();
 
-		//— ‰æ–Ê‚ğ•\‰æ–Ê‚ğ“ü‚ê‘Ö‚¦‚é
+		//è£ç”»é¢ã‚’è¡¨ç”»é¢ã‚’å…¥ã‚Œæ›¿ãˆã‚‹
 		ScreenFlip();
 
-		// escƒL[‚ğ‰Ÿ‚µ‚½‚çI—¹‚·‚é
+		// escã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã‚‰çµ‚äº†ã™ã‚‹
 		if (CheckHitKey(KEY_INPUT_ESCAPE))
 		{
 			break;
 		}
 
-		// fps‚ğ60‚ÉŒÅ’è
+		// fpsã‚’60ã«å›ºå®š
 		while (GetNowHiPerformanceCount() - time < 16667)
 		{
 		}
 	}
 
-	//staticƒNƒ‰ƒX‚Ì‰ğ•ú
+	//staticã‚¯ãƒ©ã‚¹ã®è§£æ”¾
 	Font::GetInstance().Destroy();
 	CsvLoad::GetInstance().Destroy();
 	MapDataLoad::GetInstance().Destroy();
@@ -115,9 +116,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SoundManager::GetInstance().Destroy();
 	ScoreManager::GetInstance().Destroy();
 	EffectManager::GetInstance().Destroy();
+	ModelManager::GetInstance().Destroy();
 
 	Effkseer_End();
-	DxLib_End();				// ‚c‚wƒ‰ƒCƒuƒ‰ƒŠg—p‚ÌI—¹ˆ—
+	DxLib_End();				// ï¼¤ï¼¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªä½¿ç”¨ã®çµ‚äº†å‡¦ç†
 
-	return 0;				// ƒ\ƒtƒg‚ÌI—¹ 
+	return 0;				// ã‚½ãƒ•ãƒˆã®çµ‚äº† 
 }

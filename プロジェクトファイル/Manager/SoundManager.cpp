@@ -1,4 +1,4 @@
-#include "SoundManager.h"
+ï»¿#include "SoundManager.h"
 
 SoundManager* SoundManager::m_instance = nullptr;
 
@@ -60,24 +60,24 @@ SoundManager::~SoundManager()
 
 void SoundManager::Load(std::string name, std::string path, bool isBGM)
 {
-	//BGMƒtƒ‰ƒO‚ªtrue‚Ì‚ÍABGM‚Ìvector‚É“ü‚ê‚é
+	//BGMãƒ•ãƒ©ã‚°ãŒtrueã®æ™‚ã¯ã€BGMã®vectorã«å…¥ã‚Œã‚‹
 	if (isBGM)
 	{
 		m_BGM.resize(m_BGM.size() + 1);
 
 		for (int i = 0; i < m_BGM.size(); i++)
 		{
-			//‘¶İ‚µ‚Ä‚¢‚Ä
+			//å­˜åœ¨ã—ã¦ã„ã¦
 			if (m_BGM[i])
 			{
-				//ƒpƒX‚ª“¯‚¶ê‡‚Í‘‚â‚µ‚½˜g‚ğŒ¸‚ç‚µ‚Ä•Ô‚·
+				//ãƒ‘ã‚¹ãŒåŒã˜å ´åˆã¯å¢—ã‚„ã—ãŸæ ã‚’æ¸›ã‚‰ã—ã¦è¿”ã™
 				if (m_BGM[i]->GetPath() == path)
 				{
 					m_BGM.pop_back();
 					return;
 				}
 			}
-			//ƒpƒX‚ª“¯‚¶‚à‚Ì‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢ê‡Aƒ[ƒh‚ğ‚·‚é
+			//ãƒ‘ã‚¹ãŒåŒã˜ã‚‚ã®ãŒå­˜åœ¨ã—ã¦ã„ãªã„å ´åˆã€ãƒ­ãƒ¼ãƒ‰ã‚’ã™ã‚‹
 			else
 			{
 				m_BGM[i] = std::make_shared<Sound>();
@@ -86,24 +86,24 @@ void SoundManager::Load(std::string name, std::string path, bool isBGM)
 			}
 		}
 	}
-	//BGMƒtƒ‰ƒO‚ªfalse‚Ì‚ÍASE‚Ìvector‚É“ü‚ê‚é
+	//BGMãƒ•ãƒ©ã‚°ãŒfalseã®æ™‚ã¯ã€SEã®vectorã«å…¥ã‚Œã‚‹
 	else
 	{
 		m_SE.resize(m_SE.size() + 1);
 
 		for (int i = 0; i < m_SE.size(); i++)
 		{
-			//‘¶İ‚µ‚Ä‚¢‚Ä
+			//å­˜åœ¨ã—ã¦ã„ã¦
 			if (m_SE[i])
 			{
-				//ƒpƒX‚ª“¯‚¶ê‡‚Í‘‚â‚µ‚½˜g‚ğŒ¸‚ç‚µ‚Ä•Ô‚·
+				//ãƒ‘ã‚¹ãŒåŒã˜å ´åˆã¯å¢—ã‚„ã—ãŸæ ã‚’æ¸›ã‚‰ã—ã¦è¿”ã™
 				if (m_SE[i]->GetPath() == path)
 				{
 					m_SE.pop_back();
 					return;
 				}
 			}
-			//ƒpƒX‚ª“¯‚¶‚à‚Ì‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢ê‡Aƒ[ƒh‚ğ‚·‚é
+			//ãƒ‘ã‚¹ãŒåŒã˜ã‚‚ã®ãŒå­˜åœ¨ã—ã¦ã„ãªã„å ´åˆã€ãƒ­ãƒ¼ãƒ‰ã‚’ã™ã‚‹
 			else
 			{
 				m_SE[i] = std::make_shared<Sound>();
@@ -118,10 +118,10 @@ void SoundManager::PlayBGM(std::string name, bool isFromStart)
 {
 	for (int i = 0; i < m_BGM.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚é‚©‚ÂAˆø”‚Ì–¼‘O‚Æˆê’v‚·‚é–¼‘O
+		//å­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã¤ã€å¼•æ•°ã®åå‰ã¨ä¸€è‡´ã™ã‚‹åå‰
 		if (m_BGM[i] && m_BGM[i]->GetName() == name)
 		{
-			//—¬‚ê‚Ä‚¢‚½‚ç‰½‚à‚µ‚È‚¢
+			//æµã‚Œã¦ã„ãŸã‚‰ä½•ã‚‚ã—ãªã„
 			if (CheckPlaying(m_BGM[i]->GetHandle()))
 			{
 				return;
@@ -137,7 +137,7 @@ void SoundManager::PlaySE(std::string name)
 {
 	for (int i = 0; i < m_SE.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚é‚©‚ÂAˆø”‚Ì–¼‘O‚Æˆê’v‚·‚é–¼‘O
+		//å­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã¤ã€å¼•æ•°ã®åå‰ã¨ä¸€è‡´ã™ã‚‹åå‰
 		if (m_SE[i] && m_SE[i]->GetName() == name)
 		{
 			PlaySoundMem(m_SE[i]->GetHandle(), DX_PLAYTYPE_BACK, true);
@@ -151,7 +151,7 @@ void SoundManager::FadeOutBGM(std::string name, int fadeFrame)
 	float dif = m_BGMvolume * ((kFadeFrame - static_cast<float>(fadeFrame)) / kFadeFrame);
 	for (int i = 0; i < m_BGM.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚é‚©‚ÂAˆø”‚Ì–¼‘O‚Æˆê’v‚·‚é–¼‘O
+		//å­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã¤ã€å¼•æ•°ã®åå‰ã¨ä¸€è‡´ã™ã‚‹åå‰
 		if (m_BGM[i] && m_BGM[i]->GetName() == name)
 		{
 			//BGMvolume = dif;
@@ -171,12 +171,12 @@ void SoundManager::StopBGM(std::string name)
 {
 	for (int i = 0; i < m_BGM.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚é‚©‚ÂAˆø”‚Ì–¼‘O‚Æˆê’v‚·‚é–¼‘O
+		//å­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã¤ã€å¼•æ•°ã®åå‰ã¨ä¸€è‡´ã™ã‚‹åå‰
 		if (m_BGM[i] && m_BGM[i]->GetName() == name)
 		{
 			int tempHandle = m_BGM[i]->GetHandle();
 
-			//—¬‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç‰½‚à‚µ‚È‚¢
+			//æµã‚Œã¦ã„ãªã‹ã£ãŸã‚‰ä½•ã‚‚ã—ãªã„
 			if (!CheckPlaying(tempHandle))
 			{
 				return;
@@ -193,7 +193,7 @@ void SoundManager::Delete()
 {
 	for (int i = 0; i < m_BGM.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚Ä
+		//å­˜åœ¨ã—ã¦ã„ã¦
 		if (m_BGM[i])
 		{
 			m_BGM[i]->DeleteSound();
@@ -204,7 +204,7 @@ void SoundManager::Delete()
 
 	for (int i = 0; i < m_SE.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚Ä
+		//å­˜åœ¨ã—ã¦ã„ã¦
 		if (m_SE[i])
 		{
 			m_SE[i]->DeleteSound();
@@ -219,10 +219,10 @@ bool SoundManager::isPlayingSound(std::string name)
 {
 	for (int i = 0; i < m_BGM.size(); i++)
 	{
-		//‘¶İ‚µ‚Ä‚¢‚é‚©‚ÂAˆø”‚Ì–¼‘O‚Æˆê’v‚·‚é–¼‘O‚ª‚ ‚Á‚½‚Æ‚«
+		//å­˜åœ¨ã—ã¦ã„ã‚‹ã‹ã¤ã€å¼•æ•°ã®åå‰ã¨ä¸€è‡´ã™ã‚‹åå‰ãŒã‚ã£ãŸã¨ã
 		if (m_BGM[i] && m_BGM[i]->GetName() == name)
 		{
-			//—¬‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğ•Ô‚·
+			//æµã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’è¿”ã™
 			return CheckPlaying(m_BGM[i]->GetHandle());
 		}
 	}

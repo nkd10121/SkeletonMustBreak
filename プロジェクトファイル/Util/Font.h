@@ -1,31 +1,29 @@
-#pragma once
+ï»¿#pragma once
 #include <map>
 #include <string>
 #include <list>
 
-struct FontData
-{
-
-};
-
+/// <summary>
+/// ãƒ•ã‚©ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ«ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// </summary>
 class Font
 {
 private:
-	// ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“‚È‚Ì‚ÅƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Íprivate‚É’u‚­
+	// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ãªã®ã§ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯privateã«ç½®ã
 	Font() {};
 
 public:
 	virtual ~Font();
 
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çÀ‘Ì‚Ì¶¬‚ª‚Å‚«‚Ä‚µ‚Ü‚¤‚½‚ß
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‹Ö~‚·‚é
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‹ã‚‰å®Ÿä½“ã®ç”ŸæˆãŒã§ãã¦ã—ã¾ã†ãŸã‚
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ç¦æ­¢ã™ã‚‹
 	Font(const Font&) = delete;
 	Font& operator=(const Font&) = delete;
 	Font(Font&&) = delete;
 	Font& operator= (const Font&&) = delete;
 
 	/// <summary>
-	/// Font‚ÍGetInstance()‚ğ’Ê‚µ‚½QÆ‚©‚ç‚µ‚©—˜—p‚Å‚«‚È‚¢
+	/// Fontã¯GetInstance()ã‚’é€šã—ãŸå‚ç…§ã‹ã‚‰ã—ã‹åˆ©ç”¨ã§ããªã„
 	/// </summary>
 	/// <returns></returns>
 	static Font& GetInstance()
@@ -38,7 +36,7 @@ public:
 		return *m_instance;
 	}
 
-	//‚±‚ê‚ğ‚µ–Y‚ê‚é‚Æ•’Ê‚Éƒƒ‚ƒŠƒŠ[ƒN
+	//ã“ã‚Œã‚’ã—å¿˜ã‚Œã‚‹ã¨æ™®é€šã«ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯
 	static void Destroy()
 	{
 		delete m_instance;
@@ -46,16 +44,18 @@ public:
 	}
 
 public:
-	//ƒtƒHƒ“ƒg‚Ìƒnƒ“ƒhƒ‹‚ğæ“¾‚·‚é
+	//ãƒ•ã‚©ãƒ³ãƒˆã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã™ã‚‹
 	int GetFontHandle(std::string path,std::string name, int fontSize);
 
 private:
-	//static‚É‚·‚é‚±‚Æ‚Å
-	//Singleton‚Ìƒ|ƒCƒ“ƒ^‚ªƒvƒƒOƒ‰ƒ€‹N“®‚Éˆê‚Âì‚ç‚ê‚é‚æ‚¤‚É‚·‚é
+	//staticã«ã™ã‚‹ã“ã¨ã§
+	//Singletonã®ãƒã‚¤ãƒ³ã‚¿ãŒãƒ—ãƒ­ã‚°ãƒ©ãƒ èµ·å‹•æ™‚ã«ä¸€ã¤ä½œã‚‰ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹
 	static Font* m_instance;
 
 private:
-	std::map<std::pair<std::string, int>, int> m_handles;
+	//ãƒ•ã‚©ãƒ³ãƒˆãƒãƒ³ãƒ‰ãƒ«
+	std::map<std::pair<std::string, int>, int> m_handle;
+	//ãƒ•ã‚©ãƒ³ãƒˆãƒ‘ã‚¹
 	std::list < std::string> m_paths;
 };
 

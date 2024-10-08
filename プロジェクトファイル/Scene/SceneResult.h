@@ -1,37 +1,39 @@
-#pragma once
+﻿#pragma once
 #include "SceneBase.h"
 #include <memory>
 #include <vector>
 #include <map>
 
 struct ScoreInfo;
+class UICursor;
 
+/// <summary>
+/// リザルトシーン
+/// </summary>
 class SceneResult : public SceneBase
 {
 public:
+	//コンストラクタ
 	SceneResult(SceneManager& mgr);
+	//デストラクタ
 	virtual~SceneResult();
 
-	/// <summary>
-	/// �X�V����
-	/// </summary>
-	/// <param name="input"></param>
+	//更新
 	void Update(std::shared_ptr<Input>& input);
-
-	/// <summary>
-	/// �`�揈��
-	/// </summary>
+	//描画
 	void Draw();
 
 private:
+	//スコア計算に必要な情報を取得
 	void GetScore();
+	//フレーム数を秒数に変換
 	void FrameToTime();
-
+	//スコアを計算する
 	void CalculationScore();
 
 private:
-	//�J�ڐ�
-	enum class e_Destination : int
+	//遷移先
+	enum class eDestination : int
 	{
 		InGame,
 		details,
@@ -39,57 +41,54 @@ private:
 		StageSelect,
 	};
 
-	e_Destination m_destinationScene;
+	eDestination m_destinationScene;
 
-	//�X�R�A�v�Z�ɕK�v�ȏ��
+	//スコア計算に必要な情報
 	std::shared_ptr<ScoreInfo> m_scoreInfo;
 
-	int m_frame;
-	int m_hp;
-	int m_playerKillCount;
-	int m_trapKillCount;
-	int m_combo;
-
+	//秒数
 	int m_min;
+	//ミリ秒の2桁目
 	char m_sec1;
+	//ミリ秒の1桁目
 	char m_sec2;
 
+	//最終的なスコア
 	int m_score;
 
+	//クリアしたかどうか
 	bool m_isClear;
 
-	std::vector<int> m_handles;
+	//UIの画像ハンドル
+	std::vector<int> m_UIHandles;
 
-	std::vector<std::pair<int, int>> m_uiPos;
+	//カーソルクラスのポインタ
+	std::shared_ptr<UICursor> m_pCursor;
 
-
-	float m_angle;
-	int m_cursorOffsetX;
-
-	//�t�H���g�n���h��
+	//フォントハンドル
 	int m_fontHandle;
 	int m_textHandle;
 	int m_detailHandle;
 
 	int m_alpha;
 
-	//�X�V�����o�֐��|�C���^
+	//更新メンバ関数ポインタ
 	void (SceneResult::* m_updateFunc)(std::shared_ptr<Input> input);
-	/*��Ԋ֐�*/
-	//�t�F�[�h�A�E�g
+	/*状態関数*/
+	//更新(フェードアウト)
 	void FadeOutUpdate(std::shared_ptr<Input> input);
-	//�ʏ�
+	//更新(通常)
 	void NormalUpdate(std::shared_ptr<Input> input);
-	//�ڍ�
+	//更新(詳細画面)
 	void DetailUpdate(std::shared_ptr<Input> input);
 
-	//�`�惁���o�֐��|�C���^
+	//描画メンバ関数ポインタ
 	void (SceneResult::* m_drawFunc)();
-	//�t�F�[�h�A�E�g
+	//描画(フェードアウト)
 	void FadeOutDraw();
-	//�ʏ�
+	//描画(通常)
 	void NormalDraw();
-	//�ڍ�
+	//描画(詳細画面)
 	void DetailDraw();
 };
 

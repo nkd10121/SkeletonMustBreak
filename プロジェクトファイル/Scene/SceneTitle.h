@@ -1,30 +1,30 @@
-#pragma once
+﻿#pragma once
 #include "SceneBase.h"
 #include <vector>
 #include <memory>
 
 class TitlePlayer;
+class UICursor;
 
+/// <summary>
+/// タイトルシーン
+/// </summary>
 class SceneTitle : public SceneBase
 {
 public:
+	//コンストラクタ
 	SceneTitle(SceneManager& mgr);
+	//デストラクタ
 	virtual~SceneTitle();
-
-	/// <summary>
-	/// �X�V����
-	/// </summary>
-	/// <param name="input"></param>
+	
+	//更新
 	void Update(std::shared_ptr<Input>& input);
-
-	/// <summary>
-	/// �`�揈��
-	/// </summary>
+	//描画
 	void Draw();
 
 private:
-	//�J�ڐ�
-	enum class e_Destination : int
+	//遷移先
+	enum class eDestination : int
 	{
 		StageSelect,
 		Option,
@@ -32,14 +32,15 @@ private:
 		Ranking,
 	};
 
-	std::vector<int> m_handles;
-
+	//カーソルクラスのポインタ
+	std::shared_ptr<UICursor> m_pCursor;
+	//UI画像ハンドル
+	std::vector<int> m_UIHandles;
+	//ライトハンドル
 	int m_lightHandle;
-
-	float m_angle;
-	int m_cursorOffsetX;
-	e_Destination m_destinationScene;
-
-	std::shared_ptr<TitlePlayer> m_player;
+	//遷移先
+	eDestination m_destinationScene;
+	//背景のプレイヤーポインタ
+	std::shared_ptr<TitlePlayer> m_pPlayer;
 };
 

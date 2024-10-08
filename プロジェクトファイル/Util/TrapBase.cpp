@@ -1,4 +1,4 @@
-#include "TrapBase.h"
+﻿#include "TrapBase.h"
 
 TrapBase::TrapBase(GameObjectTag tag):
 	ObjectBase(Priority::Low,tag),

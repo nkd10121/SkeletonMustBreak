@@ -1,36 +1,36 @@
-#include "Input.h"
+ï»¿#include "Input.h"
 #include <cassert>
 
 namespace
 {
-	//ƒRƒ“ƒgƒ[ƒ‰[‚Ìƒ{ƒ^ƒ“
+	//ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼ã®ãƒœã‚¿ãƒ³
 	enum PadCheckMask : int
 	{
-		A = 0x00000010,	//Aƒ{ƒ^ƒ“
-		B = 0x00000020,	//Bƒ{ƒ^ƒ“
-		X = 0x00000040,	//Xƒ{ƒ^ƒ“
-		Y = 0x00000080,	//Yƒ{ƒ^ƒ“
+		A = 0x00000010,	//Aãƒœã‚¿ãƒ³
+		B = 0x00000020,	//Bãƒœã‚¿ãƒ³
+		X = 0x00000040,	//Xãƒœã‚¿ãƒ³
+		Y = 0x00000080,	//Yãƒœã‚¿ãƒ³
 
-		L = 0x00000100,	//Lƒ{ƒ^ƒ“
-		R = 0x00000200,	//Rƒ{ƒ^ƒ“
+		L = 0x00000100,	//Lãƒœã‚¿ãƒ³
+		R = 0x00000200,	//Rãƒœã‚¿ãƒ³
 
-		RStickPush = 0x00002000,	//RƒXƒeƒBƒbƒN‰Ÿ‚µ‚İ
+		RStickPush = 0x00002000,	//Rã‚¹ãƒ†ã‚£ãƒƒã‚¯æŠ¼ã—è¾¼ã¿
 
-		P = 0x00000800,	//ƒz[ƒ€ƒ{ƒ^ƒ“(?)
+		P = 0x00000800,	//ãƒ›ãƒ¼ãƒ ãƒœã‚¿ãƒ³(?)
 
-		UP = 0x00000008,	//ãƒ{ƒ^ƒ“
-		RIGHT = 0x00000004,	//‰Eƒ{ƒ^ƒ“
-		DOWN = 0x00000001,	//‰ºƒ{ƒ^ƒ“
-		LEFT = 0x00000002,	//¶ƒ{ƒ^ƒ“
+		UP = 0x00000008,	//ä¸Šãƒœã‚¿ãƒ³
+		RIGHT = 0x00000004,	//å³ãƒœã‚¿ãƒ³
+		DOWN = 0x00000001,	//ä¸‹ãƒœã‚¿ãƒ³
+		LEFT = 0x00000002,	//å·¦ãƒœã‚¿ãƒ³
 	};
 
-	//ƒgƒŠƒK[ƒ{ƒ^ƒ“‚Ìƒfƒbƒhƒ][ƒ“
+	//ãƒˆãƒªã‚¬ãƒ¼ãƒœã‚¿ãƒ³ã®ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³
 	constexpr int kTriggerDeadZone = 60;
 }
 
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 Input::Input():
 	m_padState(),
@@ -68,26 +68,26 @@ Input::Input():
 }
 
 /// <summary>
-/// “ü—Íî•ñ‚ğXV‚·‚é
+/// å…¥åŠ›æƒ…å ±ã‚’æ›´æ–°ã™ã‚‹
 /// </summary>
 void Input::Update()
 {
-	m_lastInputData = m_inputData;	//’¼‘O“ü—Í‚ğƒRƒs[‚µ‚Ä‚¨‚­(‰Ÿ‚µ‚½uŠÔ‚ğæ“¾‚·‚é—p)
+	m_lastInputData = m_inputData;	//ç›´å‰å…¥åŠ›ã‚’ã‚³ãƒ”ãƒ¼ã—ã¦ãŠã(æŠ¼ã—ãŸç¬é–“ã‚’å–å¾—ã™ã‚‹ç”¨)
 
-	//ƒn[ƒhƒEƒFƒA“ü—Íƒ`ƒFƒbƒN
+	//ãƒãƒ¼ãƒ‰ã‚¦ã‚§ã‚¢å…¥åŠ›ãƒã‚§ãƒƒã‚¯
 	char keystate[256];
-	GetHitKeyStateAll(keystate);//Œ»İ‚ÌƒL[ƒ{[ƒh“ü—Í‚ğæ“¾
-	int padstate = GetJoypadInputState(DX_INPUT_PAD1);//ƒpƒbƒhî•ñ‚Ìæ“¾
+	GetHitKeyStateAll(keystate);//ç¾åœ¨ã®ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰å…¥åŠ›ã‚’å–å¾—
+	int padstate = GetJoypadInputState(DX_INPUT_PAD1);//ãƒ‘ãƒƒãƒ‰æƒ…å ±ã®å–å¾—
 
-	//“o˜^‚³‚ê‚½î•ñ‚Æƒn[ƒh‚Ìî•ñ‚ğÆ‚ç‚µ‡‚í‚¹‚È‚ª‚ç
-	//inputData_‚Ì“à—e‚ğXV‚µ‚Ä‚¢‚­
+	//ç™»éŒ²ã•ã‚ŒãŸæƒ…å ±ã¨ãƒãƒ¼ãƒ‰ã®æƒ…å ±ã‚’ç…§ã‚‰ã—åˆã‚ã›ãªãŒã‚‰
+	//inputData_ã®å†…å®¹ã‚’æ›´æ–°ã—ã¦ã„ã
 	for (const auto& cmd : m_commandTable)
 	{
-		auto& input = m_inputData[cmd.first];//ƒRƒ}ƒ“ƒh‚Ì–¼‘O‚©‚ç“ü—Íƒf[ƒ^‚ğì‚é
+		auto& input = m_inputData[cmd.first];//ã‚³ãƒãƒ³ãƒ‰ã®åå‰ã‹ã‚‰å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã‚’ä½œã‚‹
 
 		for (const auto& hardIO : cmd.second)
 		{
-			//ƒL[ƒ{[ƒh‚Ìƒ`ƒFƒbƒN
+			//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®ãƒã‚§ãƒƒã‚¯
 			input = false;
 			if (hardIO.first == InputType::keyboard)
 			{
@@ -108,75 +108,75 @@ void Input::Update()
 		}
 	}
 
-	//ƒ{ƒ^ƒ“‚Ì“ü—Í‚ğæ“¾
+	//ãƒœã‚¿ãƒ³ã®å…¥åŠ›ã‚’å–å¾—
 	GetJoypadDirectInputState(DX_INPUT_PAD1, &m_padState);
-	//ZR,ZL,ƒXƒeƒBƒbƒN‚Ì“ü—Í‚ğæ“¾
+	//ZR,ZL,ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ã‚’å–å¾—
 	GetJoypadXInputState(DX_INPUT_PAD1, XInputState);
 
 
 }
 
 /// <summary>
-/// w’è‚ÌƒRƒ}ƒ“ƒh‚ª‰Ÿ‚³‚ê‚½uŠÔ‚È‚Ì‚©
+/// æŒ‡å®šã®ã‚³ãƒãƒ³ãƒ‰ãŒæŠ¼ã•ã‚ŒãŸç¬é–“ãªã®ã‹
 /// </summary>
-/// <param name="command">ƒRƒ}ƒ“ƒh•¶š—ñ</param>
-/// <returns> true : ‰Ÿ‚³‚ê‚½uŠÔ, false : ‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢‚©A‰Ÿ‚µ‚Á‚Ï</returns>
+/// <param name="command">ã‚³ãƒãƒ³ãƒ‰æ–‡å­—åˆ—</param>
+/// <returns> true : æŠ¼ã•ã‚ŒãŸç¬é–“, false : æŠ¼ã•ã‚Œã¦ã„ãªã„ã‹ã€æŠ¼ã—ã£ã±</returns>
 bool Input::IsTriggered(const char* command) const
 {
 	auto it = m_inputData.find(command);
-	if (it == m_inputData.end())	//î•ñ‚ª‚È‚¯‚ê‚Îfalse‚ğ•Ô‚·
+	if (it == m_inputData.end())	//æƒ…å ±ãŒãªã‘ã‚Œã°falseã‚’è¿”ã™
 	{
-		assert(0 && "w’è‚³‚ê‚½ƒRƒ}ƒ“ƒh‚Í“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+		assert(0 && "æŒ‡å®šã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ã¯ç™»éŒ²ã•ã‚Œã¦ã„ã¾ã›ã‚“");
 		return false;
 	}
 	return (m_inputData.at(command) && !m_lastInputData.at(command));
 }
 
 /// <summary>
-/// w’è‚ÌƒRƒ}ƒ“ƒh‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éó‘Ô‚È‚Ì‚©
+/// æŒ‡å®šã®ã‚³ãƒãƒ³ãƒ‰ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹çŠ¶æ…‹ãªã®ã‹
 /// </summary>
-/// <param name="command">ƒRƒ}ƒ“ƒh•¶š—ñ</param>
-/// <returns> true : ‚¨‚µ‚Á‚Ï, false : ‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢‚©A‰Ÿ‚³‚ê‚½uŠÔ</returns>
+/// <param name="command">ã‚³ãƒãƒ³ãƒ‰æ–‡å­—åˆ—</param>
+/// <returns> true : ãŠã—ã£ã±, false : æŠ¼ã•ã‚Œã¦ã„ãªã„ã‹ã€æŠ¼ã•ã‚ŒãŸç¬é–“</returns>
 bool Input::IsPushed(const char* command) const
 {
 	auto it = m_inputData.find(command);
-	if (it == m_inputData.end())	//î•ñ‚ª‚È‚¯‚ê‚Îfalse‚ğ•Ô‚·
+	if (it == m_inputData.end())	//æƒ…å ±ãŒãªã‘ã‚Œã°falseã‚’è¿”ã™
 	{
-		assert(0 && "w’è‚³‚ê‚½ƒRƒ}ƒ“ƒh‚Í“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñ");
+		assert(0 && "æŒ‡å®šã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ã¯ç™»éŒ²ã•ã‚Œã¦ã„ã¾ã›ã‚“");
 		return false;
 	}
 	return (m_inputData.at(command) && m_lastInputData.at(command));
 }
 
 /// <summary>
-/// ƒXƒeƒBƒbƒN‚Ì“ü—Íî•ñ‚ğæ“¾
+/// ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›æƒ…å ±ã‚’å–å¾—
 /// </summary>
-/// <param name="isRight">true:‰EƒXƒeƒBƒbƒN, false:¶ƒXƒeƒBƒbƒN</param>
-/// <returns>w’èƒXƒeƒBƒbƒN‚Ì“ü—Í‚ÌX¬•ª‚ÆY¬•ª</returns>
+/// <param name="isRight">true:å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯, false:å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯</param>
+/// <returns>æŒ‡å®šã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›ã®Xæˆåˆ†ã¨Yæˆåˆ†</returns>
 std::pair<float, float> Input::GetInputStick(bool isRight)const
 {
 	if (isRight)
 	{
-		//‰EƒXƒeƒBƒbƒN‚Ì“ü—Íî•ñ‚ğ•Ô‚·
+		//å³ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›æƒ…å ±ã‚’è¿”ã™
 		return std::make_pair(static_cast<float>(m_padState.Rx), static_cast<float>(m_padState.Ry));
 	}
 	else
 	{
-		//¶ƒXƒeƒBƒbƒN‚Ì“ü—Íî•ñ‚ğ•Ô‚·
+		//å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®å…¥åŠ›æƒ…å ±ã‚’è¿”ã™
 		return std::make_pair(static_cast<float>(m_padState.X), static_cast<float>(m_padState.Y));
 	}
 }
 
 /// <summary>
-/// ZR,ZLƒ{ƒ^ƒ“‚Ì“ü—Íî•ñ‚ğæ“¾
+/// ZR,ZLãƒœã‚¿ãƒ³ã®å…¥åŠ›æƒ…å ±ã‚’å–å¾—
 /// </summary>
 /// <param name="isRight">true:ZR,false:ZL</param>
-/// <returns>true:‰Ÿ‚³‚ê‚Ä‚¢‚é,false:‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢</returns>
+/// <returns>true:æŠ¼ã•ã‚Œã¦ã„ã‚‹,false:æŠ¼ã•ã‚Œã¦ã„ãªã„</returns>
 bool Input::GetIsPushedTriggerButton(bool isRight)const
 {
 	if (isRight)
 	{
-		//ZR‚Ì“ü—Íî•ñ‚ğ•Ô‚·
+		//ZRã®å…¥åŠ›æƒ…å ±ã‚’è¿”ã™
 		if (XInputState->RightTrigger > kTriggerDeadZone)
 		{
 			return true;
@@ -188,7 +188,7 @@ bool Input::GetIsPushedTriggerButton(bool isRight)const
 	}
 	else
 	{
-		//ZR‚Ì“ü—Íî•ñ‚ğ•Ô‚·
+		//ZRã®å…¥åŠ›æƒ…å ±ã‚’è¿”ã™
 		if (XInputState->LeftTrigger > kTriggerDeadZone)
 		{
 			return true;

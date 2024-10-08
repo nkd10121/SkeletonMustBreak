@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "ColliderData.h"
 #include "Vec3.h"
 
@@ -7,12 +7,12 @@ namespace MyLib
 class ColliderDataLine : public ColliderData
 {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	ColliderDataLine(bool isTrigger);
 
-	//n“_
+	//å§‹ç‚¹
 	Vec3 m_startPoint;
-	//I“_
+	//çµ‚ç‚¹
 	Vec3 m_endPoint;
 };
 }

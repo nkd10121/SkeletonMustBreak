@@ -1,18 +1,18 @@
-#include "SceneBase.h"
+ï»¿#include "SceneBase.h"
 #include "SceneManager.h"
 
 #include "Game.h"
 
-#ifdef _DEBUG
 namespace
 {
-	//à–¾—pˆ—ƒo[‚Ì•¶š‚ÌÀ•W
+#ifdef _DEBUG
+	//èª¬æ˜ç”¨å‡¦ç†ãƒãƒ¼ã®æ–‡å­—ã®åº§æ¨™
 	constexpr int kUpdateBarStringPosX = 0;
 	constexpr int kUpdateBarStringPosY = Game::kWindowHeight - 48;
 	constexpr int kDrawBarPosStringPosX = 0;
 	constexpr int kDrawBarPosStringPosY = Game::kWindowHeight - 32;
 
-	//à–¾—pˆ—ƒo[‚ÌÀ•W
+	//èª¬æ˜ç”¨å‡¦ç†ãƒãƒ¼ã®åº§æ¨™
 	constexpr int kExplainUpdateBarPosX1 = 34;
 	constexpr int kExplainUpdateBarPosY1 = Game::kWindowHeight - 46;
 	constexpr int kExplainUpdateBarPosX2 = 62;
@@ -22,17 +22,19 @@ namespace
 	constexpr int kExplainDrawBarPosX2 = 62;
 	constexpr int kExplainDrawBarPosY2 = Game::kWindowHeight - 18;
 
-
-	//ˆ—ƒo[‚ÌF
+	//å‡¦ç†ãƒãƒ¼ã®è‰²
 	constexpr int kUpdateBarColor = 0x0000ff;
 	constexpr int kDrawBarColor = 0xff0000;
 
-	//ˆ—ƒo[‚ÌÀ•W
+	//å‡¦ç†ãƒãƒ¼ã®åº§æ¨™
 	constexpr int kBarPosX = 0;
 	constexpr int kBarPosY = Game::kWindowHeight - 16;
+#endif
 }
 
-#endif
+/// <summary>
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 SceneManager::SceneManager()
 #ifdef _DEBUG
 	:m_updateTime(0.0f),
@@ -43,76 +45,109 @@ SceneManager::SceneManager()
 	m_pScoreInfo = std::make_shared<ScoreInfo>();
 }
 
+/// <summary>
+/// ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+/// </summary>
 SceneManager::~SceneManager()
 {
 }
 
+/// <summary>
+/// æŒã£ã¦ã„ã‚‹ã‚·ãƒ¼ãƒ³ã®æ›´æ–°é–¢æ•°ã‚’å‘¼ã³å‡ºã™
+/// </summary>
+/// <param name="input">å…¥åŠ›ç®¡ç†ã‚¯ãƒ©ã‚¹ã®å‚ç…§</param>
 void SceneManager::Update(std::shared_ptr<Input>& input)
 {
 #ifdef _DEBUG
-	//XV‘O‚Ìƒ[ƒfƒBƒ“ƒOŠÔæ“¾
+	//æ›´æ–°å‰ã®ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ™‚é–“å–å¾—
 	LONGLONG start = GetNowHiPerformanceCount();
 #endif
 
-	//––”ö‚Ì‚İÀs
+	//æœ«å°¾ã®ã¿å®Ÿè¡Œ
 	scenes.back()->Update(input);
 
 #ifdef _DEBUG
-	//XVŒã‚Ìƒ[ƒfƒBƒ“ƒOŠÔ‚©‚çXV‘O‚Ìƒ[ƒfƒBƒ“ƒOŠÔ‚ğˆø‚¢‚½’l‚ğæ“¾
+	//æ›´æ–°å¾Œã®ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ™‚é–“ã‹ã‚‰æ›´æ–°å‰ã®ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ™‚é–“ã‚’å¼•ã„ãŸå€¤ã‚’å–å¾—
 	m_updateTime = static_cast<float>(GetNowHiPerformanceCount() - start);
 #endif
 }
 
+/// <summary>
+/// æŒã£ã¦ã„ã‚‹ã‚·ãƒ¼ãƒ³ã®æç”»é–¢æ•°ã‚’å‘¼ã³å‡ºã™
+/// </summary>
 void SceneManager::Draw()
 {
 #ifdef _DEBUG
-	//XV‘O‚Ìƒ[ƒfƒBƒ“ƒOŠÔæ“¾
+	//æ›´æ–°å‰ã®ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ™‚é–“å–å¾—
 	LONGLONG start = GetNowHiPerformanceCount();
 #endif
-	//æ“ª‚©‚ç‡‚É•`‰æ
-	//ÅŒã‚ÉÏ‚ñ‚¾‚à‚Ì‚ªÅŒã‚É•`‰æ‚³‚ê‚é
+	//å…ˆé ­ã‹ã‚‰é †ã«æç”»
+	//æœ€å¾Œã«ç©ã‚“ã ã‚‚ã®ãŒæœ€å¾Œã«æç”»ã•ã‚Œã‚‹
 	for (auto& scenes : scenes)
 	{
 		scenes->Draw();
 	}
 	
 #ifdef _DEBUG
-	//XVŒã‚Ìƒ[ƒfƒBƒ“ƒOŠÔ‚©‚çXV‘O‚Ìƒ[ƒfƒBƒ“ƒOŠÔ‚ğˆø‚¢‚½’l‚ğæ“¾
+	//æ›´æ–°å¾Œã®ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ™‚é–“ã‹ã‚‰æ›´æ–°å‰ã®ãƒ­ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°æ™‚é–“ã‚’å¼•ã„ãŸå€¤ã‚’å–å¾—
 	m_drawTime = static_cast<float>(GetNowHiPerformanceCount() - start);
 
 	DrawDebug();
 #endif
 }
 
+/// <summary>
+/// å®Ÿè¡Œä¸­ã®ã‚·ãƒ¼ãƒ³ã‚’å¼•æ•°ã§æŒ‡å®šã—ãŸã‚·ãƒ¼ãƒ³ã«åˆ‡ã‚Šæ›¿ãˆã‚‹
+/// </summary>
+/// <param name="nextScene">é·ç§»å…ˆã®ã‚·ãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿</param>
 void SceneManager::ChangeScene(std::shared_ptr<SceneBase> nextScene)
 {
-	if (scenes.empty())//ƒŠƒXƒg‚ª‹ó‚Á‚Û‚¾‚Á‚½‚ç“ü‚ê‘Ö‚¦‚¸‚É
+	//ãƒªã‚¹ãƒˆãŒç©ºã£ã½ã ã£ãŸã‚‰å…¥ã‚Œæ›¿ãˆãšã«
+	if (scenes.empty())
 	{
-		scenes.push_back(nextScene);//––”ö‚É’Ç‰Á
+		//æœ«å°¾ã«è¿½åŠ 
+		scenes.push_back(nextScene);
 	}
 	else
 	{
-		scenes.back() = nextScene;//Šù‚Éˆê‚ÂˆÈã‚ ‚ê‚Î––”ö‚ğ
+		//æ—¢ã«ä¸€ã¤ä»¥ä¸Šã‚ã‚Œã°æœ«å°¾ã‚’å…¥ã‚Œæ›¿ãˆã‚‹
+		scenes.back() = nextScene;
 	}
 }
 
+/// <summary>
+/// ã‚·ãƒ¼ãƒ³ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¦åˆ‡ã‚Šæ›¿ãˆã‚‹
+/// </summary>
+/// <param name="nextScene">é·ç§»å…ˆã®ã‚·ãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿</param>
 void SceneManager::ChangeAndClearScene(std::shared_ptr<SceneBase> nextScene)
 {
+	//ã‚·ãƒ¼ãƒ³ã‚’ãƒªã‚»ãƒƒãƒˆ
 	scenes.clear();
 
-	scenes.push_back(nextScene);//––”ö‚É’Ç‰Á
+	//æœ«å°¾ã«è¿½åŠ 
+	scenes.push_back(nextScene);
 }
 
+/// <summary>
+/// ç¾åœ¨å…ˆé ­ã§å®Ÿè¡Œä¸­ã®ã‚·ãƒ¼ãƒ³ã®ä¸Šã«ã‚·ãƒ¼ãƒ³ã‚’ä¹—ã£ã‘ã‚‹
+/// </summary>
+/// <param name="scene">ä¹—ã£ã‘ãŸã„ã‚·ãƒ¼ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿</param>
 void SceneManager::PushScene(std::shared_ptr<SceneBase> scene)
 {
 	scenes.push_back(scene);
 }
 
+/// <summary>
+/// ç¾åœ¨ã®å…ˆé ­ã‚·ãƒ¼ãƒ³ã‚’å‰Šé™¤ã™ã‚‹
+/// </summary>
 void SceneManager::popScene(bool isToTitle)
 {
 	scenes.pop_back();
 }
 
+/// <summary>
+/// ã‚¹ã‚³ã‚¢è¨ˆç®—ã«å¿…è¦ãªæƒ…å ±ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹
+/// </summary>
 void SceneManager::ResetScoreInfo()
 {
 	m_pScoreInfo.reset();
@@ -120,13 +155,16 @@ void SceneManager::ResetScoreInfo()
 }
 
 #ifdef _DEBUG
+/// <summary>
+/// å‡¦ç†é€Ÿåº¦ã‚’ãƒ‡ãƒãƒƒã‚°æç”»ã™ã‚‹
+/// </summary>
 void SceneManager::DrawDebug()
 {
-	//ˆ—ƒo[‚Ì•\¦@
-	//à–¾
-	DrawString(kUpdateBarStringPosX, kUpdateBarStringPosY, "ˆ—", 0xffffff, 0x000000);
+	//å‡¦ç†ãƒãƒ¼ã®è¡¨ç¤ºã€€
+	//èª¬æ˜
+	DrawString(kUpdateBarStringPosX, kUpdateBarStringPosY, "å‡¦ç†", 0xffffff, 0x000000);
 	DrawBox(kExplainUpdateBarPosX1, kExplainUpdateBarPosY1, kExplainUpdateBarPosX2, kExplainUpdateBarPosY2, kUpdateBarColor, true);
-	DrawString(kDrawBarPosStringPosX, kDrawBarPosStringPosY, "•`‰æ", 0xffffff, 0x000000);
+	DrawString(kDrawBarPosStringPosX, kDrawBarPosStringPosY, "æç”»", 0xffffff, 0x000000);
 	DrawBox(kExplainDrawBarPosX1, kExplainDrawBarPosY1, kExplainDrawBarPosX2, kExplainDrawBarPosY2, kDrawBarColor, true);
 
 	float rate = static_cast<float>(m_updateTime + m_drawTime) / 16666.6f;
@@ -137,5 +175,4 @@ void SceneManager::DrawDebug()
 	width = static_cast<float>(Game::kWindowWidth * rate);
 	DrawBox(kBarPosX, kBarPosY, static_cast<int>(width), Game::kWindowHeight, kUpdateBarColor, true);
 }
-
 #endif

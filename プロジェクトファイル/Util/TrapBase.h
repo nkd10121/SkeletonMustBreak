@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "ObjectBase.h"
 #include "MyLib.h"
 
@@ -15,7 +15,7 @@ public:
 	virtual void Update() {};
 	virtual void Draw() {};
 
-	// Õ“Ë‚µ‚½‚Æ‚«
+	// è¡çªã—ãŸã¨ã
 	void OnCollideEnter(const std::shared_ptr<Collidable>& colider) {};
 
 	MyLib::Vec3 GetPos() { return m_pos; };

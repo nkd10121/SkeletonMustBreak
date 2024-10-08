@@ -1,14 +1,14 @@
-#pragma once
+ï»¿#pragma once
 
-// “–‚½‚Á‚½‚à‚Ì‚Ì”»•Ê‚ğs‚¤‚½‚ß‚Ìƒ^ƒO
+// å½“ãŸã£ãŸã‚‚ã®ã®åˆ¤åˆ¥ã‚’è¡Œã†ãŸã‚ã®ã‚¿ã‚°
 enum class GameObjectTag
 {
-	Player,			// ƒvƒŒƒCƒ„[
-	Enemy,			// “G
+	Player,			// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼
+	Enemy,			// æ•µ
 	HitBox,
 	Search,
-	Shot,			//’e
-	Sword,			//•Ší
+	Shot,			//å¼¾
+	Sword,			//æ­¦å™¨
 	SpikeTrap,
 	CutterTrap,
 	HammerTrap,

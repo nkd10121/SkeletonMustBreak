@@ -1,4 +1,4 @@
-#include "ObjectBase.h"
+﻿#include "ObjectBase.h"
 
 ObjectBase::ObjectBase(Priority priority,GameObjectTag tag):
 	Collidable(priority, tag),

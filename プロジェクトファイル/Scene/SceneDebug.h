@@ -1,36 +1,37 @@
-#pragma once
+﻿#pragma once
 #include "SceneBase.h"
+
+/// <summary>
+/// デバッグシーン
+/// </summary>
 class SceneDebug : public SceneBase
 {
 public:
+	//コンストラクタ
 	SceneDebug(SceneManager& mgr);
+	//デストラクタ
 	virtual ~SceneDebug();
 
-	/// <summary>
-	/// �X�V����
-	/// </summary>
-	/// <param name="input"></param>
+	//更新
 	void Update(std::shared_ptr<Input>& input);
-
-	/// <summary>
-	/// �`�揈��
-	/// </summary>
+	//描画
 	void Draw();
 
 private:
-	//�J�ڐ�
-	enum class e_Destination : int
+	//遷移先列挙型
+	enum class eDestination : int
 	{
-		Title,
-		StageSelect,
-		Upgrade,
-		InGame,
-		Result,
-		Pause,
-		Option,
-		Ranking
+		Title,			//タイトル
+		StageSelect,	//ステージセレクト
+		Upgrade,		//強化
+		InGame,			//インゲーム
+		Result,			//リザルト
+		Pause,			//ポーズ
+		Option,			//オプション
+		Ranking			//ランキング(未実装)
 	};
 
-	e_Destination m_destinationScene;
+	//遷移先
+	eDestination m_destinationScene;
 };
 

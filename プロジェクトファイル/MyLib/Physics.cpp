@@ -1,4 +1,4 @@
-#include <cassert>
+ï»¿#include <cassert>
 #include "MyLib.h"
 #include "DxLib.h"
 
@@ -6,35 +6,35 @@
 
 namespace
 {
-	//Å‘å“–‚½‚è”»’èƒ|ƒŠƒSƒ“”
+	//æœ€å¤§å½“ãŸã‚Šåˆ¤å®šãƒãƒªã‚´ãƒ³æ•°
 	constexpr int kMaxColHitPolyNum = 2000;
-	//•Ç‰Ÿ‚µo‚µˆ—‚ÌÅ‘ås‰ñ”
+	//å£æŠ¼ã—å‡ºã—å‡¦ç†ã®æœ€å¤§è©¦è¡Œå›æ•°
 	constexpr int kMaxColHitTryNum = 16;
-	//•Ç‰Ÿ‚µo‚µ‚ÉƒXƒ‰ƒCƒh‚³‚¹‚é‹——£
+	//å£æŠ¼ã—å‡ºã—æ™‚ã«ã‚¹ãƒ©ã‚¤ãƒ‰ã•ã›ã‚‹è·é›¢
 	constexpr float kColHitSlideLength = 0.2f;
-	//•Çƒ|ƒŠƒSƒ“‚©°ƒ|ƒŠƒSƒ“‚©‚ğ”»’f‚·‚é‚½‚ß‚Ì•Ï”
+	//å£ãƒãƒªã‚´ãƒ³ã‹åºŠãƒãƒªã‚´ãƒ³ã‹ã‚’åˆ¤æ–­ã™ã‚‹ãŸã‚ã®å¤‰æ•°
 	constexpr float kWallPolyBorder = 0.4f;
-	//•Çƒ|ƒŠƒSƒ“‚Æ”»’f‚·‚é‚½‚ß‚Ì‚‚³•Ï”
+	//å£ãƒãƒªã‚´ãƒ³ã¨åˆ¤æ–­ã™ã‚‹ãŸã‚ã®é«˜ã•å¤‰æ•°
 	constexpr float kWallPolyHeight = 5.0f;
 
-	//d—Í
+	//é‡åŠ›
 	constexpr float kGravity = -0.018f;
-	//Å‘åd—Í‰Á‘¬“x
+	//æœ€å¤§é‡åŠ›åŠ é€Ÿåº¦
 	constexpr float kMaxGravityAccel = -2.00f;
 
-	//•â³‘Oî•ñF
+	//è£œæ­£å‰æƒ…å ±è‰²
 	const int kBeforeFixInfoColor = 0x0000ff;
-	//•â³‘O—\’èî•ñF
+	//è£œæ­£å‰äºˆå®šæƒ…å ±è‰²
 	const int kAimInfoColor = 0x00ff00;
-	//•â³Œãî•ñF
+	//è£œæ­£å¾Œæƒ…å ±è‰²
 	const int kAfterFixInfoColor = 0xff00ff;
 }
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
-/// <param name="normalStageCollisionHandle">ƒvƒŒƒCƒ„[‚È‚Ç‚ÌƒXƒe[ƒW“–‚½‚è”»’èƒnƒ“ƒhƒ‹</param>
-/// <param name="enemyStageCollisionHandle">“G‚ÌƒXƒe[ƒW“–‚½‚è”»’èƒnƒ“ƒhƒ‹</param>
+/// <param name="normalStageCollisionHandle">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãªã©ã®ã‚¹ãƒ†ãƒ¼ã‚¸å½“ãŸã‚Šåˆ¤å®šãƒãƒ³ãƒ‰ãƒ«</param>
+/// <param name="enemyStageCollisionHandle">æ•µã®ã‚¹ãƒ†ãƒ¼ã‚¸å½“ãŸã‚Šåˆ¤å®šãƒãƒ³ãƒ‰ãƒ«</param>
 MyLib::Physics::Physics(int normalStageCollisionHandle,int enemyStageCollisionHandle)
 {
 	m_stageCollisionHandle = normalStageCollisionHandle;
@@ -42,29 +42,29 @@ MyLib::Physics::Physics(int normalStageCollisionHandle,int enemyStageCollisionHa
 }
 
 /// <summary>
-/// Õ“Ë•¨‚Ì“o˜^
+/// è¡çªç‰©ã®ç™»éŒ²
 /// </summary>
-/// <param name="collidable">’Ç‰Á‚·‚é“–‚½‚è”»’è</param>
+/// <param name="collidable">è¿½åŠ ã™ã‚‹å½“ãŸã‚Šåˆ¤å®š</param>
 void MyLib::Physics::Entry(std::shared_ptr<Collidable> collidable)
 {
-	// “o˜^
+	// ç™»éŒ²
 	bool found = (std::find(m_collidables.begin(), m_collidables.end(), collidable) != m_collidables.end());
 	if (!found)
 	{
 		m_collidables.emplace_back(collidable);
 		//collidables.push_back(collidable);
 	}
-	// Šù‚É“o˜^‚³‚ê‚Ä‚½‚çƒGƒ‰[
+	// æ—¢ã«ç™»éŒ²ã•ã‚Œã¦ãŸã‚‰ã‚¨ãƒ©ãƒ¼
 	else
 	{
-		assert(0 && "w’è‚Ìcollidable‚Í“o˜^Ï‚Å‚·B");
+		assert(0 && "æŒ‡å®šã®collidableã¯ç™»éŒ²æ¸ˆã§ã™ã€‚");
 	}
 }
 
 /// <summary>
-/// Õ“Ë•¨‚Ì“o˜^íœ
+/// è¡çªç‰©ã®ç™»éŒ²å‰Šé™¤
 /// </summary>
-/// <param name="collidable">íœ‚·‚é“–‚½‚è”»’è</param>
+/// <param name="collidable">å‰Šé™¤ã™ã‚‹å½“ãŸã‚Šåˆ¤å®š</param>
 void MyLib::Physics::Exit(std::shared_ptr<Collidable> collidable)
 {
 	bool found = (std::find(m_collidables.begin(), m_collidables.end(), collidable) != m_collidables.end());
@@ -72,38 +72,38 @@ void MyLib::Physics::Exit(std::shared_ptr<Collidable> collidable)
 	{
 		m_collidables.remove(collidable);
 	}
-	// “o˜^‚³‚ê‚Ä‚È‚©‚Á‚½‚çƒGƒ‰[
+	// ç™»éŒ²ã•ã‚Œã¦ãªã‹ã£ãŸã‚‰ã‚¨ãƒ©ãƒ¼
 	else
 	{
-		assert(0 && "w’è‚Ìcollidable‚ª“o˜^‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+		assert(0 && "æŒ‡å®šã®collidableãŒç™»éŒ²ã•ã‚Œã¦ã„ã¾ã›ã‚“ã€‚");
 	}
 }
 
 /// <summary>
-/// XVi“o˜^ƒIƒuƒWƒFƒNƒg‚Ì•¨—ˆÚ“®AÕ“Ë’Ê’mj
+/// æ›´æ–°ï¼ˆç™»éŒ²ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç‰©ç†ç§»å‹•ã€è¡çªé€šçŸ¥ï¼‰
 /// </summary>
 void MyLib::Physics::Update()
 {
-	//“–‚½‚è”»’è‚ÌƒƒO‚ğc‚·
+	//å½“ãŸã‚Šåˆ¤å®šã®ãƒ­ã‚°ã‚’æ®‹ã™
 	m_preCollideInfo = m_newCollideInfo;
 	m_newCollideInfo.clear();
 	m_preTirrigerInfo = m_newTirrigerInfo;
 	m_newTirrigerInfo.clear();
 	m_onCollideInfo.clear();
 
-	// ˆÚ“®
+	// ç§»å‹•
 	for (auto& item : m_collidables)
 	{
-		// ƒ|ƒWƒVƒ‡ƒ“‚ÉˆÚ“®—Í‚ğ‘«‚·
+		// ãƒã‚¸ã‚·ãƒ§ãƒ³ã«ç§»å‹•åŠ›ã‚’è¶³ã™
 		auto pos = item->rigidbody.GetPos();
 		auto m_velocity = item->rigidbody.GetVelocity();
 
-		// d—Í‚ğ—˜—p‚·‚éİ’è‚È‚çAd—Í‚ğ’Ç‰Á‚·‚é
+		// é‡åŠ›ã‚’åˆ©ç”¨ã™ã‚‹è¨­å®šãªã‚‰ã€é‡åŠ›ã‚’è¿½åŠ ã™ã‚‹
 		if (item->rigidbody.GetUseGravity())
 		{
 			m_velocity = m_velocity + Vec3(0.0f, kGravity, 0.0f);
 
-			// Å‘åd—Í‰Á‘¬“x‚æ‚è‘å‚«‚©‚Á‚½‚çƒNƒ‰ƒ“ƒv
+			// æœ€å¤§é‡åŠ›åŠ é€Ÿåº¦ã‚ˆã‚Šå¤§ãã‹ã£ãŸã‚‰ã‚¯ãƒ©ãƒ³ãƒ—
 			if (m_velocity.y < kMaxGravityAccel)
 			{
 				m_velocity = MyLib::Vec3(m_velocity.x, kMaxGravityAccel, m_velocity.z);
@@ -114,7 +114,7 @@ void MyLib::Physics::Update()
 
 		item->rigidbody.SetVelocity(m_velocity);
 
-		// ‚à‚Æ‚à‚Æ‚Ìî•ñA—\’èî•ñ‚ğƒfƒoƒbƒO•\¦
+		// ã‚‚ã¨ã‚‚ã¨ã®æƒ…å ±ã€äºˆå®šæƒ…å ±ã‚’ãƒ‡ãƒãƒƒã‚°è¡¨ç¤º
 #if _DEBUG
 
 		for (const auto& collider : item->m_colliders)
@@ -130,11 +130,11 @@ void MyLib::Physics::Update()
 		}
 
 #endif
-		// —\’èƒ|ƒWƒVƒ‡ƒ“İ’è
+		// äºˆå®šãƒã‚¸ã‚·ãƒ§ãƒ³è¨­å®š
 		item->rigidbody.SetNextPos(nextPos);
 	}
 
-	// “–‚½‚è”»’èƒ`ƒFƒbƒNinextPosw’èj
+	// å½“ãŸã‚Šåˆ¤å®šãƒã‚§ãƒƒã‚¯ï¼ˆnextPosæŒ‡å®šï¼‰
 	CheckColide();
 
 	for (auto& item : m_collidables)
@@ -164,21 +164,21 @@ void MyLib::Physics::Update()
 			continue;
 		}
 
-		//•Ç‚Æ°‚Ì“–‚½‚è”»’è‚ğs‚¤
+		//å£ã¨åºŠã®å½“ãŸã‚Šåˆ¤å®šã‚’è¡Œã†
 		CheckWallAndFloor(item);
-		//•Ç‚Æ‚Ì“–‚½‚è”»’èˆ—
+		//å£ã¨ã®å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
 		FixPositionWithWall(item);
-		//°‚Æ‚Ì“–‚½‚è”»’èˆ—
+		//åºŠã¨ã®å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
 		FixNowPositionWithFloor(item);
 
-		// ŒŸo‚µ‚½ƒvƒŒƒCƒ„[‚ÌüˆÍ‚Ìƒ|ƒŠƒSƒ“î•ñ‚ğŠJ•ú‚·‚é
+		// æ¤œå‡ºã—ãŸãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å‘¨å›²ã®ãƒãƒªã‚´ãƒ³æƒ…å ±ã‚’é–‹æ”¾ã™ã‚‹
 		MV1CollResultPolyDimTerminate(m_hitDim);
 	}
 
 	CheckSendOnCollideInfo(m_preCollideInfo, m_newCollideInfo, false);
 	CheckSendOnCollideInfo(m_preTirrigerInfo, m_newTirrigerInfo, true);
 
-	// ˆÊ’uŠm’è
+	// ä½ç½®ç¢ºå®š
 	FixPosition();
 
 	for (const auto& info : m_onCollideInfo)
@@ -211,26 +211,26 @@ void MyLib::Physics::Update()
 }
 
 /// <summary>
-/// “–‚½‚è”»’èƒ`ƒFƒbƒN
+/// å½“ãŸã‚Šåˆ¤å®šãƒã‚§ãƒƒã‚¯
 /// </summary>
 void MyLib::Physics::CheckColide()
 {
 	std::vector<OnCollideInfoData> onCollideInfo;
-	// Õ“Ë’Ê’mAƒ|ƒWƒVƒ‡ƒ“•â³
+	// è¡çªé€šçŸ¥ã€ãƒã‚¸ã‚·ãƒ§ãƒ³è£œæ­£
 	bool	doCheck = true;
-	int		checkCount = 0;	// ƒ`ƒFƒbƒN‰ñ”
+	int		checkCount = 0;	// ãƒã‚§ãƒƒã‚¯å›æ•°
 	while (doCheck)
 	{
 		doCheck = false;
 		++checkCount;
 
-		// 2dƒ‹[ƒv‚Å‘SƒIƒuƒWƒFƒNƒg“–‚½‚è”»’è
-		// FIXME: d‚¢‚Ì‚Å‹ß‚¢ƒIƒuƒWƒFƒNƒg“¯m‚Ì‚İ“–‚½‚è”»’è‚·‚é‚È‚ÇH•v‚ª‚¢‚é
+		// 2é‡ãƒ«ãƒ¼ãƒ—ã§å…¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå½“ãŸã‚Šåˆ¤å®š
+		// FIXME: é‡ã„ã®ã§è¿‘ã„ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆåŒå£«ã®ã¿å½“ãŸã‚Šåˆ¤å®šã™ã‚‹ãªã©å·¥å¤«ãŒã„ã‚‹
 		for (const auto& objA : m_collidables)
 		{
 			for (const auto& objB : m_collidables)
 			{
-				//“¯ˆêƒIƒuƒWƒFƒNƒg‚È‚ç‘ŠúƒŠƒ^[ƒ“
+				//åŒä¸€ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãªã‚‰æ—©æœŸãƒªã‚¿ãƒ¼ãƒ³
 				if (objA == objB)
 					continue;
 
@@ -251,7 +251,7 @@ void MyLib::Physics::CheckColide()
 							AddNewCollideInfo(objA, objB, m_newCollideInfo);
 						}
 
-						// Trigger‚Ìê‡‚ÍˆÊ’u•â³‚Í‚µ‚È‚¢
+						// Triggerã®å ´åˆã¯ä½ç½®è£œæ­£ã¯ã—ãªã„
 						if (isTrigger) continue;
 
 						auto primary = objA;
@@ -273,7 +273,7 @@ void MyLib::Physics::CheckColide()
 						}
 
 						FixNextPosition(primary->rigidbody, secondary->rigidbody, primaryCollider.get(), secondaryCollider.get());
-						// ˆÊ’u•â³‚ğ‚µ‚½‚ç‚à‚¤ˆê“x‰‚ß‚©‚çs‚¤
+						// ä½ç½®è£œæ­£ã‚’ã—ãŸã‚‰ã‚‚ã†ä¸€åº¦åˆã‚ã‹ã‚‰è¡Œã†
 						doCheck = true;
 						break;
 					}
@@ -283,10 +283,10 @@ void MyLib::Physics::CheckColide()
 			}
 			if (doCheck) break;
 		}
-		if (doCheck && checkCount > 1000)
+		if (doCheck && checkCount > 800)
 		{
 #if _DEBUG
-			printfDx("‹K’è‰ñ”‚ğ’´‚¦‚Ü‚µ‚½");
+			printfDx("è¦å®šå›æ•°ã‚’è¶…ãˆã¾ã—ãŸ");
 #endif
 			break;
 		}
@@ -294,12 +294,12 @@ void MyLib::Physics::CheckColide()
 }
 
 /// <summary>
-/// /“ñ‚Â‚ÌƒIƒuƒWƒFƒNƒg‚ªÚG‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©
+/// /äºŒã¤ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒæ¥è§¦ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹
 /// </summary>
-/// <param name="rigidA">ƒIƒuƒWƒFƒNƒgA‚Ì•¨—ƒf[ƒ^</param>
-/// <param name="rigidB">ƒIƒuƒWƒFƒNƒgB‚Ì•¨—ƒf[ƒ^</param>
-/// <param name="colliderA">ƒIƒuƒWƒFƒNƒgA‚Ì“–‚½‚è”»’èƒf[ƒ^</param>
-/// <param name="colliderB">ƒIƒuƒWƒFƒNƒgB‚Ì“–‚½‚è”»’èƒf[ƒ^</param>
+/// <param name="rigidA">ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®ç‰©ç†ãƒ‡ãƒ¼ã‚¿</param>
+/// <param name="rigidB">ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®ç‰©ç†ãƒ‡ãƒ¼ã‚¿</param>
+/// <param name="colliderA">ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆAã®å½“ãŸã‚Šåˆ¤å®šãƒ‡ãƒ¼ã‚¿</param>
+/// <param name="colliderB">ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆBã®å½“ãŸã‚Šåˆ¤å®šãƒ‡ãƒ¼ã‚¿</param>
 /// <returns></returns>
 bool MyLib::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rigidB, ColliderData* colliderA, ColliderData* colliderB) const
 {
@@ -316,18 +316,18 @@ bool MyLib::Physics::IsCollide(const Rigidbody& rigidA, const Rigidbody& rigidB,
 		auto atob = rigidA.GetNextPos() - rigidB.GetNextPos();
 		auto atobLength = atob.Size();
 
-		// ‚¨Œİ‚¢‚Ì‹——£‚ªA‚»‚ê‚¼‚ê‚Ì”¼Œa‚ğ‘«‚µ‚½‚à‚Ì‚æ‚è¬‚³‚¯‚ê‚Î“–‚½‚é
+		// ãŠäº’ã„ã®è·é›¢ãŒã€ãã‚Œãã‚Œã®åŠå¾„ã‚’è¶³ã—ãŸã‚‚ã®ã‚ˆã‚Šå°ã•ã‘ã‚Œã°å½“ãŸã‚‹
 		isCollide = (atobLength < colA->m_radius + colB->m_radius);
 	}
 	return isCollide;
 }
 
 /// <summary>
-/// “–‚½‚Á‚½ƒIƒuƒWƒFƒNƒg‚ÌƒyƒA‚ğ“o˜^‚·‚é
+/// å½“ãŸã£ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒšã‚¢ã‚’ç™»éŒ²ã™ã‚‹
 /// </summary>
-/// <param name="objA">ƒIƒuƒWƒFƒNƒgA</param>
-/// <param name="objB">ƒIƒuƒWƒFƒNƒgB</param>
-/// <param name="info">“o˜^‚·‚é”z—ñ</param>
+/// <param name="objA">ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆA</param>
+/// <param name="objB">ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆB</param>
+/// <param name="info">ç™»éŒ²ã™ã‚‹é…åˆ—</param>
 void MyLib::Physics::AddNewCollideInfo(const std::shared_ptr<Collidable>& objA, const std::shared_ptr<Collidable>& objB, SendCollideInfo& info)
 {
 	bool isParentA = info.find(objA) != info.end();
@@ -354,15 +354,15 @@ void MyLib::Physics::AddNewCollideInfo(const std::shared_ptr<Collidable>& objA, 
 }
 
 /// <summary>
-/// ˆÚ“®—\’è‚ÌÀ•W‚ğC³‚·‚é
+/// ç§»å‹•äºˆå®šã®åº§æ¨™ã‚’ä¿®æ­£ã™ã‚‹
 /// </summary>
-/// <param name="primaryRigid">—Dæ“x‚ƒIƒuƒWƒFƒNƒg‚Ì•¨—ƒf[ƒ^</param>
-/// <param name="secondaryRigid">—Dæ“x’áƒIƒuƒWƒFƒNƒg‚Ì•¨—ƒf[ƒ^</param>
-/// <param name="primaryCollider">—Dæ“x‚ƒIƒuƒWƒFƒNƒg‚Ì“–‚½‚è”»’èƒf[ƒ^</param>
-/// <param name="secondaryCollider">—Dæ“x’áƒIƒuƒWƒFƒNƒg‚Ì“–‚½‚è”»’èƒf[ƒ^</param>
+/// <param name="primaryRigid">å„ªå…ˆåº¦é«˜ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç‰©ç†ãƒ‡ãƒ¼ã‚¿</param>
+/// <param name="secondaryRigid">å„ªå…ˆåº¦ä½ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ç‰©ç†ãƒ‡ãƒ¼ã‚¿</param>
+/// <param name="primaryCollider">å„ªå…ˆåº¦é«˜ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å½“ãŸã‚Šåˆ¤å®šãƒ‡ãƒ¼ã‚¿</param>
+/// <param name="secondaryCollider">å„ªå…ˆåº¦ä½ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å½“ãŸã‚Šåˆ¤å®šãƒ‡ãƒ¼ã‚¿</param>
 void MyLib::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& secondaryRigid, ColliderData* primaryCollider, ColliderData* secondaryCollider) const
 {
-	// “–‚½‚è”»’è‚Ìí•Ê‚²‚Æ‚É•â³•û–@‚ğ•Ï‚¦‚é
+	// å½“ãŸã‚Šåˆ¤å®šã®ç¨®åˆ¥ã”ã¨ã«è£œæ­£æ–¹æ³•ã‚’å¤‰ãˆã‚‹
 	auto primaryKind = primaryCollider->GetKind();
 	auto secondaryKind = secondaryCollider->GetKind();
 
@@ -373,7 +373,7 @@ void MyLib::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& s
 
 		auto primaryColliderData = dynamic_cast<MyLib::ColliderDataSphere*>(primaryCollider);
 		auto secondaryColliderData = dynamic_cast<MyLib::ColliderDataSphere*>(secondaryCollider);
-		auto awayDist = primaryColliderData->m_radius + secondaryColliderData->m_radius + 0.0001f;	// ‚»‚Ì‚Ü‚Ü‚¾‚Æ‚¿‚å‚¤‚Ç“–‚½‚éˆÊ’u‚É‚È‚é‚Ì‚Å­‚µ—]•ª‚É—£‚·
+		auto awayDist = primaryColliderData->m_radius + secondaryColliderData->m_radius + 0.0001f;	// ãã®ã¾ã¾ã ã¨ã¡ã‚‡ã†ã©å½“ãŸã‚‹ä½ç½®ã«ãªã‚‹ã®ã§å°‘ã—ä½™åˆ†ã«é›¢ã™
 		auto primaryToNewSecondaryPos = primaryToSecondaryN * awayDist;
 		auto fixedPos = primaryRigid.GetNextPos() + primaryToNewSecondaryPos;
 		fixedPos.y = secondaryRigid.GetPos().y;
@@ -382,16 +382,16 @@ void MyLib::Physics::FixNextPosition(const Rigidbody& primaryRigid, Rigidbody& s
 }
 
 /// <summary>
-/// í—Ş‚²‚Æ‚ÉÕ“Ë’Ê’m‚ğ”ò‚Î‚·”z—ñ‚É’Ç‰Á‚·‚é
+/// ç¨®é¡ã”ã¨ã«è¡çªé€šçŸ¥ã‚’é£›ã°ã™é…åˆ—ã«è¿½åŠ ã™ã‚‹
 /// </summary>
-/// <param name="preSendInfo">Õ“Ë‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg‚ÌƒƒO</param>
-/// <param name="newSendInfo">Õ“Ë‚µ‚½ƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg</param>
-/// <param name="isTrigger">–³‹‚·‚é‚©‚Ç‚¤‚©</param>
+/// <param name="preSendInfo">è¡çªã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆã®ãƒ­ã‚°</param>
+/// <param name="newSendInfo">è¡çªã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆ</param>
+/// <param name="isTrigger">ç„¡è¦–ã™ã‚‹ã‹ã©ã†ã‹</param>
 void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCollideInfo& newSendInfo, bool isTrigger)
 {
 	for (auto& parent : newSendInfo)
 	{
-		// ˆÈ‘O‚Ìî•ñ‚Ée‚Æ‚µ‚Ä“o˜^‚³‚ê‚Ä‚¢‚é‚©
+		// ä»¥å‰ã®æƒ…å ±ã«è¦ªã¨ã—ã¦ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‹
 		bool isPreParent = preSendInfo.find(parent.first) != preSendInfo.end();
 		bool isAllEnter = true;
 
@@ -400,12 +400,12 @@ void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCo
 			bool isPreChild = false;
 			if (isPreParent)
 			{
-				// ˆÈ‘O‚Ìî•ñ‚Éq‚Æ‚µ‚Ä“o˜^‚³‚ê‚Ä‚¢‚é‚©
+				// ä»¥å‰ã®æƒ…å ±ã«å­ã¨ã—ã¦ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‹
 				auto& preParent = preSendInfo[parent.first];
 				isPreChild = std::find(preParent.begin(), preParent.end(), child) != preParent.end();
 			}
 
-			// ¡‰ñ“ü‚Á‚Ä‚«‚½ê‡‚ÍEnter‚ğŒÄ‚Ô(q‚Æ‚µ‚Ä“o˜^‚³‚ê‚Ä‚¢‚È‚¢)
+			// ä»Šå›å…¥ã£ã¦ããŸå ´åˆã¯Enterã‚’å‘¼ã¶(å­ã¨ã—ã¦ç™»éŒ²ã•ã‚Œã¦ã„ãªã„)
 			if (!isPreChild)
 			{
 				if (isTrigger)
@@ -420,7 +420,7 @@ void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCo
 				}
 			}
 
-			// Stary‚Í–ˆ“xŒÄ‚Ô
+			// Staryã¯æ¯åº¦å‘¼ã¶
 			if (isTrigger)
 			{
 				AddOnCollideInfo(parent.first, child, eOnCollideInfoKind::TriggerStay);
@@ -432,26 +432,26 @@ void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCo
 				AddOnCollideInfo(child, parent.first, eOnCollideInfoKind::CollideStay);
 			}
 
-			// “o˜^‚³‚ê‚Ä‚¢‚½î•ñ‚ğíœ
+			// ç™»éŒ²ã•ã‚Œã¦ã„ãŸæƒ…å ±ã‚’å‰Šé™¤
 			if (isPreChild)
 			{
 				preSendInfo[parent.first].remove(child);
 			}
-			// ‘S‚Ä“o˜^‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚Æ‚·‚é
+			// å…¨ã¦ç™»éŒ²ã•ã‚Œã¦ã„ãªã‹ã£ãŸã¨ã™ã‚‹
 			else
 			{
 				isAllEnter = false;
 			}
 		}
 
-		// ‘S‚Ä“o˜^‚³‚ê‚Ä‚¢‚½‚çe‚Ìî•ñ‚àÁ‚·
+		// å…¨ã¦ç™»éŒ²ã•ã‚Œã¦ã„ãŸã‚‰è¦ªã®æƒ…å ±ã‚‚æ¶ˆã™
 		if (isAllEnter)
 		{
 			preSendInfo.erase(parent.first);
 		}
 	}
 
-	// c‚Á‚Ä‚¢‚é‘Oî•ñ‚©‚çExist‚ğŒÄ‚Ô(“o˜^‚ªc‚Á‚Ä‚¢‚é¡‰ñ”²‚¯‚½)
+	// æ®‹ã£ã¦ã„ã‚‹å‰æƒ…å ±ã‹ã‚‰Existã‚’å‘¼ã¶(ç™»éŒ²ãŒæ®‹ã£ã¦ã„ã‚‹ï¼ä»Šå›æŠœã‘ãŸ)
 	for (auto& parent : preSendInfo)
 	{
 		for (auto& child : parent.second)
@@ -471,11 +471,11 @@ void MyLib::Physics::CheckSendOnCollideInfo(SendCollideInfo& preSendInfo, SendCo
 }
 
 /// <summary>
-/// Õ“Ë’Ê’m‚ğ”ò‚Î‚·”z—ñ‚É’Ç‰Á‚·‚é
+/// è¡çªé€šçŸ¥ã‚’é£›ã°ã™é…åˆ—ã«è¿½åŠ ã™ã‚‹
 /// </summary>
-/// <param name="own">©g</param>
-/// <param name="send">Õ“Ë‚µ‚½‘Šè</param>
-/// <param name="kind">“–‚½‚è”»’è‚Ìí—Ş</param>
+/// <param name="own">è‡ªèº«</param>
+/// <param name="send">è¡çªã—ãŸç›¸æ‰‹</param>
+/// <param name="kind">å½“ãŸã‚Šåˆ¤å®šã®ç¨®é¡</param>
 void MyLib::Physics::AddOnCollideInfo(const std::shared_ptr<Collidable>& own, const std::shared_ptr<Collidable>& send, eOnCollideInfoKind kind)
 {
 	OnCollideInfoData addInfo;
@@ -486,14 +486,14 @@ void MyLib::Physics::AddOnCollideInfo(const std::shared_ptr<Collidable>& own, co
 }
 
 /// <summary>
-/// ÅI“I‚ÈˆÊ’u‚ğŒˆ’è‚·‚é
+/// æœ€çµ‚çš„ãªä½ç½®ã‚’æ±ºå®šã™ã‚‹
 /// </summary>
 void MyLib::Physics::FixPosition()
 {
 	for (auto& item : m_collidables)
 	{
 #if _DEBUG
-		//// •â³Œã‚ÌˆÊ’u‚ğƒfƒoƒbƒO•\¦
+		//// è£œæ­£å¾Œã®ä½ç½®ã‚’ãƒ‡ãƒãƒƒã‚°è¡¨ç¤º
 		//DebugDraw::DrawLine(item->rigidbody.GetPos(), item->nextPos, AfterFixInfoColor);
 
 		//if (item->colliderData->GetKind() == ColliderData::Kind::Circle2D)
@@ -502,11 +502,11 @@ void MyLib::Physics::FixPosition()
 		//	DebugDraw::DrawCircle(item->nextPos, itemCircleData->radius, AfterFixInfoColor);
 		//}
 #endif
-		// Pos‚ğXV‚·‚é‚Ì‚ÅAvelocity‚à‚»‚±‚ÉˆÚ“®‚·‚évelocity‚ÉC³
+		// Posã‚’æ›´æ–°ã™ã‚‹ã®ã§ã€velocityã‚‚ãã“ã«ç§»å‹•ã™ã‚‹velocityã«ä¿®æ­£
 		Vec3 toFixedPos = item->rigidbody.GetNextPos() - item->rigidbody.GetPos();
 		item->rigidbody.SetVelocity(toFixedPos);
 
-		// ˆÊ’uŠm’è
+		// ä½ç½®ç¢ºå®š
 		item->rigidbody.SetPos(item->rigidbody.GetNextPos());
 	}
 }
@@ -514,7 +514,7 @@ void MyLib::Physics::FixPosition()
 
 //MyLib::Vec3 MyLib::Physics::GetClosestPtOnSegment(Vec3 pt, Vec3 start, Vec3 end)
 //{
-//	// Å‹ßÚ“_‚ªstart‘¤ü•ªŠO—Ìˆæ‚Ìê‡
+//	// æœ€è¿‘æ¥ç‚¹ãŒstartå´ç·šåˆ†å¤–é ˜åŸŸã®å ´åˆ
 //	auto startToPt = pt - start;
 //	auto startToEnd = end - start;
 //	auto startToEndN = startToEnd.Normalize();
@@ -525,12 +525,12 @@ void MyLib::Physics::FixPosition()
 //	auto endToPt = pt - end;
 //	auto endToStart = start - end;
 //	auto endToStartN = endToStart.Normalize();
-//	// Å‹ßÚ“_‚ªend‘¤ü•ªŠO—Ìˆæ‚Ìê‡
+//	// æœ€è¿‘æ¥ç‚¹ãŒendå´ç·šåˆ†å¤–é ˜åŸŸã®å ´åˆ
 //	if (endToPt.Dot(endToStartN) < 0)
 //	{
 //		return end;
 //	}
-//	// ’†ŠÔ—Ìˆæ‚Ìê‡
+//	// ä¸­é–“é ˜åŸŸã®å ´åˆ
 //	else
 //	{
 //		float t = startToEndN.Dot(startToPt);
@@ -539,46 +539,46 @@ void MyLib::Physics::FixPosition()
 //}
 
 /// <summary>
-/// ƒ`ƒFƒbƒN‚µ‚½ƒ|ƒŠƒSƒ“‚ª•Çƒ|ƒŠƒSƒ“‚©°ƒ|ƒŠƒSƒ“‚©‚ğ”»’f‚µ•Û‘¶‚·‚é
+/// ãƒã‚§ãƒƒã‚¯ã—ãŸãƒãƒªã‚´ãƒ³ãŒå£ãƒãƒªã‚´ãƒ³ã‹åºŠãƒãƒªã‚´ãƒ³ã‹ã‚’åˆ¤æ–­ã—ä¿å­˜ã™ã‚‹
 /// </summary>
-/// <param name="col">ƒ`ƒFƒbƒN‚·‚éƒIƒuƒWƒFƒNƒg</param>
+/// <param name="col">ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</param>
 void MyLib::Physics::CheckWallAndFloor(std::shared_ptr<Collidable>& col)
 {
-	// •Çƒ|ƒŠƒSƒ“‚Æ°ƒ|ƒŠƒSƒ“‚Ì”‚ğ‰Šú‰»‚·‚é
+	// å£ãƒãƒªã‚´ãƒ³ã¨åºŠãƒãƒªã‚´ãƒ³ã®æ•°ã‚’åˆæœŸåŒ–ã™ã‚‹
 	m_wallNum = 0;
 	m_floorNum = 0;
 
-	// ŒŸo‚³‚ê‚½ƒ|ƒŠƒSƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+	// æ¤œå‡ºã•ã‚ŒãŸãƒãƒªã‚´ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 	for (int i = 0; i < m_hitDim.HitNum; i++)
 	{
-		// ƒ|ƒŠƒSƒ“‚Ì–@ü‚Ì‚x¬•ª‚ª•Çƒ|ƒŠƒSƒ“ƒ{[ƒ_[‚É’B‚Á‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚Å•Çƒ|ƒŠƒSƒ“‚©°ƒ|ƒŠƒSƒ“‚©‚ğ”»’f‚·‚é
+		// ãƒãƒªã‚´ãƒ³ã®æ³•ç·šã®ï¼¹æˆåˆ†ãŒå£ãƒãƒªã‚´ãƒ³ãƒœãƒ¼ãƒ€ãƒ¼ã«é”ã£ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹ã§å£ãƒãƒªã‚´ãƒ³ã‹åºŠãƒãƒªã‚´ãƒ³ã‹ã‚’åˆ¤æ–­ã™ã‚‹
 		if (m_hitDim.Dim[i].Normal.y < kWallPolyBorder && m_hitDim.Dim[i].Normal.y > -kWallPolyBorder)
 		{
-			// •Çƒ|ƒŠƒSƒ“‚Æ”»’f‚³‚ê‚½ê‡‚Å‚àAƒvƒŒƒCƒ„[‚Ì‚xÀ•W‚æ‚è‚‚¢ƒ|ƒŠƒSƒ“‚Ì‚İ“–‚½‚è”»’è‚ğs‚¤
+			// å£ãƒãƒªã‚´ãƒ³ã¨åˆ¤æ–­ã•ã‚ŒãŸå ´åˆã§ã‚‚ã€ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ï¼¹åº§æ¨™ã‚ˆã‚Šé«˜ã„ãƒãƒªã‚´ãƒ³ã®ã¿å½“ãŸã‚Šåˆ¤å®šã‚’è¡Œã†
 			if (m_hitDim.Dim[i].Position[0].y > col->rigidbody.GetPos().y + kWallPolyHeight ||
 				m_hitDim.Dim[i].Position[1].y > col->rigidbody.GetPos().y + kWallPolyHeight ||
 				m_hitDim.Dim[i].Position[2].y > col->rigidbody.GetPos().y + kWallPolyHeight)
 			{
-				// ƒ|ƒŠƒSƒ“‚Ì”‚ªŒÀŠE”‚É’B‚µ‚Ä‚¢‚È‚©‚Á‚½‚çƒ|ƒŠƒSƒ“‚ğ”z—ñ‚É’Ç‰Á
+				// ãƒãƒªã‚´ãƒ³ã®æ•°ãŒé™ç•Œæ•°ã«é”ã—ã¦ã„ãªã‹ã£ãŸã‚‰ãƒãƒªã‚´ãƒ³ã‚’é…åˆ—ã«è¿½åŠ 
 				if (m_wallNum < ColInfo::kMaxColHitPolyNum)
 				{
-					// ƒ|ƒŠƒSƒ“‚Ì\‘¢‘Ì‚ÌƒAƒhƒŒƒX‚ğ•Çƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚É•Û‘¶‚·‚é
+					// ãƒãƒªã‚´ãƒ³ã®æ§‹é€ ä½“ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å£ãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã«ä¿å­˜ã™ã‚‹
 					m_pWallPoly[m_wallNum] = &m_hitDim.Dim[i];
 
-					// •Çƒ|ƒŠƒSƒ“‚Ì”‚ğ‰ÁZ‚·‚é
+					// å£ãƒãƒªã‚´ãƒ³ã®æ•°ã‚’åŠ ç®—ã™ã‚‹
 					m_wallNum++;
 				}
 			}
 		}
 		else
 		{
-			// ƒ|ƒŠƒSƒ“‚Ì”‚ªŒÀŠE”‚É’B‚µ‚Ä‚¢‚È‚©‚Á‚½‚çƒ|ƒŠƒSƒ“‚ğ”z—ñ‚É’Ç‰Á
+			// ãƒãƒªã‚´ãƒ³ã®æ•°ãŒé™ç•Œæ•°ã«é”ã—ã¦ã„ãªã‹ã£ãŸã‚‰ãƒãƒªã‚´ãƒ³ã‚’é…åˆ—ã«è¿½åŠ 
 			if (m_floorNum < ColInfo::kMaxColHitPolyNum)
 			{
-				// ƒ|ƒŠƒSƒ“‚Ì\‘¢‘Ì‚ÌƒAƒhƒŒƒX‚ğ°ƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚É•Û‘¶‚·‚é
+				// ãƒãƒªã‚´ãƒ³ã®æ§‹é€ ä½“ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’åºŠãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã«ä¿å­˜ã™ã‚‹
 				m_pFloorPoly[m_floorNum] = &m_hitDim.Dim[i];
 
-				// °ƒ|ƒŠƒSƒ“‚Ì”‚ğ‰ÁZ‚·‚é
+				// åºŠãƒãƒªã‚´ãƒ³ã®æ•°ã‚’åŠ ç®—ã™ã‚‹
 				m_floorNum++;
 			}
 		}
@@ -586,9 +586,9 @@ void MyLib::Physics::CheckWallAndFloor(std::shared_ptr<Collidable>& col)
 }
 
 /// <summary>
-/// •Çƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’è‚ğƒ`ƒFƒbƒN‚µAˆÚ“®‚³‚¹‚é
+/// å£ãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’ãƒã‚§ãƒƒã‚¯ã—ã€ç§»å‹•ã•ã›ã‚‹
 /// </summary>
-/// <param name="col">ƒ`ƒFƒbƒN‚·‚éƒIƒuƒWƒFƒNƒg</param>
+/// <param name="col">ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</param>
 void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 {
 	float radius = 0.0f;
@@ -597,70 +597,70 @@ void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 		radius = dynamic_cast<MyLib::ColliderDataSphere*> (col.get())->m_radius;
 	}
 
-	// •Çƒ|ƒŠƒSƒ“‚ª‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	// å£ãƒãƒªã‚´ãƒ³ãŒãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_wallNum == 0) return;
 
-	// •Çƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’èˆ—
-	// •Ç‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚Í‰Šúó‘Ô‚Å‚Íu“–‚½‚Á‚Ä‚¢‚È‚¢v‚É‚µ‚Ä‚¨‚­
+	// å£ãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
+	// å£ã«å½“ãŸã£ãŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°ã¯åˆæœŸçŠ¶æ…‹ã§ã¯ã€Œå½“ãŸã£ã¦ã„ãªã„ã€ã«ã—ã¦ãŠã
 	m_isHitFlag = false;
 
-	// ˆÚ“®‚µ‚½‚©‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// ç§»å‹•ã—ãŸã‹ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if (col->rigidbody.GetDir().Size() != 0.0f)
 	{
-		// •Çƒ|ƒŠƒSƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		// å£ãƒãƒªã‚´ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		for (int i = 0; i < m_wallNum; i++)
 		{
-			// i”Ô–Ú‚Ì•Çƒ|ƒŠƒSƒ“‚ÌƒAƒhƒŒƒX‚ğ•Çƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚©‚çæ“¾
+			// iç•ªç›®ã®å£ãƒãƒªã‚´ãƒ³ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å£ãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã‹ã‚‰å–å¾—
 			m_pPoly = m_pWallPoly[i];
 
-			// ƒ|ƒŠƒSƒ“‚ÆƒvƒŒƒCƒ„[‚ª“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚çŸ‚ÌƒJƒEƒ“ƒg‚Ö
+			// ãƒãƒªã‚´ãƒ³ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå½“ãŸã£ã¦ã„ãªã‹ã£ãŸã‚‰æ¬¡ã®ã‚«ã‚¦ãƒ³ãƒˆã¸
 			if (!HitCheck_Sphere_Triangle(col->rigidbody.GetNextPosVECTOR(), radius,
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
 
-			// ‚±‚±‚É‚«‚½‚çƒ|ƒŠƒSƒ“‚ÆƒvƒŒƒCƒ„[‚ª“–‚½‚Á‚Ä‚¢‚é‚Æ‚¢‚¤‚±‚Æ‚È‚Ì‚ÅAƒ|ƒŠƒSƒ“‚É“–‚½‚Á‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+			// ã“ã“ã«ããŸã‚‰ãƒãƒªã‚´ãƒ³ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå½“ãŸã£ã¦ã„ã‚‹ã¨ã„ã†ã“ã¨ãªã®ã§ã€ãƒãƒªã‚´ãƒ³ã«å½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 			m_isHitFlag = true;
 
-			//•Ç‚ğl—¶‚µ‚½ˆÚ“®‚ğŠOÏ‚ğg‚Á‚ÄZo
+			//å£ã‚’è€ƒæ…®ã—ãŸç§»å‹•ã‚’å¤–ç©ã‚’ä½¿ã£ã¦ç®—å‡º
 			MyLib::Vec3 SlideVec;
 
 			VECTOR ret;
 			ret = VCross(col->rigidbody.GetVelocityVECTOR(), m_pPoly->Normal);
-			// is•ûŒüƒxƒNƒgƒ‹‚Æ•Çƒ|ƒŠƒSƒ“‚Ì–@üƒxƒNƒgƒ‹‚É‚’¼‚ÈƒxƒNƒgƒ‹‚ğZo
+			// é€²è¡Œæ–¹å‘ãƒ™ã‚¯ãƒˆãƒ«ã¨å£ãƒãƒªã‚´ãƒ³ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã«å‚ç›´ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡º
 			SlideVec = MyLib::Vec3(ret.x, ret.y, ret.z);
 
-			// Zo‚µ‚½ƒxƒNƒgƒ‹‚Æ•Çƒ|ƒŠƒSƒ“‚Ì–@üƒxƒNƒgƒ‹‚É‚’¼‚ÈƒxƒNƒgƒ‹‚ğZoA‚±‚ê‚ª
-			// Œ³‚ÌˆÚ“®¬•ª‚©‚ç•Ç•ûŒü‚ÌˆÚ“®¬•ª‚ğ”²‚¢‚½ƒxƒNƒgƒ‹
+			// ç®—å‡ºã—ãŸãƒ™ã‚¯ãƒˆãƒ«ã¨å£ãƒãƒªã‚´ãƒ³ã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«ã«å‚ç›´ãªãƒ™ã‚¯ãƒˆãƒ«ã‚’ç®—å‡ºã€ã“ã‚ŒãŒ
+			// å…ƒã®ç§»å‹•æˆåˆ†ã‹ã‚‰å£æ–¹å‘ã®ç§»å‹•æˆåˆ†ã‚’æŠœã„ãŸãƒ™ã‚¯ãƒˆãƒ«
 			ret = VCross(m_pPoly->Normal, SlideVec.ConvertToVECTOR());
 			SlideVec = MyLib::Vec3(ret.x, ret.y, ret.z);
 
-			// ‚»‚ê‚ğˆÚ“®‘O‚ÌÀ•W‚É‘«‚µ‚½‚à‚Ì‚ğV‚½‚ÈÀ•W‚Æ‚·‚é
+			// ãã‚Œã‚’ç§»å‹•å‰ã®åº§æ¨™ã«è¶³ã—ãŸã‚‚ã®ã‚’æ–°ãŸãªåº§æ¨™ã¨ã™ã‚‹
 			col->rigidbody.SetNextPos(col->rigidbody.GetPos() + SlideVec);
 
-			//•ÏX‚µ‚½‚½‚ßV‚½‚Éæ“¾
+			//å¤‰æ›´ã—ãŸãŸã‚æ–°ãŸã«å–å¾—
 			//tempNextPos = col->rigidbody.GetNextPos();
 			//nextPos = tempNextPos.ConvertToVECTOR();
 
-			// V‚½‚ÈˆÚ“®À•W‚Å•Çƒ|ƒŠƒSƒ“‚Æ“–‚½‚Á‚Ä‚¢‚È‚¢‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é
+			// æ–°ãŸãªç§»å‹•åº§æ¨™ã§å£ãƒãƒªã‚´ãƒ³ã¨å½“ãŸã£ã¦ã„ãªã„ã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹
 			bool isHitWallPolygon = false;
 			for (int j = 0; j < m_wallNum; j++)
 			{
-				// j”Ô–Ú‚Ì•Çƒ|ƒŠƒSƒ“‚ÌƒAƒhƒŒƒX‚ğ•Çƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚©‚çæ“¾
+				// jç•ªç›®ã®å£ãƒãƒªã‚´ãƒ³ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å£ãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã‹ã‚‰å–å¾—
 				m_pPoly = m_pWallPoly[j];
 
-				// “–‚½‚Á‚Ä‚¢‚½‚çƒ‹[ƒv‚©‚ç”²‚¯‚é
+				// å½“ãŸã£ã¦ã„ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‹ã‚‰æŠœã‘ã‚‹
 				if (HitCheck_Sphere_Triangle(col->rigidbody.GetNextPosVECTOR(), radius,
 					m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
 				{
-					//true‚É‚·‚é
+					//trueã«ã™ã‚‹
 					isHitWallPolygon = true;
 					break;
 				}
 			}
 
-			// ‘S‚Ä‚Ìƒ|ƒŠƒSƒ“‚Æ“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç‚±‚±‚Åƒ‹[ƒvI—¹
+			// å…¨ã¦ã®ãƒãƒªã‚´ãƒ³ã¨å½“ãŸã£ã¦ã„ãªã‹ã£ãŸã‚‰ã“ã“ã§ãƒ«ãƒ¼ãƒ—çµ‚äº†
 			if (!isHitWallPolygon)
 			{
-				//ƒqƒbƒgƒtƒ‰ƒO‚ğ“|‚·
+				//ãƒ’ãƒƒãƒˆãƒ•ãƒ©ã‚°ã‚’å€’ã™
 				m_isHitFlag = false;
 				break;
 			}
@@ -668,15 +668,15 @@ void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 	}
 	else
 	{
-		// ˆÚ“®‚µ‚Ä‚¢‚È‚¢ê‡‚Ìˆ—
+		// ç§»å‹•ã—ã¦ã„ãªã„å ´åˆã®å‡¦ç†
 
-		// •Çƒ|ƒŠƒSƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		// å£ãƒãƒªã‚´ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		for (int i = 0; i < m_wallNum; i++)
 		{
-			// i”Ô–Ú‚Ì•Çƒ|ƒŠƒSƒ“‚ÌƒAƒhƒŒƒX‚ğ•Çƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚©‚çæ“¾
+			// iç•ªç›®ã®å£ãƒãƒªã‚´ãƒ³ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å£ãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã‹ã‚‰å–å¾—
 			m_pPoly = m_pWallPoly[i];
 
-			// ƒ|ƒŠƒSƒ“‚É“–‚½‚Á‚Ä‚¢‚½‚ç“–‚½‚Á‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚½ã‚Åƒ‹[ƒv‚©‚ç”²‚¯‚é
+			// ãƒãƒªã‚´ãƒ³ã«å½“ãŸã£ã¦ã„ãŸã‚‰å½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ãŸä¸Šã§ãƒ«ãƒ¼ãƒ—ã‹ã‚‰æŠœã‘ã‚‹
 			if (HitCheck_Sphere_Triangle(col->rigidbody.GetNextPosVECTOR(), radius,
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
 			{
@@ -686,7 +686,7 @@ void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 		}
 	}
 
-	// •Ç‚É“–‚½‚Á‚Ä‚¢‚½‚ç•Ç‚©‚ç‰Ÿ‚µo‚·ˆ—‚ğs‚¤
+	// å£ã«å½“ãŸã£ã¦ã„ãŸã‚‰å£ã‹ã‚‰æŠ¼ã—å‡ºã™å‡¦ç†ã‚’è¡Œã†
 	if (m_isHitFlag)
 	{
 		FixPositionWithWallInternal(col);
@@ -694,9 +694,9 @@ void MyLib::Physics::FixPositionWithWall(std::shared_ptr<Collidable>& col)
 }
 
 /// <summary>
-/// •Ç‚Ì’†‚©‚ç‰Ÿ‚µo‚·
+/// å£ã®ä¸­ã‹ã‚‰æŠ¼ã—å‡ºã™
 /// </summary>
-/// <param name="col">ƒ`ƒFƒbƒN‚·‚éƒIƒuƒWƒFƒNƒg</param>
+/// <param name="col">ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</param>
 void MyLib::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& col)
 {
 	float radius = 0.0f;
@@ -705,18 +705,18 @@ void MyLib::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& co
 		radius = dynamic_cast<MyLib::ColliderDataSphere*> (col.get())->m_radius;
 	}
 
-	// •Ç‚©‚ç‚Ì‰Ÿ‚µo‚µˆ—‚ğ‚İ‚éÅ‘å”‚¾‚¯ŒJ‚è•Ô‚µ
+	// å£ã‹ã‚‰ã®æŠ¼ã—å‡ºã—å‡¦ç†ã‚’è©¦ã¿ã‚‹æœ€å¤§æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 	for (int i = 0; i < ColInfo::kMaxColHitTryNum; i++)
 	{
-		// “–‚½‚é‰Â”\«‚Ì‚ ‚é•Çƒ|ƒŠƒSƒ“‚ğ‘S‚ÄŒ©‚é
+		// å½“ãŸã‚‹å¯èƒ½æ€§ã®ã‚ã‚‹å£ãƒãƒªã‚´ãƒ³ã‚’å…¨ã¦è¦‹ã‚‹
 		bool isHitWall = false;
-		// •Çƒ|ƒŠƒSƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+		// å£ãƒãƒªã‚´ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 		for (int j = 0; j < m_wallNum; j++)
 		{
-			// i”Ô–Ú‚Ì•Çƒ|ƒŠƒSƒ“‚ÌƒAƒhƒŒƒX‚ğ•Çƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚©‚çæ“¾
+			// iç•ªç›®ã®å£ãƒãƒªã‚´ãƒ³ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å£ãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã‹ã‚‰å–å¾—
 			m_pPoly = m_pWallPoly[j];
 
-			// ƒ|ƒŠƒSƒ“‚ÆƒvƒŒƒCƒ„[‚ª“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚çŸ‚ÌƒJƒEƒ“ƒg‚Ö
+			// ãƒãƒªã‚´ãƒ³ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå½“ãŸã£ã¦ã„ãªã‹ã£ãŸã‚‰æ¬¡ã®ã‚«ã‚¦ãƒ³ãƒˆã¸
 			if (!HitCheck_Sphere_Triangle(col->rigidbody.GetNextPosVECTOR(), radius,
 				m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
 
@@ -725,13 +725,13 @@ void MyLib::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& co
 			MyLib::Vec3 set;
 			set = MyLib::Vec3(ret.x, ret.y, ret.z);
 
-			// “–‚½‚Á‚Ä‚¢‚½‚ç‹K’è‹——£•ªƒvƒŒƒCƒ„[‚ğ•Ç‚Ì–@ü•ûŒü‚ÉˆÚ“®‚³‚¹‚é
+			// å½“ãŸã£ã¦ã„ãŸã‚‰è¦å®šè·é›¢åˆ†ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å£ã®æ³•ç·šæ–¹å‘ã«ç§»å‹•ã•ã›ã‚‹
 			col->rigidbody.SetNextPos(set);
 
-			// ˆÚ“®‚µ‚½ã‚Å•Çƒ|ƒŠƒSƒ“‚ÆÚG‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğ”»’è
+			// ç§»å‹•ã—ãŸä¸Šã§å£ãƒãƒªã‚´ãƒ³ã¨æ¥è§¦ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®š
 			for (int k = 0; k < m_wallNum; k++)
 			{
-				// “–‚½‚Á‚Ä‚¢‚½‚çƒ‹[ƒv‚ğ”²‚¯‚é
+				// å½“ãŸã£ã¦ã„ãŸã‚‰ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 				m_pPoly = m_pWallPoly[k];
 				if (HitCheck_Sphere_Triangle(col->rigidbody.GetNextPosVECTOR(), radius,
 					m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]))
@@ -741,22 +741,22 @@ void MyLib::Physics::FixPositionWithWallInternal(std::shared_ptr<Collidable>& co
 				}
 			}
 
-			// ‘S‚Ä‚Ìƒ|ƒŠƒSƒ“‚Æ“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç‚±‚±‚Åƒ‹[ƒvI—¹
+			// å…¨ã¦ã®ãƒãƒªã‚´ãƒ³ã¨å½“ãŸã£ã¦ã„ãªã‹ã£ãŸã‚‰ã“ã“ã§ãƒ«ãƒ¼ãƒ—çµ‚äº†
 			if (!isHitWall) break;
 		}
 
-		//ƒ‹[ƒvI—¹
+		//ãƒ«ãƒ¼ãƒ—çµ‚äº†
 		if (!isHitWall) break;
 	}
 }
 
 /// <summary>
-/// °ƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’è‚ğƒ`ƒFƒbƒN‚µAˆÚ“®‚³‚¹‚é
+/// åºŠãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šã‚’ãƒã‚§ãƒƒã‚¯ã—ã€ç§»å‹•ã•ã›ã‚‹
 /// </summary>
-/// <param name="col">ƒ`ƒFƒbƒN‚·‚éƒIƒuƒWƒFƒNƒg</param>
+/// <param name="col">ãƒã‚§ãƒƒã‚¯ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</param>
 void MyLib::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& col)
 {
-	//°ƒ|ƒŠƒSƒ“‚ª‚È‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+	//åºŠãƒãƒªã‚´ãƒ³ãŒãªã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 	if (m_floorNum == 0) return;
 
 	float radius = 0.0f;
@@ -765,66 +765,66 @@ void MyLib::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& col)
 		radius = dynamic_cast<MyLib::ColliderDataSphere*> (col.get())->m_radius;
 	}
 
-	// °ƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’èˆ—
-	//‚ ‚½‚Á‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‰Šú‰»
+	// åºŠãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®šå‡¦ç†
+	//ã‚ãŸã£ãŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°åˆæœŸåŒ–
 	bool IsHitFlag = false;
 
-	////ƒWƒƒƒ“ƒv’†‚©‚Âã¸’†‚Ìê‡
+	////ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã‹ã¤ä¸Šæ˜‡ä¸­ã®å ´åˆ
 	//if (dynamic_cast<CharacterBase*>(this)->GetJumpState() && dynamic_cast<CharacterBase*>(this)->GetJumpPower() >= 0.0f)
 	//{
-	//	// “Vˆä‚É“ª‚ğ‚Ô‚Â‚¯‚éˆ—‚ğs‚¤
-	//	// ˆê”Ô’á‚¢“Vˆä‚É‚Ô‚Â‚¯‚éˆ×‚Ì”»’è—p•Ï”‚ğ‰Šú‰»
+	//	// å¤©äº•ã«é ­ã‚’ã¶ã¤ã‘ã‚‹å‡¦ç†ã‚’è¡Œã†
+	//	// ä¸€ç•ªä½ã„å¤©äº•ã«ã¶ã¤ã‘ã‚‹ç‚ºã®åˆ¤å®šç”¨å¤‰æ•°ã‚’åˆæœŸåŒ–
 	//	float PolyMinPosY = 0.0f;
 
-	//	// °ƒ|ƒŠƒSƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+	//	// åºŠãƒãƒªã‚´ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 	//	for (int i = 0; i < m_floorNum; i++)
 	//	{
-	//		// i”Ô–Ú‚Ì°ƒ|ƒŠƒSƒ“‚ÌƒAƒhƒŒƒX‚ğ°ƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚©‚çæ“¾
+	//		// iç•ªç›®ã®åºŠãƒãƒªã‚´ãƒ³ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’åºŠãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã‹ã‚‰å–å¾—
 	//		m_pPoly = m_pFloorPoly[i];
 
-	//		// ‘«æ‚©‚ç“ª‚Ì‚‚³‚Ü‚Å‚ÌŠÔ‚Åƒ|ƒŠƒSƒ“‚ÆÚG‚µ‚Ä‚¢‚é‚©‚Ç‚¤‚©‚ğ”»’è
+	//		// è¶³å…ˆã‹ã‚‰é ­ã®é«˜ã•ã¾ã§ã®é–“ã§ãƒãƒªã‚´ãƒ³ã¨æ¥è§¦ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®š
 	//		m_lineRes = HitCheck_Line_Triangle(m_nextPos, VAdd(m_nextPos, VGet(0.0f, kHeadHeight, 0.0f)),
 	//			m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2]);
 
-	//		// ÚG‚µ‚Ä‚¢‚È‚©‚Á‚½‚ç‰½‚à‚µ‚È‚¢
+	//		// æ¥è§¦ã—ã¦ã„ãªã‹ã£ãŸã‚‰ä½•ã‚‚ã—ãªã„
 	//		if (!m_lineRes.HitFlag) continue;
 
-	//		// “Vˆäƒ|ƒŠƒSƒ“‚ª¡‚Ü‚ÅŒŸo‚³‚ê‚½ƒ|ƒŠƒSƒ“‚æ‚è’á‚¢ê‡ˆ—‚ğ’Ê‚·
+	//		// å¤©äº•ãƒãƒªã‚´ãƒ³ãŒä»Šã¾ã§æ¤œå‡ºã•ã‚ŒãŸãƒãƒªã‚´ãƒ³ã‚ˆã‚Šä½ã„å ´åˆå‡¦ç†ã‚’é€šã™
 	//		if (PolyMinPosY < m_lineRes.Position.y)
 	//		{
-	//			// ƒ|ƒŠƒSƒ“‚É“–‚½‚Á‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+	//			// ãƒãƒªã‚´ãƒ³ã«å½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 	//			IsHitFlag = true;
 
-	//			// ÚG‚µ‚½‚xÀ•W‚ğ•Û‘¶‚·‚é
+	//			// æ¥è§¦ã—ãŸï¼¹åº§æ¨™ã‚’ä¿å­˜ã™ã‚‹
 	//			PolyMinPosY = m_lineRes.Position.y;
 	//		}
 	//	}
 
-	//	// ÚG‚µ‚½ƒ|ƒŠƒSƒ“‚ª‚ ‚ê‚Î
+	//	// æ¥è§¦ã—ãŸãƒãƒªã‚´ãƒ³ãŒã‚ã‚Œã°
 	//	if (IsHitFlag)
 	//	{
-	//		// ÚG‚µ‚½ê‡‚ÍƒvƒŒƒCƒ„[‚Ì‚xÀ•W‚ğÚGÀ•W‚ğŒ³‚ÉXV
+	//		// æ¥è§¦ã—ãŸå ´åˆã¯ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ï¼¹åº§æ¨™ã‚’æ¥è§¦åº§æ¨™ã‚’å…ƒã«æ›´æ–°
 	//		m_nextPos.y = PolyMinPosY - kHeadHeight;
 
-	//		//’n–Ê‚É“–‚½‚Á‚½‚Ìˆ—‚ğs‚¤
+	//		//åœ°é¢ã«å½“ãŸã£ãŸæ™‚ã®å‡¦ç†ã‚’è¡Œã†
 	//		dynamic_cast<CharacterBase*>(this)->HitGroundUpdate();
 	//	}
 	//}
 
-	// °ƒ|ƒŠƒSƒ“‚Æ‚Ì“–‚½‚è”»’è
-	//ˆê”Ô‚‚¢°ƒ|ƒŠƒSƒ“‚É‚Ô‚Â‚¯‚éˆ×‚Ì”»’è—p•Ï”‚ğ‰Šú‰»
+	// åºŠãƒãƒªã‚´ãƒ³ã¨ã®å½“ãŸã‚Šåˆ¤å®š
+	//ä¸€ç•ªé«˜ã„åºŠãƒãƒªã‚´ãƒ³ã«ã¶ã¤ã‘ã‚‹ç‚ºã®åˆ¤å®šç”¨å¤‰æ•°ã‚’åˆæœŸåŒ–
 	float PolyMaxPosY = 0.0f;
 
-	// °ƒ|ƒŠƒSƒ“‚É“–‚½‚Á‚½‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO‚ğ“|‚µ‚Ä‚¨‚­
+	// åºŠãƒãƒªã‚´ãƒ³ã«å½“ãŸã£ãŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°ã‚’å€’ã—ã¦ãŠã
 	m_isHitFlag = false;
 
-	// °ƒ|ƒŠƒSƒ“‚Ì”‚¾‚¯ŒJ‚è•Ô‚µ
+	// åºŠãƒãƒªã‚´ãƒ³ã®æ•°ã ã‘ç¹°ã‚Šè¿”ã—
 	for (int i = 0; i < m_floorNum; i++)
 	{
-		// i”Ô–Ú‚Ì°ƒ|ƒŠƒSƒ“‚ÌƒAƒhƒŒƒX‚ğ°ƒ|ƒŠƒSƒ“ƒ|ƒCƒ“ƒ^”z—ñ‚©‚çæ“¾
+		// iç•ªç›®ã®åºŠãƒãƒªã‚´ãƒ³ã®ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’åºŠãƒãƒªã‚´ãƒ³ãƒã‚¤ãƒ³ã‚¿é…åˆ—ã‹ã‚‰å–å¾—
 		m_pPoly = m_pFloorPoly[i];
 
-		// ƒ|ƒŠƒSƒ“‚ÆƒvƒŒƒCƒ„[‚ª“–‚½‚Á‚Ä‚¢‚È‚©‚Á‚½‚çŸ‚ÌƒJƒEƒ“ƒg‚Ö
+		// ãƒãƒªã‚´ãƒ³ã¨ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒå½“ãŸã£ã¦ã„ãªã‹ã£ãŸã‚‰æ¬¡ã®ã‚«ã‚¦ãƒ³ãƒˆã¸
 		if (!HitCheck_Sphere_Triangle(col->rigidbody.GetNextPosVECTOR(), radius,
 			m_pPoly->Position[0], m_pPoly->Position[1], m_pPoly->Position[2])) continue;
 
@@ -840,20 +840,20 @@ void MyLib::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& col)
 			mostHeightY = m_pPoly->Position[2].y;
 		}
 
-		// Šù‚É“–‚½‚Á‚½ƒ|ƒŠƒSƒ“‚ª‚ ‚èAŠ‚Â¡‚Ü‚ÅŒŸo‚µ‚½°ƒ|ƒŠƒSƒ“‚æ‚è’á‚¢ê‡‚Í‰½‚à‚µ‚È‚¢
+		// æ—¢ã«å½“ãŸã£ãŸãƒãƒªã‚´ãƒ³ãŒã‚ã‚Šã€ä¸”ã¤ä»Šã¾ã§æ¤œå‡ºã—ãŸåºŠãƒãƒªã‚´ãƒ³ã‚ˆã‚Šä½ã„å ´åˆã¯ä½•ã‚‚ã—ãªã„
 		if (m_isHitFlag && PolyMaxPosY > mostHeightY) continue;
 
-		// ƒ|ƒŠƒSƒ“‚É“–‚½‚Á‚½ƒtƒ‰ƒO‚ğ—§‚Ä‚é
+		// ãƒãƒªã‚´ãƒ³ã«å½“ãŸã£ãŸãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
 		m_isHitFlag = true;
 
-		// ÚG‚µ‚½‚xÀ•W‚ğ•Û‘¶‚·‚é
+		// æ¥è§¦ã—ãŸï¼¹åº§æ¨™ã‚’ä¿å­˜ã™ã‚‹
 		PolyMaxPosY = mostHeightY;
 	}
 
-	// °ƒ|ƒŠƒSƒ“‚Ì“–‚½‚è”»’è‚©‚ÂAƒWƒƒƒ“ƒv—Í‚ª0‚æ‚è‚à¬‚³‚¢(‰º~’†‚Ìê‡)‚Ç‚¤‚©‚Åˆ—‚ğ•ªŠò
+	// åºŠãƒãƒªã‚´ãƒ³ã®å½“ãŸã‚Šåˆ¤å®šã‹ã¤ã€ã‚¸ãƒ£ãƒ³ãƒ—åŠ›ãŒ0ã‚ˆã‚Šã‚‚å°ã•ã„(ä¸‹é™ä¸­ã®å ´åˆ)ã©ã†ã‹ã§å‡¦ç†ã‚’åˆ†å²
 	if (m_isHitFlag)
 	{
-		// ÚG‚µ‚½ƒ|ƒŠƒSƒ“‚Åˆê”Ô‚‚¢‚xÀ•W‚ğƒvƒŒƒCƒ„[‚Ì‚xÀ•W‚É‚·‚é
+		// æ¥è§¦ã—ãŸãƒãƒªã‚´ãƒ³ã§ä¸€ç•ªé«˜ã„ï¼¹åº§æ¨™ã‚’ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ï¼¹åº§æ¨™ã«ã™ã‚‹
 		auto set = col->rigidbody.GetNextPos();
 		set.y = PolyMaxPosY + radius;
 		col->rigidbody.SetNextPos(set);
@@ -861,8 +861,8 @@ void MyLib::Physics::FixNowPositionWithFloor(std::shared_ptr<Collidable>& col)
 		//m_nextPos.y = PolyMaxPosY;
 		//dynamic_cast<CharacterBase*>(this)->HitGroundUpdate();
 
-		////ƒWƒƒƒ“ƒv—Í‚ª0‚æ‚è‚à¬‚³‚¢(‰º~’†)‚©‚ÂAƒWƒƒƒ“ƒv’†‚Å‚ ‚Á‚½ê‡
-		////ƒWƒƒƒ“ƒvˆ—‚ğI—¹‚·‚é
+		////ã‚¸ãƒ£ãƒ³ãƒ—åŠ›ãŒ0ã‚ˆã‚Šã‚‚å°ã•ã„(ä¸‹é™ä¸­)ã‹ã¤ã€ã‚¸ãƒ£ãƒ³ãƒ—ä¸­ã§ã‚ã£ãŸå ´åˆ
+		////ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†ã‚’çµ‚äº†ã™ã‚‹
 		//if (dynamic_cast<CharacterBase*>(this)->GetJumpPower() <= 0.0f &&
 		//	dynamic_cast<CharacterBase*>(this)->GetJumpState())
 		//{

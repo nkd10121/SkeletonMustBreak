@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <map>
 #include <memory>
 #include <vector>
@@ -9,53 +9,56 @@
 class TrapBase;
 class Input;
 
+/// <summary>
+/// ãƒˆãƒ©ãƒƒãƒ—é–¢ä¿‚ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
+/// </summary>
 class TrapManager
 {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	TrapManager(int trapNum,std::list<MyLib::Vec3>& trapPoss);
-	//ƒfƒXƒgƒ‰ƒNƒ^
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	~TrapManager();
 
-	//‰Šú‰»
+	//åˆæœŸåŒ–
 	void Init();
-	//XV
+	//æ›´æ–°
 	void Update(std::shared_ptr<Input>& input,int slotNum,MyLib::Vec3 playerPos, MyLib::Vec3 playerVec,bool isPlayerSurvival,int* trapPoint,int nowPhase, std::shared_ptr<MyLib::Physics> physics);
-	//•`‰æ
+	//æç”»
 	void Draw();
 
-	//ƒgƒ‰ƒbƒv‚Ì‚Ç‚±‚Éİ’u‚·‚é‚©Œ©‚é‚½‚ß‚Ì•`‰æ
+	//ãƒˆãƒ©ãƒƒãƒ—ã®ã©ã“ã«è¨­ç½®ã™ã‚‹ã‹è¦‹ã‚‹ãŸã‚ã®æç”»
 	void PreviewDraw();
 
 private:
-	//ƒgƒ‰ƒbƒv‚Ì¶¬
+	//ãƒˆãƒ©ãƒƒãƒ—ã®ç”Ÿæˆ
 	bool CreateTrap(int slotNum, std::shared_ptr<MyLib::Physics> physics, int* trapPoint);
 
 private:
-	//ƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹‚ğŠi”[‚·‚é
+	//ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«ã‚’æ ¼ç´ã™ã‚‹
 	std::vector<int> m_modelHandles;
 
-	//À•W‚Æã©‚ğŠi”[‚·‚é
+	//åº§æ¨™ã¨ç½ ã‚’æ ¼ç´ã™ã‚‹
 	std::list<std::shared_ptr<TrapBase>> m_traps;
 
-	//ã©İ’u‰Â”\À•W‚ğŠi”[‚·‚é
+	//ç½ è¨­ç½®å¯èƒ½åº§æ¨™ã‚’æ ¼ç´ã™ã‚‹
 	std::list<MyLib::Vec3> m_trapPositions;
 
-	//İ’u—\’èÀ•W‚ğŠi”[
+	//è¨­ç½®äºˆå®šåº§æ¨™ã‚’æ ¼ç´
 	MyLib::Vec3 m_previewPos;
 
-	//Œ»İ‚ÌƒXƒƒbƒgƒCƒ“ƒfƒbƒNƒX
+	//ç¾åœ¨ã®ã‚¹ãƒ­ãƒƒãƒˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 	int m_nowSlotIdx;
 
-	//‚·‚Å‚Éã©‚ª’u‚©‚ê‚Ä‚¢‚é‚©‚Ç‚¤‚©
+	//ã™ã§ã«ç½ ãŒç½®ã‹ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹
 	bool m_isAlreadyPlaced;
 
-	//ã©‚ğ“_–Å‚³‚¹‚é‚½‚ß‚ÌƒAƒ“ƒOƒ‹
+	//ç½ ã‚’ç‚¹æ»…ã•ã›ã‚‹ãŸã‚ã®ã‚¢ãƒ³ã‚°ãƒ«
 	float m_angle;
-	//ã©‚Ì“§–¾“x
+	//ç½ ã®é€æ˜åº¦
 	float m_transparency;	
 
-	//ZL‚ğ‰Ÿ‚µ‚Ä‚¢‚éŠÔ
+	//ZLã‚’æŠ¼ã—ã¦ã„ã‚‹æ™‚é–“
 	int m_pushZLCount;
 
 };

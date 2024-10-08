@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include <DxLib.h>
 #include "Vec3.h"
 
@@ -6,62 +6,62 @@ namespace MyLib
 {
 
 /// <summary>
-/// •¨—AÕ“Ë”»’è‚É•K—v‚Èƒf[ƒ^‚Ì‰ò
+/// ç‰©ç†ã€è¡çªåˆ¤å®šã«å¿…è¦ãªãƒ‡ãƒ¼ã‚¿ã®å¡Š
 /// </summary>
 class Rigidbody
 {
 public:
-	//ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	Rigidbody();
-	// ‰Šú‰»
+	// åˆæœŸåŒ–
 	void Init(bool m_useGravity = false);	
 
-	// velocity‚É—Í‚ğ‰Á‚¦‚é
+	// velocityã«åŠ›ã‚’åŠ ãˆã‚‹
 	void AddForce(const Vec3& force);
 
 	/*Getter*/
-	//Œ»İÀ•W‚ğæ“¾
+	//ç¾åœ¨åº§æ¨™ã‚’å–å¾—
 	const Vec3& GetPos() const { return m_pos; }
-	//ˆÚ“®—\’èÀ•W
+	//ç§»å‹•äºˆå®šåº§æ¨™
 	const Vec3& GetNextPos() const { return m_nextPos; }
-	//Œü‚«‚ğæ“¾
+	//å‘ãã‚’å–å¾—
 	const Vec3& GetDir() const { return m_dir; }
-	//ˆÚ“®‘¬“x‚ğæ“¾
+	//ç§»å‹•é€Ÿåº¦ã‚’å–å¾—
 	const Vec3& GetVelocity() const { return m_velocity; }
 
-	//Œ»İÀ•W‚ğæ“¾
+	//ç¾åœ¨åº§æ¨™ã‚’å–å¾—
 	const VECTOR GetPosVECTOR() { return m_pos.ConvertToVECTOR(); }
-	//ˆÚ“®—\’èÀ•W‚ğæ“¾
+	//ç§»å‹•äºˆå®šåº§æ¨™ã‚’å–å¾—
 	const VECTOR GetNextPosVECTOR() { return m_nextPos.ConvertToVECTOR(); }
-	//Œü‚«‚ğæ“¾
+	//å‘ãã‚’å–å¾—
 	const VECTOR GetDirVECTOR() { return m_dir.ConvertToVECTOR(); }
-	//ˆÚ“®‘¬“x‚ğæ“¾
+	//ç§»å‹•é€Ÿåº¦ã‚’å–å¾—
 	const VECTOR GetVelocityVECTOR(){ return m_velocity.ConvertToVECTOR(); }
 
-	//d—Í‚ğ—^‚¦‚é‚©‚Ç‚¤‚©æ“¾
+	//é‡åŠ›ã‚’ä¸ãˆã‚‹ã‹ã©ã†ã‹å–å¾—
 	bool GetUseGravity() const { return m_useGravity; }		
 
 	/*Setter*/
-	//Œ»İÀ•W‚ğİ’è
+	//ç¾åœ¨åº§æ¨™ã‚’è¨­å®š
 	void SetPos(const Vec3& set) { m_pos = set; }
-	//ˆÚ“®—\’èÀ•W‚ğİ’è
+	//ç§»å‹•äºˆå®šåº§æ¨™ã‚’è¨­å®š
 	void SetNextPos(const Vec3& set) { m_nextPos = set; }
-	//Œü‚«‚ğİ’è
+	//å‘ãã‚’è¨­å®š
 	void SetVelocity(Vec3 set,float mul = 1.0f);
-	//ˆÚ“®‘¬“x‚ğİ’è
+	//ç§»å‹•é€Ÿåº¦ã‚’è¨­å®š
 	void SetUseGravity(bool set) { m_useGravity = set; }
 
 private:
-	//Œ»İÀ•W
+	//ç¾åœ¨åº§æ¨™
 	Vec3 m_pos;
-	//ˆÚ“®—\’èÀ•W
+	//ç§»å‹•äºˆå®šåº§æ¨™
 	Vec3 m_nextPos;
 
-	//Œü‚«
+	//å‘ã
 	Vec3 m_dir;
-	//ˆÚ“®‘¬“x
+	//ç§»å‹•é€Ÿåº¦
 	Vec3 m_velocity;
-	//d—Í‚ğ—^‚¦‚é‚©‚Ç‚¤‚©
+	//é‡åŠ›ã‚’ä¸ãˆã‚‹ã‹ã©ã†ã‹
 	bool m_useGravity;
 };
 }

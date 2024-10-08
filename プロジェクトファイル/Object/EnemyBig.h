@@ -1,95 +1,22 @@
-#pragma once
+ï»¿#pragma once
 #include "EnemyBase.h"
 
-class WeaponBase;
-
+/// <summary>
+/// å¤§ãã„æ•µ
+/// </summary>
 class EnemyBig : public EnemyBase
 {
 public:
-	EnemyBig(int modelH, int weponH);
+	//ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	EnemyBig();
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 	virtual ~EnemyBig();
 
+	//åˆæœŸåŒ–
 	void Init(std::shared_ptr<MyLib::Physics>physics, std::vector<MyLib::Vec3> route) override;
-	void Finalize(std::shared_ptr<MyLib::Physics> physics) override;
+	//æ›´æ–°
 	void Update(MyLib::Vec3 playerPos, bool isChase);
+	//æç”»
 	void Draw();
-
-
-
-private:
-
-	void SetModelPos();
-
-	/// <summary>
-	/// ƒAƒjƒ[ƒVƒ‡ƒ“‚ÌXVˆ—
-	/// </summary>
-	/// <param name="attachNo">is‚³‚¹‚½‚¢ƒAƒjƒ[ƒVƒ‡ƒ“”Ô†</param>
-	/// <returns>ƒ‹[ƒv‚µ‚½‚©‚Ç‚¤‚©</returns>
-	bool UpdateAnim(int attachNo, float startTime = 0.0f);
-
-	/// <summary>
-	///	ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì•ÏX
-	/// </summary>
-	/// <param name="animIndex">•ÏXŒã‚ÌƒAƒjƒ[ƒVƒ‡ƒ“”Ô†</param>
-	void ChangeAnim(int animIndex, float animSpeed = 0.5f);
-private:
-	std::shared_ptr<MyLib::Physics> m_pPhisics;
-
-	const enum eAnimIdx : int
-	{
-		Idle = 42,
-		Run = 54,
-		Attack = 4,
-		Hit = 39,
-		DeathA = 25,
-		DeathB = 27,
-		DeathC = 30,
-	};
-
-	eAnimIdx m_nowAnimIdx;
-
-	int m_weponHandle;
-
-	int m_tempFrameCount;	//¶¬‚Æ”jŠü‚ğŠÇ—‚·‚é‚½‚ß‚Ìˆê“I•Ï”(—p‚ªÏ‚ñ‚¾‚çÁ‚µ‚Ä‚æ‚µ)
-
-	int m_weponAttachFrameNum;
-
-	std::shared_ptr<WeaponBase> m_weapon;
-
-	int m_attackWaitFrame;
-
-	int m_knockCount;
-
-
-
-
-	/*ƒAƒjƒ[ƒVƒ‡ƒ“ŠÖŒW*/
-	int m_currentAnimNo;	//Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“
-	int m_prevAnimNo;		//•ÏX‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“
-	float m_animBlendRate;	//ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‡¬Š„‡
-	//0.0f:prev‚ªÄ¶
-	//1.0f:currnt‚ªÄ¶
-
-	float m_animSpeed;
-	bool m_isAnimationFinish;
-
-	std::vector<MyLib::Vec3> m_route;
-	int m_routeNum;
-	MyLib::Vec3 m_destinationPos;
-
-	bool m_isChasing;
-
-	//ó‘Ô‘JˆÚ‚Ì‚½‚ß‚Ìƒƒ“ƒoŠÖ”
-	using UpdateFunc_t = void (EnemyBig::*)(MyLib::Vec3 playerPos, bool isChase);
-	UpdateFunc_t m_updateFunc;
-
-	//UŒ‚
-	void AttackUpdate(MyLib::Vec3 playerPos, bool isChase);
-	//•à‚«
-	void WalkUpdate(MyLib::Vec3 playerPos, bool isChase);
-	//UŒ‚ƒqƒbƒg
-	void HitUpdate(MyLib::Vec3 playerPos, bool isChase);
-
-	void DeathUpdate(MyLib::Vec3 playerPos, bool isChase);
 };
 

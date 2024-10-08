@@ -1,8 +1,9 @@
-#include "Shot.h"
+ï»¿#include "Shot.h"
 #include "DxLib.h"
 #include "MapDataLoad.h"
 #include <string>
 
+#include "ModelManager.h"
 namespace
 {
 	constexpr float kRadius = 1.0f;
@@ -25,15 +26,15 @@ Shot::~Shot()
 	MV1DeleteModel(m_arrowModel);
 }
 
-void Shot::Init(std::shared_ptr<MyLib::Physics> physics, int model)
+void Shot::Init(std::shared_ptr<MyLib::Physics> physics)
 {
 	Collidable::Init(physics);
 
-	// •¨—‹““®‚Ì‰Šú‰»
+	// ç‰©ç†æŒ™å‹•ã®åˆæœŸåŒ–
 	//rigidbody.Init(true);
 	rigidbody.Init();
 
-	m_arrowModel = model;
+	m_arrowModel = ModelManager::GetInstance().GetModelHandle("data/model/arrow.mv1");
 	MV1SetScale(m_arrowModel, VECTOR(8.0f, 8.0f, 8.0f));
 
 	m_isExist = true;
@@ -52,7 +53,7 @@ void Shot::Set(const MyLib::Vec3& pos, const MyLib::Vec3& m_dir, const int& atk)
 	m_moveDir = m_dir;
 	m_atk = atk;
 
-	//‰ñ“]‚³‚¹‚é•ûŒü‚ğŒvZ‚·‚é
+	//å›è»¢ã•ã›ã‚‹æ–¹å‘ã‚’è¨ˆç®—ã™ã‚‹
 	m_angle = -atan2f(m_moveDir.z, m_moveDir.x) - DX_PI_F / 2;
 	m_rot = MyLib::Vec3(0.0f, m_angle, 0.0f);
 
@@ -61,7 +62,7 @@ void Shot::Set(const MyLib::Vec3& pos, const MyLib::Vec3& m_dir, const int& atk)
 
 void Shot::Update()
 {
-	//‘¶İ‚µ‚Ä‚¢‚È‚¢ó‘Ô‚È‚ç‰½‚à‚³‚¹‚È‚¢
+	//å­˜åœ¨ã—ã¦ã„ãªã„çŠ¶æ…‹ãªã‚‰ä½•ã‚‚ã•ã›ãªã„
 	if (!m_isExist)return;
 
 	m_frameCount++;
@@ -71,12 +72,12 @@ void Shot::Update()
 
 	auto hitDim = MV1CollCheck_Sphere(m_mapHandle, -1, rigidbody.GetPosVECTOR(), kRadius);
 
-	// ŒŸo‚µ‚½üˆÍ‚Ìƒ|ƒŠƒSƒ“î•ñ‚ğŠJ•ú‚·‚é
+	// æ¤œå‡ºã—ãŸå‘¨å›²ã®ãƒãƒªã‚´ãƒ³æƒ…å ±ã‚’é–‹æ”¾ã™ã‚‹
 	MV1CollResultPolyDimTerminate(hitDim);
 
 	if (hitDim.HitNum != 0)
 	{
-		// ŒŸo‚µ‚½üˆÍ‚Ìƒ|ƒŠƒSƒ“î•ñ‚ğŠJ•ú‚·‚é
+		// æ¤œå‡ºã—ãŸå‘¨å›²ã®ãƒãƒªã‚´ãƒ³æƒ…å ±ã‚’é–‹æ”¾ã™ã‚‹
 		m_isExist = false;
 	}
 
@@ -88,7 +89,7 @@ void Shot::Update()
 
 void Shot::Draw()
 {
-	//‘¶İ‚µ‚Ä‚¢‚È‚¢ó‘Ô‚È‚ç‰½‚à‚³‚¹‚È‚¢
+	//å­˜åœ¨ã—ã¦ã„ãªã„çŠ¶æ…‹ãªã‚‰ä½•ã‚‚ã•ã›ãªã„
 	if (!m_isExist)return;
 
 	rigidbody.SetPos(rigidbody.GetNextPos());
@@ -106,31 +107,31 @@ void Shot::OnCollideEnter(const std::shared_ptr<Collidable>& colider)
 void Shot::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 {
 #ifdef _DEBUG
-	std::string message = "’e‚ª";
+	std::string message = "å¼¾ãŒ";
 #endif
 	auto tag = colider->GetTag();
 	switch (tag)
 	{
 	case GameObjectTag::Player:
 #ifdef _DEBUG
-		message += "ƒvƒŒƒCƒ„[";
+		message += "ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼";
 #endif
 		break;
 	case GameObjectTag::Enemy:
 #ifdef _DEBUG
-		message += "“G";
+		message += "æ•µ";
 #endif
 		//m_isExist = false;
 		break;
 	case GameObjectTag::HitBox:
 #ifdef _DEBUG
-		message += "“–‚½‚è”»’è";
+		message += "å½“ãŸã‚Šåˆ¤å®š";
 #endif
 		m_isExist = false;
 		break;
 	}
 #ifdef _DEBUG
-	message += "‚Æ“–‚½‚Á‚½I\n";
+	message += "ã¨å½“ãŸã£ãŸï¼\n";
 	printfDx(message.c_str());
 #endif
 }

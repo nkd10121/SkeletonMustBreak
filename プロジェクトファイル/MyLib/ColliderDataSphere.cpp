@@ -1,8 +1,8 @@
-#include "DxLib.h"
+ï»¿#include "DxLib.h"
 #include "MyLib.h"
 
 /// <summary>
-/// ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+/// ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
 /// </summary>
 /// <param name="isTrigger"></param>
 MyLib::ColliderDataSphere::ColliderDataSphere(bool isTrigger):

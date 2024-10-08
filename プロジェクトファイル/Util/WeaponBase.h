@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "ObjectBase.h"
 class WeaponBase : public ObjectBase
 {
@@ -6,14 +6,14 @@ public:
 	WeaponBase();
 	virtual ~WeaponBase();
 
-	void Init(int weaponModelHandle,int ownerModelHandle, const TCHAR* franeName, float modelSize = 1.0f);
+	void Init(int ownerModelHandle, const TCHAR* franeName, float modelSize = 1.0f);
 	void Update(MyLib::Vec3 moveVec);
 	void Draw();
 
 	void SetAtk(int atk) { m_atk = atk; }
 	const int GetAtk()const { return m_atk; }
 
-	void CollisionInit(std::shared_ptr<MyLib::Physics> physics);
+	void InitCollision(std::shared_ptr<MyLib::Physics> physics);
 	void CollisionEnd();
 
 	const bool GetIsCollisionOn()const { return m_isCollisionOn; }
@@ -24,30 +24,29 @@ private:
 	void ConvertMatToVec();
 
 protected:
-	//ƒ‚ƒfƒ‹ƒTƒCƒY‚Ì•ÏX
+	//ãƒ¢ãƒ‡ãƒ«ã‚µã‚¤ã‚ºã®å¤‰æ›´
 	void SetModelSize(float modelSize);
 
-	// Õ“Ë‚µ‚½‚Æ‚«
+	// è¡çªã—ãŸã¨ã
 	void OnCollideEnter(const std::shared_ptr<Collidable>& colider);
 	void OnTriggerEnter(const std::shared_ptr<Collidable>& colider)override;
 
+protected:
 private:
-	//•Šíƒ‚ƒfƒ‹ƒnƒ“ƒhƒ‹
-	int m_weaponModelHandle;
 	int m_ownerModelHandle;
 
 	std::shared_ptr<MyLib::Physics> m_pPhysics;
 
-	//•Ší‚ğ‚½‚¹‚éêŠ
+	//æ­¦å™¨ã‚’æŒãŸã›ã‚‹å ´æ‰€
 	int m_weaponAttachFrame;
-	//ƒ‚ƒfƒ‹ƒTƒCƒY
+	//ãƒ¢ãƒ‡ãƒ«ã‚µã‚¤ã‚º
 	float m_modelScale;
 
 	MATRIX m_mat;
 
 	int m_atk;
 
-	//“–‚½‚è”»’è‚ÌØ‚è‘Ö‚¦
+	//å½“ãŸã‚Šåˆ¤å®šã®åˆ‡ã‚Šæ›¿ãˆ
 	bool m_isCollisionOn;
 
 };

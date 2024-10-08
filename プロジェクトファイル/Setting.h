@@ -1,7 +1,12 @@
-#pragma once
+﻿#pragma once
+
+/// <summary>
+/// オプションを管理するクラス
+/// </summary>
 class Setting
 {
 private:
+	//オプションデータ
 	struct Data
 	{
 		float bgmVolume = 0.5f;
@@ -10,21 +15,21 @@ private:
 		bool isFullScreen = false;
 	};
 private:
-	// �V���O���g���p�^�[���Ȃ̂ŃR���X�g���N�^��private�ɒu��
+	// シングルトンパターンなのでコンストラクタはprivateに置く
 	Setting() {};
-
-public:
+	//デストラクタ
 	virtual ~Setting();
 
-	//�R�s�[�R���X�g���N�^������̂̐������ł��Ă��܂�����
-	//�R�s�[�R���X�g���N�^���֎~����
+public:
+	//コピーコンストラクタから実体の生成ができてしまうため
+	//コピーコンストラクタを禁止する
 	Setting(const Setting&) = delete;
 	Setting& operator=(const Setting&) = delete;
 	Setting(Setting&&) = delete;
 	Setting& operator= (const Setting&&) = delete;
 
 	/// <summary>
-	/// Setting��GetInstance()��ʂ����Q�Ƃ��炵�����p�ł��Ȃ�
+	/// SettingはGetInstance()を通した参照からしか利用できない
 	/// </summary>
 	/// <returns></returns>
 	static Setting& GetInstance()
@@ -37,7 +42,7 @@ public:
 		return *m_instance;
 	}
 
-	//��������Y���ƕ��ʂɃ��������[�N
+	//これをし忘れると普通にメモリリーク
 	static void Destroy()
 	{
 		delete m_instance;
@@ -45,30 +50,42 @@ public:
 	}
 
 public:
+	//BGMボリュームを設定する
 	void SetBGMVolume(float volume) { m_data.bgmVolume = volume; }
+	//SEボリュームを設定する
 	void SetSEVolume(float volume) { m_data.seVolume = volume; }
+	//感度を設定する
 	void SetSensitivity(float sensitivity) { m_data.sensitivity = sensitivity; }
+	//フルスクリーンを設定する
 	void SetIsFullScreen(bool isFullScreen) { m_data.isFullScreen = isFullScreen; }
 
+	//BGMボリュームを取得する
 	const float GetBGMVolume()const { return m_data.bgmVolume; }
+	//SEボリュームを取得する
 	const float GetSEVolume()const { return m_data.seVolume; }
+	//感度を取得する
 	const float GetSensitivity()const { return m_data.sensitivity; }
+	//フルスクリーンを取得する
 	const bool GetIsFullScreen()const { return !m_data.isFullScreen; }
 
+	//オプションデータを読み込む
 	void Load();
+	//オプションデータを保存する
 	void Save();
 
 private:
+	//オプションデータを全消去する
 	void ClearData();
-
+	//新しいオプションデータを生成する
 	void CreateNewData();
 
 private:
-	//static�ɂ��邱�Ƃ�
-	//Singleton�̃|�C���^���v���O�����N�����Ɉ�����悤�ɂ���
+	//staticにすることで
+	//Singletonのポインタがプログラム起動時に一つ作られるようにする
 	static Setting* m_instance;
 
 public:
+	//オプションデータ
 	Data m_data;
 };
 

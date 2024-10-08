@@ -1,30 +1,38 @@
-#pragma once
+ï»¿#pragma once
+#include <string>
+#include <list>
 
 /// <summary>
-/// 3Dƒ‚ƒfƒ‹‚ğŠÇ—‚·‚éƒNƒ‰ƒX
+/// ãƒãƒ³ãƒ‰ãƒ«
+/// </summary>
+struct Handle
+{
+	std::string path;	//ãƒ¢ãƒ‡ãƒ«ãƒ‘ã‚¹
+	int handle;			//ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+	bool isEternal;		//æ°¸ä¹…ãƒ•ãƒ©ã‚°
+};
+
+/// <summary>
+/// 3Dãƒ¢ãƒ‡ãƒ«ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’ç®¡ç†ã™ã‚‹ã‚¯ãƒ©ã‚¹
 /// </summary>
 class ModelManager
 {
-	//1.‚»‚ÌƒV[ƒ“‚Å—ÊY‚³‚ê‚éƒ‚ƒfƒ‹‚ğ‚ ‚ç‚©‚¶‚ßƒ[ƒh‚µ‚Ä‚¨‚­
-	//2.—~‚µ‚¢ƒ‚ƒfƒ‹‚Ìƒnƒ“ƒhƒ‹‚ª‚ ‚ê‚Î‚±‚ÌƒNƒ‰ƒX‚É\¿‚µ‚Äæ“¾‚·‚é
-	//3.ƒV[ƒ“Ø‚è‘Ö‚¦‚²‚Æ‚Éƒnƒ“ƒhƒ‹‚ğDelete‚·‚é
-
 private:
-	// ƒVƒ“ƒOƒ‹ƒgƒ“ƒpƒ^[ƒ“‚È‚Ì‚ÅƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Íprivate‚É’u‚­
+	// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ãƒ‘ã‚¿ãƒ¼ãƒ³ãªã®ã§ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã¯privateã«ç½®ã
 	ModelManager() {};
+	//ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	virtual ~ModelManager();
 
 public:
-	virtual ~ModelManager() {};
-
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚©‚çÀ‘Ì‚Ì¶¬‚ª‚Å‚«‚Ä‚µ‚Ü‚¤‚½‚ß
-	//ƒRƒs[ƒRƒ“ƒXƒgƒ‰ƒNƒ^‚ğ‹Ö~‚·‚é
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‹ã‚‰å®Ÿä½“ã®ç”ŸæˆãŒã§ãã¦ã—ã¾ã†ãŸã‚
+	//ã‚³ãƒ”ãƒ¼ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’ç¦æ­¢ã™ã‚‹
 	ModelManager(const ModelManager&) = delete;
 	ModelManager& operator=(const ModelManager&) = delete;
 	ModelManager(ModelManager&&) = delete;
 	ModelManager& operator= (const ModelManager&&) = delete;
 
 	/// <summary>
-	/// ModelManager‚ÍGetInstance()‚ğ’Ê‚µ‚½QÆ‚©‚ç‚µ‚©—˜—p‚Å‚«‚È‚¢
+	/// ModelManagerã¯GetInstance()ã‚’é€šã—ãŸå‚ç…§ã‹ã‚‰ã—ã‹åˆ©ç”¨ã§ããªã„
 	/// </summary>
 	/// <returns></returns>
 	static ModelManager& GetInstance()
@@ -37,16 +45,27 @@ public:
 		return *m_instance;
 	}
 
-	//‚±‚ê‚ğ‚µ–Y‚ê‚é‚Æ•’Ê‚Éƒƒ‚ƒŠƒŠ[ƒN
+	//ã“ã‚Œã‚’ã—å¿˜ã‚Œã‚‹ã¨æ™®é€šã«ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯
 	static void Destroy()
 	{
 		delete m_instance;
 		m_instance = nullptr;
 	}
 
+public:
+	//æŒ‡å®šã—ãŸãƒ‘ã‚¹ã®ãƒãƒ³ãƒ‰ãƒ«ã‚’å–å¾—ã™ã‚‹
+	int GetModelHandle(std::string path, bool isEternal = false);
+	//ãƒ‘ã‚¹ã®ãƒªã‚¹ãƒˆã‚’å…¨æ¶ˆå»ã™ã‚‹
+	void Clear();
+
 private:
-	//static‚É‚·‚é‚±‚Æ‚Å
-	//Singleton‚Ìƒ|ƒCƒ“ƒ^‚ªƒvƒƒOƒ‰ƒ€‹N“®‚Éˆê‚Âì‚ç‚ê‚é‚æ‚¤‚É‚·‚é
+	//staticã«ã™ã‚‹ã“ã¨ã§
+	//Singletonã®ãƒã‚¤ãƒ³ã‚¿ãŒãƒ—ãƒ­ã‚°ãƒ©ãƒ èµ·å‹•æ™‚ã«ä¸€ã¤ä½œã‚‰ã‚Œã‚‹ã‚ˆã†ã«ã™ã‚‹
 	static ModelManager* m_instance;
+
+private:
+	//ãƒ¢ãƒ‡ãƒ«ãƒãƒ³ãƒ‰ãƒ«
+	std::list<Handle> m_handles;
+
 };
 
