@@ -8,10 +8,20 @@
 class TrapBase :public ObjectBase
 {
 public:
+	//ステータス構造体
+	struct Status
+	{
+		int atk;
+		float searchRange;
+		float atkRange;
+		int coolTime;
+		int cost;
+	};
+public:
 	TrapBase(GameObjectTag tag);
 	virtual ~TrapBase() {};
 
-	virtual void Init(int handle,int subHandle = -1) {};
+	virtual void Init() {};
 	virtual void Update() {};
 	virtual void Draw() {};
 
@@ -24,6 +34,8 @@ public:
 	int GetAtk() { return m_attack; }
 
 protected:
+	Status status;
+
 	MyLib::Vec3 m_pos;
 
 	std::shared_ptr<MyLib::Physics> m_pPhysics;

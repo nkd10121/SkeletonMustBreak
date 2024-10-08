@@ -74,6 +74,7 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* characterName)
 		}
 	}
 
+#ifdef _DEBUG
 	//情報を取得できなかった時、エラーを吐くようにする
 	//取得できなかった理由想定
 	//①キャラクター名がスペルミスや大文字小文字の違いで異なる
@@ -82,7 +83,7 @@ void CsvLoad::StatusLoad(CharacterBase::Status& data, const char* characterName)
 	{
 		assert(0 && "指定したキャラクター名の情報を取得できませんでした");
 	}
-
+#endif
 	return;
 }
 
@@ -190,6 +191,7 @@ void CsvLoad::AnimDataLoad(std::string characterName, std::map<std::string, int>
 		}
 	}
 
+#ifdef _DEBUG
 	//情報を取得できなかった時、エラーを吐くようにする
 	//取得できなかった理由想定
 	//①キャラクター名がスペルミスや大文字小文字の違いで異なる
@@ -198,6 +200,71 @@ void CsvLoad::AnimDataLoad(std::string characterName, std::map<std::string, int>
 	{
 		assert(0 && "指定したキャラクター名のアニメーション情報を取得できませんでした");
 	}
+#endif
 
 	return;
+}
+
+/// <summary>
+/// 罠ステータス情報ロード
+/// </summary>
+/// <param name="trapName">罠の名前</param>
+/// <returns>取得したステータス</returns>
+TrapBase::Status CsvLoad::TrapStatusLoad(const char* trapName)
+{
+	TrapBase::Status ret;
+
+	// 一時保存用string
+	std::string strBuf;
+	// カンマ分け一時保存用string
+	std::vector<std::string> strConmaBuf;
+
+	// ファイル読み込み
+	std::ifstream ifs("data/csv/trapStatus.csv");
+	if (!ifs)
+	{
+		assert(false);
+		return ret;
+	}
+
+	//情報を取得できたかどうかのフラグ
+	bool isGet = false;
+
+	//最初は対応表情報が入っているだけなので無視する
+	std::getline(ifs, strBuf);
+
+	while (getline(ifs, strBuf))
+	{
+		//取得した文字列をカンマ区切りの配列(情報群)にする
+		strConmaBuf = Split(strBuf, ',');
+
+		//[0]:キャラクター名
+		//[1]:攻撃力
+		//[2]:索敵範囲
+		//[3]:攻撃範囲
+		//[4]:クールタイム
+		//[5]:設置コスト
+
+		//指定したキャラクター名と一致するデータがあれば情報を取得する
+		if (strConmaBuf[LoadData::eStatusOrder::name] == trapName)
+		{
+			isGet = true;
+
+			ret.atk = std::stoi(strConmaBuf[static_cast<int>(LoadData::eTrapStatusOrder::atk)]);
+			ret.searchRange = std::stof(strConmaBuf[static_cast<int>(LoadData::eTrapStatusOrder::searchRange)]);
+			ret.atkRange = std::stof(strConmaBuf[static_cast<int>(LoadData::eTrapStatusOrder::attackRange)]);
+			ret.coolTime = std::stoi(strConmaBuf[static_cast<int>(LoadData::eTrapStatusOrder::coolTime)]);
+			ret.cost = std::stoi(strConmaBuf[static_cast<int>(LoadData::eTrapStatusOrder::cost)]);
+		}
+	}
+
+#ifdef _DEBUG
+	//情報を取得できなかった時、エラーを吐くようにする
+	if (!isGet)
+	{
+		assert(0 && "指定した罠のステータス情報を取得できませんでした");
+	}
+#endif
+
+	return ret;
 }

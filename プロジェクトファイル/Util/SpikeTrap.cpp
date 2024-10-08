@@ -1,5 +1,7 @@
 ﻿#include "SpikeTrap.h"
 #include "SoundManager.h"
+#include "ModelManager.h"
+#include "CsvLoad.h"
 
 //外部ファイルで
 //1.攻撃力
@@ -8,6 +10,18 @@
 //4.クールタイム
 //5.設置コスト
 //		を変更できるようにしたい
+
+namespace
+{
+	//トラップ名
+	const char* kTrapName = "Spike";
+
+	//モデルのパス
+	const char* kFramePath = "data/model/spike_frame.mv1";
+	const char* kSpikePath = "data/model/spike.mv1";
+
+		
+}
 
 SpikeTrap::SpikeTrap(std::shared_ptr<MyLib::Physics> physics):
 	TrapBase(GameObjectTag::SpikeTrap),
@@ -19,15 +33,18 @@ SpikeTrap::SpikeTrap(std::shared_ptr<MyLib::Physics> physics):
 {
 	m_pPhysics = physics;
 
+	//ステータスの取得
+	status = CsvLoad::GetInstance().TrapStatusLoad(kTrapName);
+
 	//当たり判定の設定
 	auto collider = Collidable::AddCollider(MyLib::ColliderData::Kind::Sphere, true);
 	auto sphereCol = dynamic_cast<MyLib::ColliderDataSphere*>(collider.get());
-	sphereCol->m_radius = 8.0f;
+	sphereCol->m_radius = status.atkRange;
 
-	m_pSearch = std::make_shared<SearchObject>(5.5f);
+	m_pSearch = std::make_shared<SearchObject>(status.searchRange);
 
 	//攻撃力の設定
-	m_attack = 30;
+	m_attack = status.atk;
 }
 
 SpikeTrap::~SpikeTrap()
@@ -36,13 +53,13 @@ SpikeTrap::~SpikeTrap()
 	MV1DeleteModel(m_spikeModelHandle);
 }
 
-void SpikeTrap::Init(int handle, int subHandle)
+void SpikeTrap::Init()
 {
 	m_frameModelPos = m_pos;
 	m_spikeModelPos = m_pos;
 
-	m_modelHandle = handle;
-	m_spikeModelHandle = subHandle;
+	m_modelHandle = ModelManager::GetInstance().GetModelHandle(kFramePath);
+	m_spikeModelHandle = ModelManager::GetInstance().GetModelHandle(kSpikePath);
 
 	m_frameModelPos.y -= 0.5f;
 
@@ -110,7 +127,7 @@ void SpikeTrap::Update()
 			}
 		}
 
-		if (m_attackCount >= 7*60)
+		if (m_attackCount >= status.coolTime)
 		{
 			//すべてを初期化する
 			m_spikeModelPos = m_pos;

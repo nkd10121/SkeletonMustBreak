@@ -9,6 +9,7 @@
 #include "SoundManager.h"
 #include "EffectManager.h"
 #include "ModelManager.h"
+#include "CsvLoad.h"
 
 namespace
 {
@@ -260,15 +261,15 @@ bool TrapManager::CreateTrap(int slotNum, std::shared_ptr<MyLib::Physics> physic
 	{
 		//設置コスト以上の罠ポイントがあるか確認する
 		//足りていたら消費して罠を設置する
-		if (*trapPoint >= kSpikeCost)
+		if (*trapPoint >= CsvLoad::GetInstance().TrapStatusLoad("Spike").cost)
 		{
-			*trapPoint -= kSpikeCost;
+			*trapPoint -= CsvLoad::GetInstance().TrapStatusLoad("Spike").cost;
 
 			//罠を設置する
 			std::shared_ptr<TrapBase> add;
 			add = std::make_shared<SpikeTrap>(physics);
 			add->SetPos(m_previewPos);
-			add->Init(MV1DuplicateModel(m_modelHandles[0]), MV1DuplicateModel(m_modelHandles[1]));
+			add->Init();
 			m_traps.emplace_back(add);
 
 			//設置成功
@@ -285,16 +286,16 @@ bool TrapManager::CreateTrap(int slotNum, std::shared_ptr<MyLib::Physics> physic
 	{
 		//設置コスト以上の罠ポイントがあるか確認する
 		//足りていなかったら終わる
-		if (*trapPoint >= kCutterCost)
+		if (*trapPoint >= CsvLoad::GetInstance().TrapStatusLoad("Cutter").cost)
 		{
 			//足りていたら消費する
-			*trapPoint -= kCutterCost;
+			*trapPoint -= CsvLoad::GetInstance().TrapStatusLoad("Cutter").cost;
 
 			//罠を設置する
 			std::shared_ptr<TrapBase> add;
 			add = std::make_shared<CutterTrap>(physics);
 			add->SetPos(m_previewPos);
-			add->Init(MV1DuplicateModel(m_modelHandles[Cutter]));
+			add->Init();
 			m_traps.emplace_back(add);
 
 			//設置成功

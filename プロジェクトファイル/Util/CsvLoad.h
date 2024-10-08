@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CharacterBase.h"
+#include "TrapBase.h"
 #include "EnemyManager.h"
 
 #include <string>
@@ -14,17 +15,27 @@ namespace LoadData
 		hp,		//体力
 		atk,	//攻撃力
 		def,	//防御力
-		speed,
-		point
+		speed,	//移動速度
+		point	//ドロップする罠ポイント
 	};
 
-	//ステータス情報の並び列挙型
+	//敵生成情報の並び列挙型
 	enum eStageOrder : int
 	{
 		ID,						//敵ID
 		phase,					//出現フェーズ
 		frame,					//出現フレーム
 		AppearanceLocation,		//出現場所
+	};
+
+	enum class eTrapStatusOrder
+	{
+		name,			//トラップ名
+		atk,			//攻撃力
+		searchRange,	//索敵範囲
+		attackRange,	//攻撃範囲
+		coolTime,		//クールタイム
+		cost			//設置コスト
 	};
 }
 
@@ -77,6 +88,9 @@ public:
 
 	//アニメーション情報ロード
 	void AnimDataLoad(std::string characterName, std::map<std::string, int>& anim);
+
+	//罠ステータス情報ロード
+	TrapBase::Status TrapStatusLoad(const char* trapName);
 private:
 	//staticにすることで
 	//Singletonのポインタがプログラム起動時に一つ作られるようにする
