@@ -189,7 +189,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -198,7 +198,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -209,7 +209,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -220,7 +220,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(DXLIB_DIR);$(ProjectDir);$(ProjectDir)MyLib;$(ProjectDir)Scene;$(ProjectDir)Object;$(ProjectDir)Util</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -229,7 +229,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -238,7 +238,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -249,7 +249,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NOMINMAX;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <UndefinePreprocessorDefinitions>
       </UndefinePreprocessorDefinitions>
@@ -260,7 +260,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../プロジェクトに追加すべきファイル_VC用;$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util;$(ProjectDir)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../プロジェクトに追加すべきファイル_VC用;$(ProjectDir);$(ProjectDir)Manager;$(ProjectDir)MyLib;$(ProjectDir)Object;$(ProjectDir)Scene;$(ProjectDir)Util</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
