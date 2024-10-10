@@ -33,18 +33,31 @@ CutterTrap::CutterTrap(std::shared_ptr<MyLib::Physics> physics) :
 
 CutterTrap::~CutterTrap()
 {
-	MV1DeleteModel(m_modelHandle);
+
 }
 
 void CutterTrap::Init()
 {
+	//存在している状態にする
+	m_isExist = true;
 	m_modelHandle = ModelManager::GetInstance().GetModelHandle(kModelPath);
 	MV1SetScale(m_modelHandle, VECTOR(kModelSizeScale, kModelSizeScale, kModelSizeScale));
 	MV1SetPosition(m_modelHandle, m_pos.ConvertToVECTOR());
 }
 
+GameObjectTag CutterTrap::Finalize()
+{
+	MV1DeleteModel(m_modelHandle);
+	Collidable::Finalize(m_pPhysics);
+
+	return Collidable::GetTag();
+}
+
 void CutterTrap::Update()
 {
+	//存在していない状態なら何もさせない
+	if (!m_isExist)return;
+
 	//モデルを回転させる
 	m_rotationAngle += kRotationSpeed;
 	MV1SetRotationXYZ(m_modelHandle, VECTOR(0.0f, m_rotationAngle, 0.0f));
@@ -59,7 +72,7 @@ void CutterTrap::Update()
 
 	if (m_frame % status.coolTime == status.coolTime - 1)
 	{
-		Finalize(m_pPhysics);
+		Collidable::Finalize(m_pPhysics);
 	}
 
 	m_frame++;
@@ -67,5 +80,7 @@ void CutterTrap::Update()
 
 void CutterTrap::Draw()
 {
+	//存在していない状態なら何もさせない
+	if (!m_isExist)return;
 	MV1DrawModel(m_modelHandle);
 }

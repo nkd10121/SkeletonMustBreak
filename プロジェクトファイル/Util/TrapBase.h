@@ -22,6 +22,7 @@ public:
 	virtual ~TrapBase() {};
 
 	virtual void Init() {};
+	virtual GameObjectTag Finalize();
 	virtual void Update() {};
 	virtual void Draw() {};
 
@@ -33,6 +34,9 @@ public:
 
 	int GetAtk() { return m_attack; }
 
+	//存在しているかを取得
+	const bool GetIsExist()const { return m_isExist; }
+
 protected:
 	Status status;
 
@@ -42,6 +46,8 @@ protected:
 	std::shared_ptr<SearchObject> m_pSearch;
 
 	int m_attack;
+
+	int m_isExist;	//存在フラグ
 
 };
 

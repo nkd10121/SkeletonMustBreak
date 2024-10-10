@@ -4,9 +4,10 @@ class SpikeTrap : public TrapBase
 {
 public:
 	SpikeTrap(std::shared_ptr<MyLib::Physics> physics);
-	virtual ~SpikeTrap();
+	virtual ~SpikeTrap()override;
 
 	void Init();
+	virtual GameObjectTag Finalize()override;
 	void Update()override;
 	void Draw();
 

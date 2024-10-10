@@ -87,3 +87,25 @@ int Font::GetFontHandle(std::string path, std::string name, int fontSize)
 
 	return ret;
 }
+
+void Font::DrawStringUseFont(int x, int y, std::string str, unsigned int color, std::string name, int size)
+{
+	float drawX = static_cast<float>(x);
+	float drawY = static_cast<float>(y);
+	int handle = -1;
+
+	for (auto& h : m_handle)
+	{
+		if (h.first.first == name && h.first.second == size)
+		{
+			handle = h.second;
+		}
+	}
+
+	auto len = static_cast<float>(str.length());
+	drawX -= (len/2) * (size/2);
+	drawY -= size/2;
+
+
+	DrawStringToHandle(static_cast<int>(drawX), static_cast<int>(drawY), str.c_str(), color, handle);
+}

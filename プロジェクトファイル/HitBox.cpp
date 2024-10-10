@@ -12,7 +12,7 @@ HitBox::HitBox(float r) :
 	m_pPhysics(),
 	m_lastHitObjectAttack(0),
 	m_hitObjectTag(),
-	m_isEnemy(false),
+	m_isHead(false),
 	m_isHit(false)
 {
 	//当たり判定の設定
@@ -34,10 +34,10 @@ HitBox::~HitBox()
 /// <param name="physics">物理クラスのポインタ</param>
 /// <param name="pos">設定座標</param>
 /// <param name="isEnemy">持ち主がEnemyかどうか</param>
-void HitBox::Init(std::shared_ptr<MyLib::Physics> physics, MyLib::Vec3 pos, bool isEnemy)
+void HitBox::Init(std::shared_ptr<MyLib::Physics> physics, MyLib::Vec3 pos, bool isHead)
 {
 	m_pPhysics = physics;
-	m_isEnemy = isEnemy;
+	m_isHead = isHead;
 
 	Collidable::Init(m_pPhysics);
 
@@ -69,19 +69,20 @@ void HitBox::Finalize(std::shared_ptr<MyLib::Physics> physics)
 /// <param name="colider"></param>
 void HitBox::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 {
-	if (m_isEnemy)
-	{
-		//矢、トラップ
-		m_hitObjectTag = colider->GetTag();
-		if (m_hitObjectTag == GameObjectTag::Shot)
-		{
-			{	//なんか{}がないとエラー吐く
-				Shot* col = dynamic_cast<Shot*>(colider.get());
-				m_lastHitObjectAttack = col->GetAtk();
-			}
-			m_isHit = true;
-		}
 
+	//矢、トラップ
+	m_hitObjectTag = colider->GetTag();
+	if (m_hitObjectTag == GameObjectTag::Shot)
+	{
+		{	//なんか{}がないとエラー吐く
+			Shot* col = dynamic_cast<Shot*>(colider.get());
+			m_lastHitObjectAttack = col->GetAtk();
+		}
+		m_isHit = true;
+	}
+
+	if (!m_isHead)
+	{
 		if (m_hitObjectTag == GameObjectTag::SpikeTrap)
 		{
 			{	//なんか{}がないとエラー吐く
@@ -100,7 +101,6 @@ void HitBox::OnTriggerEnter(const std::shared_ptr<Collidable>& colider)
 			m_isHit = true;
 		}
 	}
-
 }
 
 /// <summary>

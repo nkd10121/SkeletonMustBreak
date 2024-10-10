@@ -34,8 +34,6 @@ namespace
 
 	//エフェクトのフレーム数
 	constexpr int kEffectFrame = 120;
-	//ヒットエフェクトのオフセット
-	constexpr int kEffectOffsetRand = 6;
 
 	constexpr float kComboTextSize = 0.05f;
 }
@@ -61,6 +59,7 @@ EnemyManager::EnemyManager() :
 
 	//エフェクトのロード
 	EffectManager::GetInstance().Load("EnemyHit", "data/effect/enemy_hit.efk", kEffectFrame);
+	EffectManager::GetInstance().Load("EnemyCriticalHit", "data/effect/enemy_CriticalHit.efk", kEffectFrame);
 	EffectManager::GetInstance().Load("EnemyDisappear", "data/effect/enemy_disappear.efk", kEffectFrame);
 }
 
@@ -193,28 +192,14 @@ void EnemyManager::Update(std::shared_ptr<MyLib::Physics> physics, GameManager* 
 
 		m_enemyPos.emplace_back(e->GetCenterPos());
 
-		//コリジョン情報を更新する
-		MV1RefreshCollInfo(e->GetModelHandle());
-
 		//プレイヤーからプレイヤーの向いている方向にレイを飛ばして敵がそのレイに当たったかどうかを取得する
-		auto colData = MV1CollCheck_Line(e->GetModelHandle(), -1, start, end);
+		auto colData = HitCheck_Line_Sphere(start, end,e->GetCenterPos().ConvertToVECTOR(),e->GetRadius());
 		//当たっていたら
-		if (colData.HitFlag)
+		if (colData)
 		{
 			//その敵を一旦RayHitEnemy的な配列につっこんで保留しておく
 			//一通りの敵の更新が終わったらそのRayHitEnemyの中で最もプレイヤーと近い敵のHPを画面上部に表示する
 			rayHitEnemys.emplace_back(e);
-		}
-
-		//敵が攻撃に当たった時
-		if (e->GetIsHit())
-		{
-			//敵の近くにヒットエフェクトを表示
-			auto pos = e->GetCenterPos();
-			MyLib::Vec3 offset = MyLib::Vec3(static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand/2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand/2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand/2));
-			pos += offset;
-
-			EffectManager::GetInstance().CreateEffect("EnemyHit", pos,pos);
 		}
 
 		//死んでいる(ダウンアニメーションが始まっている)敵の判定をする

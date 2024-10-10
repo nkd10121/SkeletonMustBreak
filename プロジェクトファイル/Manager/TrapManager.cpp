@@ -31,11 +31,6 @@ namespace
 		"data/model/cutter.mv1",
 		"data/model/hammer.mv1",
 	};
-
-	//それぞれの罠のコスト
-	//TODO:外部データ化
-	constexpr int kSpikeCost = 400;
-	constexpr int kCutterCost = 250;
 }
 
 /// <summary>
@@ -193,6 +188,39 @@ void TrapManager::Update(std::shared_ptr<Input>& input, int slotNum, MyLib::Vec3
 	{
 		trap->Update();
 	}
+
+
+	//現在が準備フェーズ中かつ、Yボタンを押したとき、罠を解除する
+	if (nowPhase % 2 == 0 && input->IsTriggered("X"))
+	{
+		//すでに設置された罠の座標を見て
+		for (auto& trap : m_traps)
+		{
+			//すでにその座標に罠が設置されていたら
+			if (trap->GetPos() == m_previewPos)
+			{
+				//そのトラップを解除する
+				auto tag =  trap->Finalize();
+				trap.reset();
+				trap = nullptr;
+
+				if (tag == GameObjectTag::SpikeTrap)
+				{
+					*trapPoint += CsvLoad::GetInstance().TrapStatusLoad("Spike").cost;
+				}
+				else if(tag == GameObjectTag::CutterTrap)
+				{
+					*trapPoint += CsvLoad::GetInstance().TrapStatusLoad("Cutter").cost;
+				}
+			}
+		}
+	}
+
+	//不要になった罠をここで削除処理する
+	auto it = remove_if(m_traps.begin(), m_traps.end(), [](auto& v) {
+		return v == nullptr;
+		});
+	m_traps.erase(it, m_traps.end());
 }
 
 /// <summary>

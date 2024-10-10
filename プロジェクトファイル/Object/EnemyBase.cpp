@@ -9,6 +9,7 @@
 #include "HitBox.h"
 #include "SearchObject.h"
 #include "SoundManager.h"
+#include "EffectManager.h"
 #include <memory>
 
 namespace
@@ -22,31 +23,36 @@ namespace
 	constexpr float kAnimBlendRateMax = 1.0f;
 
 	constexpr float kDistance = 2.6f;
+
+	//ヒットエフェクトのオフセット
+	constexpr int kEffectOffsetRand = 6;
 }
 
 EnemyBase::EnemyBase(Priority priority)
 	:CharacterBase(priority, GameObjectTag::Enemy),
 	m_pWeapon(nullptr),
-	m_pHitbox(nullptr),
+	m_pNormalHitbox(nullptr),
+	m_pHeadHitbox(nullptr),
 	m_pSearch(nullptr),
+	m_dropPoint(0),
+	m_attackWaitFrame(0),
+	m_knockCount(0),
+	m_routeIdx(0),
+	m_searchRange(0.0f),
+	m_radius(0.0f),
 	m_isExist(false),
 	m_isReach(false),
 	m_isHit(false),
 	m_isDead(false),
-	m_dropPoint(0),
 	m_isDroped(false),
 	m_isAttack(false),
 	m_isKnock(false),
-	m_searchRange(0.0f),
+	m_isChase(true),
+	m_isChasing(false),
 	m_route(),
 	m_destinationPos(),
 	m_centerPos(),
-	m_lastHitObjectTag(),
-	m_attackWaitFrame(0),
-	m_knockCount(0),
-	m_routeIdx(0),
-	m_isChase(true),
-	m_isChasing(false)
+	m_lastHitObjectTag()
 {
 }
 
@@ -59,7 +65,8 @@ EnemyBase::~EnemyBase()
 void EnemyBase::Finalize(std::shared_ptr<MyLib::Physics>physics)
 {
 	Collidable::Finalize(physics);
-	m_pHitbox->Finalize(m_pPhysics);
+	m_pNormalHitbox->Finalize(m_pPhysics);
+	m_pHeadHitbox->Finalize(m_pPhysics);
 	if (m_isChase)
 	{
 		m_pWeapon->CollisionEnd();
@@ -120,6 +127,18 @@ int EnemyBase::GetDropPoint()
 	return m_dropPoint;
 }
 
+const float EnemyBase::GetRadius() const
+{
+	//もし半径0(索敵範囲なし)ならとりあえずの値を返す
+	if (m_radius == 0.0f)
+	{
+		return 5.0f;
+	}
+	
+	//0でなければ索敵範囲の半径をそのまま返す
+	return m_radius;
+}
+
 /// <summary>
 /// ほかのオブジェクトと押し出し判定をする当たり判定を作成
 /// </summary>
@@ -138,7 +157,6 @@ void EnemyBase::InitCollision(float radius)
 void EnemyBase::LoadModel(std::string path)
 {
 	m_modelHandle = ModelManager::GetInstance().GetModelHandle(path);
-	MV1SetupCollInfo(m_modelHandle);
 }
 
 /// <summary>
@@ -205,7 +223,7 @@ void EnemyBase::InitRigidbody(bool isUseGravity)
 void EnemyBase::CalculationCenterPos(float modeldefaultSize, float modelSize)
 {
 	m_centerPos = rigidbody.GetPos();
-	m_centerPos.y += modeldefaultSize * modelSize / 2;
+	m_centerPos.y += (modeldefaultSize * modelSize) / 2;
 }
 
 /// <summary>
@@ -222,10 +240,16 @@ void EnemyBase::SetModelPos(float offset)
 /// ダメージ判定をする当たり判定を作成
 /// </summary>
 /// <param name="radius">半径</param>
-void EnemyBase::InitHitBox(float radius)
+void EnemyBase::InitNormalHitBox(float radius)
 {
-	m_pHitbox = std::make_shared<HitBox>(radius);
-	m_pHitbox->Init(m_pPhysics, m_centerPos, true);
+	m_pNormalHitbox = std::make_shared<HitBox>(radius);
+	m_pNormalHitbox->Init(m_pPhysics, m_centerPos, false);
+}
+
+void EnemyBase::InitHeadHitBox(float radius)
+{
+	m_pHeadHitbox = std::make_shared<HitBox>(radius);
+	m_pHeadHitbox->Init(m_pPhysics, m_centerPos, true);
 }
 
 /// <summary>
@@ -236,22 +260,57 @@ void EnemyBase::InitSearch(float radius)
 {
 	m_pSearch = std::make_shared<SearchObject>(radius);
 	m_pSearch->Init(m_pPhysics, m_modelPos, true);
+
+	m_radius = radius;
 }
 
 /// <summary>
 /// ダメージを受けたとき
 /// </summary>
-void EnemyBase::OnDamage()
+void EnemyBase::OnNormalDamage()
 {
 	//HPを減らす
-	m_status.hp -= m_pHitbox->GetIsAttackNum() - m_status.def;
+	m_status.hp -= m_pNormalHitbox->GetIsAttackNum() - m_status.def;
 
-	m_lastHitObjectTag = m_pHitbox->GetHitObjectTag();
+	m_lastHitObjectTag = m_pNormalHitbox->GetHitObjectTag();
 
 	//EnemyManagerがエフェクトを生成するためのフラグ
 	m_isHit = true;
 
 	SoundManager::GetInstance().PlaySE("EnemyHit");
+
+	//敵の近くにヒットエフェクトを表示
+	auto pos = m_centerPos;
+	MyLib::Vec3 offset = MyLib::Vec3(static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand / 2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand / 2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand / 2));
+	pos += offset;
+	EffectManager::GetInstance().CreateEffect("EnemyHit", pos, pos);
+
+	if (!m_isKnock && !m_isAttack)
+	{
+		m_isKnock = true;
+		m_updateFunc = &EnemyBase::HitUpdate;
+		m_nowAnimIdx = m_animIdx["Hit"];
+
+		ChangeAnim(m_nowAnimIdx);
+	}
+}
+
+void EnemyBase::OnHeadDamage()
+{
+	//HPを減らす
+	m_status.hp -= m_pHeadHitbox->GetIsAttackNum() * 4 - m_status.def;
+
+	m_lastHitObjectTag = m_pHeadHitbox->GetHitObjectTag();
+
+	//EnemyManagerがエフェクトを生成するためのフラグ
+	m_isHit = true;
+
+	SoundManager::GetInstance().PlaySE("EnemyCriticalHit");
+	//敵の近くにヒットエフェクトを表示
+	auto pos = m_centerPos;
+	MyLib::Vec3 offset = MyLib::Vec3(static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand / 2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand / 2), static_cast<float>(GetRand(kEffectOffsetRand) - kEffectOffsetRand / 2));
+	pos += offset;
+	EffectManager::GetInstance().CreateEffect("EnemyCriticalHit", pos, pos);
 
 	if (!m_isKnock && !m_isAttack)
 	{

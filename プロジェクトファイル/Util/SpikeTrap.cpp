@@ -3,14 +3,6 @@
 #include "ModelManager.h"
 #include "CsvLoad.h"
 
-//外部ファイルで
-//1.攻撃力
-//2.索敵範囲
-//3.攻撃範囲
-//4.クールタイム
-//5.設置コスト
-//		を変更できるようにしたい
-
 namespace
 {
 	//トラップ名
@@ -19,8 +11,6 @@ namespace
 	//モデルのパス
 	const char* kFramePath = "data/model/spike_frame.mv1";
 	const char* kSpikePath = "data/model/spike.mv1";
-
-		
 }
 
 SpikeTrap::SpikeTrap(std::shared_ptr<MyLib::Physics> physics):
@@ -49,12 +39,15 @@ SpikeTrap::SpikeTrap(std::shared_ptr<MyLib::Physics> physics):
 
 SpikeTrap::~SpikeTrap()
 {
-	MV1DeleteModel(m_modelHandle);
-	MV1DeleteModel(m_spikeModelHandle);
+
+
 }
 
 void SpikeTrap::Init()
 {
+	//存在している状態にする
+	m_isExist = true;
+
 	m_frameModelPos = m_pos;
 	m_spikeModelPos = m_pos;
 
@@ -74,8 +67,20 @@ void SpikeTrap::Init()
 	m_pSearch->Init(m_pPhysics,m_pos);
 }
 
+GameObjectTag SpikeTrap::Finalize()
+{
+	MV1DeleteModel(m_modelHandle);
+	MV1DeleteModel(m_spikeModelHandle);
+	m_pSearch->Finalize(m_pPhysics);
+
+	return Collidable::GetTag();
+}
+
 void SpikeTrap::Update()
 {
+	//存在していない状態なら何もさせない
+	if (!m_isExist)return;
+
 	if (!m_isAttack)
 	{
 		if (m_pSearch->GetIsTrigger())
@@ -112,7 +117,7 @@ void SpikeTrap::Update()
 		{
 			if (!m_isInitCollision)
 			{
-				Finalize(m_pPhysics);
+				Collidable::Finalize(m_pPhysics);
 				m_isInitCollision = true;
 			}
 		}
@@ -146,6 +151,9 @@ void SpikeTrap::Update()
 
 void SpikeTrap::Draw()
 {
+	//存在していない状態なら何もさせない
+	if (!m_isExist)return;
+
 	MV1DrawModel(m_modelHandle);
 	MV1DrawModel(m_spikeModelHandle);
 }

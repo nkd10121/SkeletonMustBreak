@@ -37,24 +37,26 @@ public:
 	void OnCollideStay(const std::shared_ptr<Collidable>& colider)override;
 
 	//中心座標を返す
-	virtual  MyLib::Vec3 GetCenterPos()const { return m_centerPos; };
+	virtual  MyLib::Vec3 GetCenterPos()const { return m_centerPos; }
 	//足元座標を返す
-	virtual  MyLib::Vec3 GetPos()const { return rigidbody.GetPos(); };
+	virtual  MyLib::Vec3 GetPos()const { return rigidbody.GetPos(); }
 	//ダメージを食らったかどうかを取得
 	bool GetIsHit();
 	//死亡時に落とす罠ポイントを取得
 	int GetDropPoint();
 	//死亡して罠を落としたかどうかを取得
-	bool GetIsDropedPoint()const { return m_isDroped; };
+	bool GetIsDropedPoint()const { return m_isDroped; }
 	//死亡しているかどうかを取得
-	bool GetIsDead()const { return m_isDead; };
+	bool GetIsDead()const { return m_isDead; }
 	//存在しているかどうかを取得
 	const bool GetIsExist()const { return m_isExist; }
 	//目的地に到達しているかどうかを取得
 	const bool GetIsReach()const { return m_isReach; }
 	//最後に攻撃してきたオブジェクトのタグを取得
 	const GameObjectTag GetLastHitObjectTag()const { return m_lastHitObjectTag; }
-	
+	//HPを表示するための当たり判定の半径を取得
+	const float GetRadius()const;
+
 	//レイキャストをするためにモデルハンドルを取得
 	const int GetModelHandle()const { return CharacterBase::m_modelHandle; }
 	//現在のHPを取得
@@ -78,11 +80,15 @@ protected:
 	//モデル座標を設定
 	void SetModelPos(float offset);
 	//ダメージ判定をする当たり判定を作成
-	void InitHitBox(float radius);
+	void InitNormalHitBox(float radius);
+	//ダメージ判定をする当たり判定を作成
+	void InitHeadHitBox(float radius);
 	//索敵判定をする当たり判定を作成
 	void InitSearch(float radius);
 	//ダメージを受けたとき
-	void OnDamage();
+	void OnNormalDamage();
+	//ダメージを受けたとき
+	void OnHeadDamage();
 	//死亡した時
 	void Death();
 	//アニメーションブレンドの更新
@@ -92,7 +98,8 @@ protected:
 	void SetDrawModelPos(float offset);
 protected:
 	std::shared_ptr<WeaponBase> m_pWeapon;		//武器ポインタ
-	std::shared_ptr<HitBox> m_pHitbox;			//ダメージ判定をする当たり判定
+	std::shared_ptr<HitBox> m_pNormalHitbox;	//ダメージ判定をする当たり判定
+	std::shared_ptr<HitBox> m_pHeadHitbox;		//ダメージ判定をする当たり判定
 	std::shared_ptr<SearchObject> m_pSearch;	//索敵判定をする当たり判定
 	
 	int m_dropPoint;		//死亡時にドロップするポイント
@@ -101,6 +108,7 @@ protected:
 	int m_routeIdx;			//現在の目的地
 
 	float m_searchRange;	//索敵範囲
+	float m_radius;			//HPバーを表示する当たり判定の半径
 
 	bool m_isExist;		//存在するかどうか
 	bool m_isReach;		//最終目的地に着いたかどうか

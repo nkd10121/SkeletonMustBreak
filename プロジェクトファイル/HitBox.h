@@ -13,7 +13,7 @@ public:
 	~HitBox();
 
 	//初期化
-	void Init(std::shared_ptr<MyLib::Physics> physics, MyLib::Vec3 pos,bool isEnemy);
+	void Init(std::shared_ptr<MyLib::Physics> physics, MyLib::Vec3 pos,bool isHead);
 	//更新
 	void Update(MyLib::Vec3 pos);
 
@@ -39,7 +39,7 @@ private:
 	//最後に当たったオブジェクトのタグ
 	GameObjectTag m_hitObjectTag;
 	//このクラスの持ち主が敵かどうか
-	bool m_isEnemy;
+	bool m_isHead;
 	//ほかのオブジェクトに当たったかどうか
 	bool m_isHit;
 };

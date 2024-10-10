@@ -43,7 +43,10 @@ Input::Input():
 							{InputType::pad,PadCheckMask::B} };
 
 	m_commandTable["Y"] = { { InputType::keyboard,KEY_INPUT_U },
-							{InputType::pad,PadCheckMask::Y} };
+							{InputType::pad,PadCheckMask::Y} };	
+	
+	m_commandTable["X"] = { { InputType::keyboard,KEY_INPUT_U },
+							{InputType::pad,PadCheckMask::X} };
 
 	m_commandTable["PAUSE"] = { { InputType::keyboard,KEY_INPUT_P },
 							{InputType::pad,PadCheckMask::P} };

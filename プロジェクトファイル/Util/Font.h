@@ -47,6 +47,7 @@ public:
 	//フォントのハンドルを取得する
 	int GetFontHandle(std::string path,std::string name, int fontSize);
 
+	void DrawStringUseFont(int x, int y, std::string str, unsigned int color,std::string name,int size);
 private:
 	//staticにすることで
 	//Singletonのポインタがプログラム起動時に一つ作られるようにする

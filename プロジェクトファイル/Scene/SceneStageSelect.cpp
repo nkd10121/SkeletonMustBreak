@@ -82,6 +82,8 @@ SceneStageSelect::SceneStageSelect(SceneManager& mgr) :
 
 	//念のためロード
 	ScoreManager::GetInstance().Load();
+
+	Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30);
 }
 
 /// <summary>
@@ -233,29 +235,30 @@ void SceneStageSelect::Draw()
 	m_pPlayer->Draw();
 	MV1DrawModel(m_UIHandles[BGmodel]);
 
+	if (m_destinationScene != eDestination::Title)
+	{
+		//背景の描画
+		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
+		Font::GetInstance().DrawStringUseFont(850, 465, "ハイスコア", 0xffffff, kFontName, 30);
+	}
+
+
 	if (m_destinationScene == eDestination::stage1)
 	{
-		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
-
 		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_UIHandles[stage1MiniMap], true);
 
-		DrawStringToHandle(775, 465, "ハイスコア", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
 		DrawFormatStringToHandle(765, 500, 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50), "%d", ScoreManager::GetInstance().GetStage1Score());
 	}
 	else if (m_destinationScene == eDestination::stage2)
 	{
-		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
 		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_UIHandles[stage2MiniMap], true);
 
-		DrawStringToHandle(775, 465, "ハイスコア", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
 		DrawFormatStringToHandle(765, 500, 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50), "%d", ScoreManager::GetInstance().GetStage2Score());
 	}
 	else if (m_destinationScene == eDestination::stage3)
 	{
-		DrawRotaGraph(850, 360, 1.0f, 0.0f, m_UIHandles[scoreBg], true);
 		DrawRotaGraph(850, 300, 1.6f, 0.0f, m_UIHandles[stage3MiniMap], true);
 
-		DrawStringToHandle(775, 465, "ハイスコア", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
 		DrawFormatStringToHandle(765, 500, 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50), "%d", ScoreManager::GetInstance().GetStage3Score());
 	}
 
@@ -266,10 +269,10 @@ void SceneStageSelect::Draw()
 	DrawRotaGraph(m_uiPos[static_cast<int>(eDestination::stage2)].first, m_uiPos[static_cast<int>(eDestination::stage2)].second, 1.2f, 0.0f, m_UIHandles[uiFrame], true);
 	DrawRotaGraph(m_uiPos[static_cast<int>(eDestination::stage3)].first, m_uiPos[static_cast<int>(eDestination::stage3)].second, 1.2f, 0.0f, m_UIHandles[uiFrame], true);
 
-	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::Title)].first - 45, m_uiPos[static_cast<int>(eDestination::Title)].second - 15, "もどる", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 30));
-	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::stage1)].first - 110, m_uiPos[static_cast<int>(eDestination::stage1)].second - 25, "ステージ1", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50));
-	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::stage2)].first - 120, m_uiPos[static_cast<int>(eDestination::stage2)].second - 25, "ステージ2", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50));
-	DrawStringToHandle(m_uiPos[static_cast<int>(eDestination::stage3)].first - 120, m_uiPos[static_cast<int>(eDestination::stage3)].second - 25, "ステージ3", 0xffffff, Font::GetInstance().GetFontHandle(kFontPath, kFontName, 50));
+	Font::GetInstance().DrawStringUseFont(m_uiPos[static_cast<int>(eDestination::Title)].first, m_uiPos[static_cast<int>(eDestination::Title)].second, "もどる", 0xffffff, kFontName, 30);
+	Font::GetInstance().DrawStringUseFont(m_uiPos[static_cast<int>(eDestination::stage1)].first, m_uiPos[static_cast<int>(eDestination::stage1)].second, "ステージ1", 0xffffff, kFontName, 50);
+	Font::GetInstance().DrawStringUseFont(m_uiPos[static_cast<int>(eDestination::stage2)].first, m_uiPos[static_cast<int>(eDestination::stage2)].second, "ステージ2", 0xffffff, kFontName, 50);
+	Font::GetInstance().DrawStringUseFont(m_uiPos[static_cast<int>(eDestination::stage3)].first, m_uiPos[static_cast<int>(eDestination::stage3)].second, "ステージ3", 0xffffff, kFontName, 50);
 
 
 #ifdef _DEBUG

@@ -4,11 +4,12 @@ class CutterTrap : public TrapBase
 {
 public:
 	CutterTrap(std::shared_ptr<MyLib::Physics> physics);
-	virtual ~CutterTrap();
+	virtual ~CutterTrap()override;
 
 	void Init();
+	virtual GameObjectTag Finalize()override;
 	void Update()override;
-	void Draw();
+	void Draw()override;
 
 private:
 	float m_rotationAngle;

@@ -25,7 +25,7 @@ namespace
 	//索敵範囲
 	constexpr float kSearchingRadius = 30.0f;
 	//当たり判定の半径
-	constexpr float kHitBoxRadius = 3.8f;
+	constexpr float kHitBoxRadius = 3.0f;
 }
 
 /// <summary>
@@ -90,7 +90,9 @@ void Enemy::Init(std::shared_ptr<MyLib::Physics> physics, std::vector<MyLib::Vec
 	MV1SetPosition(m_modelHandle, m_modelPos.ConvertToVECTOR());
 
 	//ダメージ判定をする当たり判定を作成
-	InitHitBox(kHitBoxRadius);
+	InitNormalHitBox(kHitBoxRadius);
+	InitHeadHitBox(kHitBoxRadius*0.8f);
+
 	//索敵判定をする当たり判定を作成
 	InitSearch(kModelDefaultSize * kModelSizeScale / 2);
 
@@ -126,15 +128,25 @@ void Enemy::Update(MyLib::Vec3 playerPos, bool isChase)
 
 	//判定の更新
 	MyLib::Vec3 centerPos = rigidbody.GetPos();
-	centerPos.y += kModelDefaultSize / 2 * kModelSizeScale * 0.8f;
-	m_pHitbox->Update(centerPos);
+	centerPos.y += kModelDefaultSize / 2 * kModelSizeScale * 0.3f;
+	m_pNormalHitbox->Update(centerPos);
 	m_pSearch->Update(centerPos);
 
+	centerPos.y += kModelDefaultSize / 2 * kModelSizeScale * 0.8f;
+	m_pHeadHitbox->Update(centerPos);
+
 	//敵(プレイヤー)の攻撃にあたった時
-	if (m_pHitbox->GetIsHit())
+	if (m_pNormalHitbox->GetIsHit())
 	{
 		//HPを減らす処理を行う
-		OnDamage();
+		OnNormalDamage();
+	}
+
+	//敵(プレイヤー)の攻撃にあたった時
+	if (m_pHeadHitbox->GetIsHit())
+	{
+		//HPを減らす処理を行う
+		OnHeadDamage();
 	}
 
 	//HPが0以下になったら死亡する
