@@ -1,0 +1,5 @@
+﻿名前,Idle,Move,Attack,Hit,Jump,Aim,Death0,Death1,Death2,Win,DeathPose
+Player,1,4,-1,-1,11,56,28,-1,-1,23,29
+NormalSkelton,42,54,4,39,-1,-1,25,27,30,-1,-1
+BigSkelton,42,54,4,39,-1,-1,25,27,30,-1,-1
+FastSkelton,42,54,4,39,-1,-1,25,27,30,-1,-1
